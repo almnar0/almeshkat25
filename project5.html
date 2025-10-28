@@ -1,0 +1,779 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>نظام الزراعة الذكية - لوحة التحكم</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #56ab2f 0%, #a8e063 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 40px;
+        }
+
+        .header h1 {
+            font-size: 3em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .dashboard {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 20px;
+        }
+
+        .panel {
+            background: white;
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .panel h2 {
+            color: #333;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.5em;
+            border-bottom: 3px solid #56ab2f;
+            padding-bottom: 10px;
+        }
+
+        .sensor-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+
+        .sensor-card {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+            transition: all 0.3s;
+        }
+
+        .sensor-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .sensor-icon {
+            font-size: 3em;
+            margin-bottom: 10px;
+        }
+
+        .sensor-value {
+            font-size: 2em;
+            font-weight: bold;
+            color: #56ab2f;
+            margin-bottom: 5px;
+        }
+
+        .sensor-label {
+            color: #666;
+            font-size: 0.9em;
+        }
+
+        .sensor-status {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 0.8em;
+            font-weight: bold;
+            margin-top: 8px;
+        }
+
+        .status-good {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status-warning {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .status-danger {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .plant-list {
+            display: grid;
+            gap: 15px;
+        }
+
+        .plant-card {
+            background: linear-gradient(135deg, #fff 0%, #f8f9fa 100%);
+            padding: 20px;
+            border-radius: 15px;
+            border-right: 5px solid #56ab2f;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            transition: all 0.3s;
+        }
+
+        .plant-card:hover {
+            transform: translateX(-5px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .plant-icon {
+            font-size: 3em;
+        }
+
+        .plant-info {
+            flex: 1;
+        }
+
+        .plant-name {
+            font-size: 1.3em;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .plant-stats {
+            display: flex;
+            gap: 15px;
+            font-size: 0.9em;
+            color: #666;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 25px;
+            background: #e0e0e0;
+            border-radius: 12px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #56ab2f 0%, #a8e063 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 0.9em;
+            transition: width 0.5s ease;
+        }
+
+        .control-section {
+            margin-top: 20px;
+        }
+
+        .control-btn {
+            width: 100%;
+            padding: 15px;
+            margin-bottom: 10px;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.1em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .btn-water {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-water:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-fertilize {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+        }
+
+        .btn-fertilize:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(245, 87, 108, 0.4);
+        }
+
+        .btn-light {
+            background: linear-gradient(135deg, #fceabb 0%, #f8b500 100%);
+            color: #333;
+        }
+
+        .btn-light:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(248, 181, 0, 0.4);
+        }
+
+        .schedule-item {
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .schedule-item.active {
+            background: #d4edda;
+            border: 2px solid #28a745;
+        }
+
+        .schedule-time {
+            font-weight: bold;
+            color: #56ab2f;
+        }
+
+        .schedule-action {
+            color: #666;
+        }
+
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 30px;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: 0.4s;
+            border-radius: 30px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 22px;
+            width: 22px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: 0.4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .slider {
+            background-color: #56ab2f;
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(30px);
+        }
+
+        .weather-widget {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+        }
+
+        .weather-icon {
+            font-size: 4em;
+            margin-bottom: 10px;
+        }
+
+        .weather-temp {
+            font-size: 3em;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .weather-desc {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .alert-box {
+            padding: 15px;
+            background: #fff3cd;
+            border-right: 4px solid #ffc107;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .alert-box.success {
+            background: #d4edda;
+            border-right-color: #28a745;
+        }
+
+        .alert-box.danger {
+            background: #f8d7da;
+            border-right-color: #dc3545;
+        }
+
+        .chart-container {
+            margin-top: 20px;
+            height: 200px;
+            position: relative;
+        }
+
+        .chart-bar {
+            position: absolute;
+            bottom: 0;
+            width: 40px;
+            background: linear-gradient(180deg, #56ab2f 0%, #a8e063 100%);
+            border-radius: 8px 8px 0 0;
+            transition: height 0.5s ease;
+        }
+
+        .chart-label {
+            position: absolute;
+            bottom: -25px;
+            width: 40px;
+            text-align: center;
+            font-size: 0.8em;
+            color: #666;
+        }
+
+        @media (max-width: 768px) {
+            .dashboard {
+                grid-template-columns: 1fr;
+            }
+            
+            .sensor-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .live-indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            background: #28a745;
+            border-radius: 50%;
+            animation: blink 2s infinite;
+            margin-left: 10px;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🌱 نظام الزراعة الذكية</h1>
+            <p>مراقبة وإدارة حديقة المدرسة <span class="live-indicator"></span></p>
+        </div>
+
+        <div class="dashboard">
+            <!-- Sensors Panel -->
+            <div class="panel">
+                <h2>📊 المستشعرات الحية</h2>
+                <div class="sensor-grid">
+                    <div class="sensor-card">
+                        <div class="sensor-icon">💧</div>
+                        <div class="sensor-value" id="soilMoisture">65%</div>
+                        <div class="sensor-label">رطوبة التربة</div>
+                        <span class="sensor-status status-good">ممتاز</span>
+                    </div>
+                    <div class="sensor-card">
+                        <div class="sensor-icon">🌡️</div>
+                        <div class="sensor-value" id="temperature">28°C</div>
+                        <div class="sensor-label">درجة الحرارة</div>
+                        <span class="sensor-status status-good">مناسب</span>
+                    </div>
+                    <div class="sensor-card">
+                        <div class="sensor-icon">☀️</div>
+                        <div class="sensor-value" id="lightLevel">850 lux</div>
+                        <div class="sensor-label">مستوى الإضاءة</div>
+                        <span class="sensor-status status-good">كافي</span>
+                    </div>
+                    <div class="sensor-card">
+                        <div class="sensor-icon">💨</div>
+                        <div class="sensor-value" id="humidity">55%</div>
+                        <div class="sensor-label">رطوبة الجو</div>
+                        <span class="sensor-status status-good">مثالي</span>
+                    </div>
+                    <div class="sensor-card">
+                        <div class="sensor-icon">⚗️</div>
+                        <div class="sensor-value" id="ph">6.8</div>
+                        <div class="sensor-label">حموضة التربة</div>
+                        <span class="sensor-status status-good">متعادل</span>
+                    </div>
+                    <div class="sensor-card">
+                        <div class="sensor-icon">🌿</div>
+                        <div class="sensor-value" id="nutrients">82%</div>
+                        <div class="sensor-label">المغذيات</div>
+                        <span class="sensor-status status-good">جيد</span>
+                    </div>
+                </div>
+
+                <div class="weather-widget" style="margin-top: 20px;">
+                    <div class="weather-icon">⛅</div>
+                    <div class="weather-temp">26°C</div>
+                    <div class="weather-desc">غائم جزئياً</div>
+                    <div style="margin-top: 10px; font-size: 0.9em; opacity: 0.8;">
+                        احتمال المطر: 20% | الرياح: 12 كم/س
+                    </div>
+                </div>
+            </div>
+
+            <!-- Plants Panel -->
+            <div class="panel">
+                <h2>🌺 النباتات المراقبة</h2>
+                <div class="plant-list">
+                    <div class="plant-card">
+                        <div class="plant-icon">🍅</div>
+                        <div class="plant-info">
+                            <div class="plant-name">طماطم</div>
+                            <div class="plant-stats">
+                                <span>📅 عمر: 45 يوم</span>
+                                <span>💧 آخر ري: منذ 6 ساعات</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 75%;">75% نمو</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="plant-card">
+                        <div class="plant-icon">🥒</div>
+                        <div class="plant-info">
+                            <div class="plant-name">خيار</div>
+                            <div class="plant-stats">
+                                <span>📅 عمر: 38 يوم</span>
+                                <span>💧 آخر ري: منذ 4 ساعات</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 65%;">65% نمو</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="plant-card">
+                        <div class="plant-icon">🌶️</div>
+                        <div class="plant-info">
+                            <div class="plant-name">فلفل أخضر</div>
+                            <div class="plant-stats">
+                                <span>📅 عمر: 52 يوم</span>
+                                <span>💧 آخر ري: منذ 8 ساعات</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 90%;">90% نمو</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="plant-card">
+                        <div class="plant-icon">🥬</div>
+                        <div class="plant-info">
+                            <div class="plant-name">خس</div>
+                            <div class="plant-stats">
+                                <span>📅 عمر: 25 يوم</span>
+                                <span>💧 آخر ري: منذ 5 ساعات</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 50%;">50% نمو</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="plant-card">
+                        <div class="plant-icon">🌻</div>
+                        <div class="plant-info">
+                            <div class="plant-name">عباد الشمس</div>
+                            <div class="plant-stats">
+                                <span>📅 عمر: 60 يوم</span>
+                                <span>💧 آخر ري: منذ 7 ساعات</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 95%;">95% نمو</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Controls & Alerts Panel -->
+            <div class="panel">
+                <h2>⚙️ التحكم والتنبيهات</h2>
+                
+                <div style="margin-bottom: 25px;">
+                    <h3 style="color: #333; margin-bottom: 15px;">🔔 التنبيهات النشطة</h3>
+                    <div class="alert-box success">
+                        <span style="font-size: 1.5em;">✅</span>
+                        <span>تم الري التلقائي بنجاح - القطاع A</span>
+                    </div>
+                    <div class="alert-box">
+                        <span style="font-size: 1.5em;">⚠️</span>
+                        <span>الري القادم بعد 3 ساعات - القطاع B</span>
+                    </div>
+                    <div class="alert-box success">
+                        <span style="font-size: 1.5em;">🌱</span>
+                        <span>نباتات الخس جاهزة للحصاد قريباً</span>
+                    </div>
+                </div>
+
+                <div class="control-section">
+                    <h3 style="color: #333; margin-bottom: 15px;">🎮 التحكم اليدوي</h3>
+                    <button class="control-btn btn-water" onclick="activateWater()">
+                        💧 تشغيل الري الآن
+                    </button>
+                    <button class="control-btn btn-fertilize" onclick="activateFertilize()">
+                        🌿 إضافة السماد
+                    </button>
+                    <button class="control-btn btn-light" onclick="toggleLight()">
+                        💡 تبديل الإضاءة الإضافية
+                    </button>
+                </div>
+
+                <div style="margin-top: 25px;">
+                    <h3 style="color: #333; margin-bottom: 15px;">⚡ الأنظمة التلقائية</h3>
+                    <div style="display: flex; justify-content: space-between; align-items: center; padding: 15px; background: #f8f9fa; border-radius: 10px; margin-bottom: 10px;">
+                        <span style="font-weight: bold;">الري التلقائي</span>
+                        <label class="toggle-switch">
+                            <input type="checkbox" checked onchange="toggleAutoWater()">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; align-items: center; padding: 15px; background: #f8f9fa; border-radius: 10px; margin-bottom: 10px;">
+                        <span style="font-weight: bold;">الإضاءة التلقائية</span>
+                        <label class="toggle-switch">
+                            <input type="checkbox" checked onchange="toggleAutoLight()">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; align-items: center; padding: 15px; background: #f8f9fa; border-radius: 10px;">
+                        <span style="font-weight: bold;">التسميد التلقائي</span>
+                        <label class="toggle-switch">
+                            <input type="checkbox" onchange="toggleAutoFertilize()">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Schedule Panel -->
+            <div class="panel">
+                <h2>📅 جدول العناية</h2>
+                <div>
+                    <div class="schedule-item active">
+                        <div>
+                            <div class="schedule-time">8:00 صباحاً</div>
+                            <div class="schedule-action">ري تلقائي - جميع القطاعات</div>
+                        </div>
+                        <span>✅</span>
+                    </div>
+                    <div class="schedule-item">
+                        <div>
+                            <div class="schedule-time">12:00 ظهراً</div>
+                            <div class="schedule-action">فحص المستشعرات</div>
+                        </div>
+                        <span>⏳</span>
+                    </div>
+                    <div class="schedule-item">
+                        <div>
+                            <div class="schedule-time">4:00 مساءً</div>
+                            <div class="schedule-action">ري تلقائي - القطاع B</div>
+                        </div>
+                        <span>⏰</span>
+                    </div>
+                    <div class="schedule-item">
+                        <div>
+                            <div class="schedule-time">6:00 مساءً</div>
+                            <div class="schedule-action">تشغيل الإضاءة الإضافية</div>
+                        </div>
+                        <span>⏰</span>
+                    </div>
+                    <div class="schedule-item">
+                        <div>
+                            <div class="schedule-time">الأحد</div>
+                            <div class="schedule-action">إضافة السماد</div>
+                        </div>
+                        <span>📅</span>
+                    </div>
+                </div>
+
+                <div style="margin-top: 25px;">
+                    <h3 style="color: #333; margin-bottom: 15px;">📊 إحصائيات الأسبوع</h3>
+                    <div style="position: relative; height: 200px; background: #f8f9fa; border-radius: 10px; padding: 20px;">
+                        <div id="chart" style="position: relative; height: 100%; display: flex; align-items: flex-end; justify-content: space-around;"></div>
+                    </div>
+                    <div style="display: flex; justify-content: space-around; margin-top: 10px; font-size: 0.9em; color: #666;">
+                        <span>السبت</span>
+                        <span>الأحد</span>
+                        <span>الاثنين</span>
+                        <span>الثلاثاء</span>
+                        <span>الأربعاء</span>
+                        <span>الخميس</span>
+                        <span>الجمعة</span>
+                    </div>
+                </div>
+
+                <div style="margin-top: 25px;">
+                    <h3 style="color: #333; margin-bottom: 15px;">💧 استهلاك المياه</h3>
+                    <div style="background: #f8f9fa; padding: 20px; border-radius: 10px;">
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                            <span style="color: #666;">اليوم</span>
+                            <span style="font-weight: bold; color: #56ab2f;">45 لتر</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                            <span style="color: #666;">هذا الأسبوع</span>
+                            <span style="font-weight: bold; color: #56ab2f;">320 لتر</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between;">
+                            <span style="color: #666;">هذا الشهر</span>
+                            <span style="font-weight: bold; color: #56ab2f;">1,245 لتر</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let sensors = {
+            soilMoisture: 65,
+            temperature: 28,
+            lightLevel: 850,
+            humidity: 55,
+            ph: 6.8,
+            nutrients: 82
+        };
+
+        let autoSystems = {
+            water: true,
+            light: true,
+            fertilize: false
+        };
+
+        function updateSensors() {
+            sensors.soilMoisture = Math.max(40, Math.min(90, sensors.soilMoisture + (Math.random() - 0.5) * 3));
+            sensors.temperature = Math.max(20, Math.min(35, sensors.temperature + (Math.random() - 0.5) * 2));
+            sensors.lightLevel = Math.max(600, Math.min(1200, sensors.lightLevel + (Math.random() - 0.5) * 50));
+            sensors.humidity = Math.max(40, Math.min(80, sensors.humidity + (Math.random() - 0.5) * 4));
+            sensors.ph = Math.max(6.0, Math.min(7.5, sensors.ph + (Math.random() - 0.5) * 0.2));
+            sensors.nutrients = Math.max(60, Math.min(95, sensors.nutrients + (Math.random() - 0.5) * 2));
+
+            document.getElementById('soilMoisture').textContent = Math.round(sensors.soilMoisture) + '%';
+            document.getElementById('temperature').textContent = sensors.temperature.toFixed(1) + '°C';
+            document.getElementById('lightLevel').textContent = Math.round(sensors.lightLevel) + ' lux';
+            document.getElementById('humidity').textContent = Math.round(sensors.humidity) + '%';
+            document.getElementById('ph').textContent = sensors.ph.toFixed(1);
+            document.getElementById('nutrients').textContent = Math.round(sensors.nutrients) + '%';
+        }
+
+        function activateWater() {
+            alert('💧 تم تشغيل نظام الري!\nالوقت المتوقع: 15 دقيقة');
+            sensors.soilMoisture = Math.min(90, sensors.soilMoisture + 15);
+            updateSensors();
+        }
+
+        function activateFertilize() {
+            alert('🌿 تم إضافة السماد!\nسيتم توزيعه تلقائياً على جميع النباتات');
+            sensors.nutrients = Math.min(95, sensors.nutrients + 10);
+            updateSensors();
+        }
+
+        function toggleLight() {
+            alert('💡 تم تبديل حالة الإضاءة الإضافية');
+            sensors.lightLevel = sensors.lightLevel < 900 ? 1100 : 750;
+            updateSensors();
+        }
+
+        function toggleAutoWater() {
+            autoSystems.water = !autoSystems.water;
+            alert(autoSystems.water ? 'تم تفعيل الري التلقائي ✅' : 'تم إيقاف الري التلقائي ⏸️');
+        }
+
+        function toggleAutoLight() {
+            autoSystems.light = !autoSystems.light;
+            alert(autoSystems.light ? 'تم تفعيل الإضاءة التلقائية ✅' : 'تم إيقاف الإضاءة التلقائية ⏸️');
+        }
+
+        function toggleAutoFertilize() {
+            autoSystems.fertilize = !autoSystems.fertilize;
+            alert(autoSystems.fertilize ? 'تم تفعيل التسميد التلقائي ✅' : 'تم إيقاف التسميد التلقائي ⏸️');
+        }
+
+        function createChart() {
+            const chart = document.getElementById('chart');
+            const data = [65, 72, 68, 75, 80, 78, 85];
+            const maxHeight = 140;
+
+            chart.innerHTML = data.map((value, index) => {
+                const height = (value / 100) * maxHeight;
+                return `
+                    <div style="position: relative; width: 50px;">
+                        <div style="
+                            width: 40px;
+                            height: ${height}px;
+                            background: linear-gradient(180deg, #56ab2f 0%, #a8e063 100%);
+                            border-radius: 8px 8px 0 0;
+                            transition: height 0.5s ease;
+                            position: relative;
+                        ">
+                            <div style="position: absolute; top: -20px; left: 50%; transform: translateX(-50%); font-size: 0.8em; font-weight: bold; color: #56ab2f;">
+                                ${value}%
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Update sensors every 3 seconds
+        setInterval(updateSensors, 3000);
+
+        // Auto water when soil moisture is low
+        setInterval(() => {
+            if(autoSystems.water && sensors.soilMoisture < 50) {
+                sensors.soilMoisture = Math.min(85, sensors.soilMoisture + 20);
+                console.log('Auto watering activated');
+            }
+        }, 10000);
+
+        // Initialize chart
+        createChart();
+    </script>
+</body>
+</html>

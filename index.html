@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>قسم التقنية - مدارس المشكاة</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            color: white;
+            margin-bottom: 50px;
+            padding: 40px 20px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            font-size: 3em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .subtitle {
+            font-size: 1.3em;
+            opacity: 0.9;
+        }
+
+        .back-button {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: white;
+            color: #667eea;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1.1em;
+            font-weight: bold;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+            z-index: 1000;
+            display: none;
+        }
+
+        .back-button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .projects-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 30px;
+            margin-bottom: 50px;
+        }
+
+        .project-card {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            cursor: pointer;
+        }
+
+        .project-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .project-image {
+            width: 100%;
+            height: 200px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 4em;
+            color: white;
+        }
+
+        .project-content {
+            padding: 25px;
+        }
+
+        .project-title {
+            font-size: 1.5em;
+            color: #333;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+
+        .project-description {
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+
+        .project-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 1px solid #eee;
+        }
+
+        .project-students {
+            color: #667eea;
+            font-weight: bold;
+        }
+
+        .project-date {
+            color: #999;
+            font-size: 0.9em;
+        }
+
+        .view-button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 10px 25px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: opacity 0.3s ease;
+            margin-top: 10px;
+            width: 100%;
+        }
+
+        .view-button:hover {
+            opacity: 0.9;
+        }
+
+        .tags {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-top: 15px;
+        }
+
+        .tag {
+            background: #f0f0f0;
+            padding: 5px 12px;
+            border-radius: 15px;
+            font-size: 0.85em;
+            color: #666;
+        }
+
+        footer {
+            text-align: center;
+            color: white;
+            padding: 20px;
+            margin-top: 50px;
+        }
+
+        .project-viewer {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: white;
+            z-index: 999;
+            overflow: auto;
+        }
+
+        .project-viewer.active {
+            display: block;
+        }
+
+        #projectFrame {
+            width: 100%;
+            height: calc(100vh - 80px);
+            margin-top: 80px;
+            border: none;
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2em;
+            }
+
+            .subtitle {
+                font-size: 1em;
+            }
+
+            .projects-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .back-button {
+                padding: 10px 20px;
+                font-size: 1em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <button class="back-button" onclick="goBack()">← العودة للمشاريع</button>
+
+    <div class="container" id="mainContent">
+        <header>
+            <h1>🖥️ قسم التقنية</h1>
+            <p class="subtitle">مدارس المشكاة - معرض أعمال الطلاب المميزة</p>
+        </header>
+
+        <div class="projects-grid" id="projectsGrid"></div>
+
+        <footer>
+            <p>© 2025 مدارس المشكاة - قسم التقنية | جميع الحقوق محفوظة</p>
+        </footer>
+    </div>
+
+    <div class="project-viewer" id="projectViewer">
+        <iframe id="projectFrame"></iframe>
+    </div>
+
+    <script>
+        const projects = [
+            {
+                id: 1,
+                icon: '💻',
+                title: 'تطبيق إدارة المكتبة الذكية',
+                shortDesc: 'نظام متكامل لإدارة استعارة الكتب مع تقنية البحث الذكي والإشعارات التلقائية',
+                students: ' 1 ',
+                date: 'أكتوبر 2025',
+                tags: ['تطوير ويب', 'قواعد البيانات', 'واجهات تفاعلية'],
+                file: 'project1.html'
+            },
+        
+            {
+                id: 3,
+                icon: '🎮',
+                title: 'لعبة ماث تشالنج التعليمية',
+                shortDesc: 'لعبة تفاعلية ممتعة تساعد الطلاب على إتقان الرياضيات من خلال التحديات والألغاز',
+                students: '2   ',
+                date: 'أغسطس 2025',
+                tags: ['ألعاب تعليمية', 'برمجة', 'تصميم'],
+                file: 'project3.html'
+            },
+           
+            {
+                id: 5,
+                icon: '🌱',
+                title: 'نظام الزراعة الذكية المدرسي',
+                shortDesc: 'حل IoT متطور لمراقبة وري النباتات في حديقة المدرسة بشكل آلي وفعال',
+                students: '3   ',
+                date: 'يونيو 2025',
+                tags: ['IoT', 'بيئة', 'أتمتة'],
+                file: 'project5.html'
+            },
+            
+            {
+                id: 7,
+                icon: '🔐',
+                title: 'نظام الحضور الذكي بالتعرف على الوجه',
+                shortDesc: 'نظام حضور متطور يستخدم الذكاء الاصطناعي للتعرف على وجوه الطلاب تلقائياً',
+                students: '4   ',
+                date: 'أبريل 2025',
+                tags: ['ذكاء اصطناعي', 'أمن', 'إدارة'],
+                file: 'project7.html'
+            },
+          
+        ];
+
+        const grid = document.getElementById('projectsGrid');
+        const projectViewer = document.getElementById('projectViewer');
+        const projectFrame = document.getElementById('projectFrame');
+        const mainContent = document.getElementById('mainContent');
+        const backButton = document.querySelector('.back-button');
+
+        function displayProjects() {
+            grid.innerHTML = projects.map(project => `
+                <div class="project-card" onclick="openProject('${project.file}')">
+                    <div class="project-image">${project.icon}</div>
+                    <div class="project-content">
+                        <h3 class="project-title">${project.title}</h3>
+                        <p class="project-description">${project.shortDesc}</p>
+                        <div class="tags">
+                            ${project.tags.map(tag => `<span class="tag">${tag}</span>`).join('')}
+                        </div>
+                        <div class="project-meta">
+                            <span class="project-students">👥 ${project.students}</span>
+                            <span class="project-date">📅 ${project.date}</span>
+                        </div>
+                        <button class="view-button">تشغيل المشروع 🚀</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function openProject(filename) {
+            mainContent.style.display = 'none';
+            projectViewer.classList.add('active');
+            backButton.style.display = 'block';
+            projectFrame.src = filename;
+        }
+
+        function goBack() {
+            mainContent.style.display = 'block';
+            projectViewer.classList.remove('active');
+            backButton.style.display = 'none';
+            projectFrame.src = '';
+        }
+
+        displayProjects();
+    </script>
+</body>
+</html>

@@ -1,0 +1,824 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>نظام الحضور الذكي - التعرف على الوجه</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 40px;
+        }
+
+        .header h1 {
+            font-size: 3em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .dashboard {
+            display: grid;
+            grid-template-columns: 1fr 2fr 1fr;
+            gap: 20px;
+        }
+
+        .panel {
+            background: white;
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .panel h2 {
+            color: #333;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.5em;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 10px;
+        }
+
+        .camera-container {
+            position: relative;
+            background: #000;
+            border-radius: 15px;
+            overflow: hidden;
+            aspect-ratio: 4/3;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .camera-placeholder {
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: white;
+        }
+
+        .camera-icon {
+            font-size: 5em;
+            margin-bottom: 20px;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.1); opacity: 0.8; }
+        }
+
+        .face-detection-overlay {
+            position: absolute;
+            border: 3px solid #00ff00;
+            border-radius: 10px;
+            animation: scanBorder 2s infinite;
+        }
+
+        @keyframes scanBorder {
+            0%, 100% { border-color: #00ff00; }
+            50% { border-color: #00aa00; }
+        }
+
+        .scan-button {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.2em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .scan-button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .scan-button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .scan-button.scanning {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+            transition: all 0.3s;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .stat-icon {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .stat-value {
+            font-size: 2em;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .stat-label {
+            color: #666;
+            font-size: 0.9em;
+            margin-top: 5px;
+        }
+
+        .attendance-list {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .attendance-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            border-right: 5px solid #28a745;
+            transition: all 0.3s;
+        }
+
+        .attendance-item:hover {
+            background: #e9ecef;
+            transform: translateX(-5px);
+        }
+
+        .attendance-item.absent {
+            border-right-color: #dc3545;
+        }
+
+        .attendance-item.late {
+            border-right-color: #ffc107;
+        }
+
+        .student-avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8em;
+            color: white;
+            flex-shrink: 0;
+        }
+
+        .student-info {
+            flex: 1;
+        }
+
+        .student-name {
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .student-class {
+            color: #666;
+            font-size: 0.9em;
+        }
+
+        .attendance-time {
+            font-size: 0.85em;
+            color: #666;
+        }
+
+        .status-badge {
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            font-weight: bold;
+        }
+
+        .status-present {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status-absent {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .status-late {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .class-selector {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 1em;
+            margin-bottom: 20px;
+            cursor: pointer;
+        }
+
+        .recognition-result {
+            padding: 20px;
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            color: white;
+            border-radius: 15px;
+            text-align: center;
+            margin-top: 20px;
+            display: none;
+            animation: slideDown 0.5s;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .recognition-result.show {
+            display: block;
+        }
+
+        .result-icon {
+            font-size: 3em;
+            margin-bottom: 10px;
+        }
+
+        .result-name {
+            font-size: 1.5em;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .progress-ring {
+            width: 120px;
+            height: 120px;
+            margin: 20px auto;
+        }
+
+        .progress-ring-circle {
+            stroke: #28a745;
+            stroke-width: 8;
+            fill: transparent;
+            stroke-dasharray: 283;
+            stroke-dashoffset: 283;
+            transform-origin: center;
+            transform: rotate(-90deg);
+            animation: progress 2s ease-out forwards;
+        }
+
+        @keyframes progress {
+            to {
+                stroke-dashoffset: 0;
+            }
+        }
+
+        .filter-buttons {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .filter-btn {
+            flex: 1;
+            padding: 10px;
+            border: 2px solid #e0e0e0;
+            background: white;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: bold;
+        }
+
+        .filter-btn:hover {
+            background: #f8f9fa;
+        }
+
+        .filter-btn.active {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+
+        .report-card {
+            padding: 20px;
+            background: linear-gradient(135deg, #fff 0%, #f8f9fa 100%);
+            border-radius: 15px;
+            margin-bottom: 15px;
+            border-right: 5px solid #667eea;
+        }
+
+        .report-title {
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .report-value {
+            font-size: 2em;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .chart-bar-container {
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-around;
+            height: 150px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 15px;
+            margin-top: 15px;
+        }
+
+        .chart-bar {
+            width: 30px;
+            background: linear-gradient(180deg, #667eea 0%, #764ba2 100%);
+            border-radius: 5px 5px 0 0;
+            position: relative;
+            transition: all 0.5s ease;
+        }
+
+        .chart-label {
+            position: absolute;
+            bottom: -25px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 0.8em;
+            color: #666;
+            white-space: nowrap;
+        }
+
+        @media (max-width: 1200px) {
+            .dashboard {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .live-indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            background: #28a745;
+            border-radius: 50%;
+            animation: blink 2s infinite;
+            margin-left: 10px;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎯 نظام الحضور الذكي</h1>
+            <p>التعرف التلقائي على الوجه <span class="live-indicator"></span></p>
+        </div>
+
+        <div class="dashboard">
+            <!-- Camera Panel -->
+            <div class="panel">
+                <h2>📷 كاميرا التعرف</h2>
+                
+                <select class="class-selector" id="classSelector">
+                    <option value="all">جميع الصفوف</option>
+                    <option value="1">الصف الأول المتوسط</option>
+                    <option value="2">الصف الثاني المتوسط</option>
+                    <option value="3">الصف الثالث المتوسط</option>
+                </select>
+
+                <div class="camera-container">
+                    <div class="camera-placeholder" id="cameraView">
+                        <div class="camera-icon">📸</div>
+                        <p style="font-size: 1.2em;">جاهز للمسح</p>
+                        <p style="opacity: 0.7; margin-top: 10px;">اضغط على "بدء المسح" للتعرف على الوجوه</p>
+                    </div>
+                </div>
+
+                <button class="scan-button" id="scanButton" onclick="startScanning()">
+                    🔍 بدء المسح
+                </button>
+
+                <div class="recognition-result" id="recognitionResult">
+                    <div class="result-icon">✅</div>
+                    <div class="result-name" id="resultName">محمد أحمد</div>
+                    <div id="resultClass">الصف الثاني المتوسط</div>
+                    <div style="margin-top: 10px; font-size: 0.9em;">
+                        تم تسجيل الحضور: <span id="resultTime">8:15 ص</span>
+                    </div>
+                </div>
+
+                <div class="stats-grid" style="margin-top: 20px;">
+                    <div class="stat-card">
+                        <div class="stat-icon">✅</div>
+                        <div class="stat-value" id="presentCount">0</div>
+                        <div class="stat-label">حاضر</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">❌</div>
+                        <div class="stat-value" id="absentCount">0</div>
+                        <div class="stat-label">غائب</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">⏰</div>
+                        <div class="stat-value" id="lateCount">0</div>
+                        <div class="stat-label">متأخر</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">📊</div>
+                        <div class="stat-value" id="attendanceRate">0%</div>
+                        <div class="stat-label">نسبة الحضور</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Attendance List Panel -->
+            <div class="panel">
+                <h2>📋 سجل الحضور اليومي</h2>
+                
+                <div class="filter-buttons">
+                    <button class="filter-btn active" onclick="filterAttendance('all')">الكل</button>
+                    <button class="filter-btn" onclick="filterAttendance('present')">حاضر</button>
+                    <button class="filter-btn" onclick="filterAttendance('absent')">غائب</button>
+                    <button class="filter-btn" onclick="filterAttendance('late')">متأخر</button>
+                </div>
+
+                <div class="attendance-list" id="attendanceList"></div>
+            </div>
+
+            <!-- Statistics Panel -->
+            <div class="panel">
+                <h2>📊 التقارير والإحصائيات</h2>
+                
+                <div class="report-card">
+                    <div class="report-title">
+                        <span>إجمالي الطلاب</span>
+                        <span class="report-value" id="totalStudents">150</span>
+                    </div>
+                </div>
+
+                <div class="report-card">
+                    <div class="report-title">
+                        <span>متوسط الحضور الأسبوعي</span>
+                        <span class="report-value" id="weeklyAvg">92%</span>
+                    </div>
+                </div>
+
+                <div class="report-card">
+                    <div class="report-title">
+                        <span>🏆 أفضل صف</span>
+                        <span style="font-weight: bold; color: #28a745;">الثالث متوسط</span>
+                    </div>
+                    <div style="margin-top: 10px; color: #666;">نسبة حضور: 96%</div>
+                </div>
+
+                <h3 style="color: #333; margin: 20px 0 15px;">📈 الحضور الأسبوعي</h3>
+                <div class="chart-bar-container" id="weeklyChart"></div>
+
+                <h3 style="color: #333; margin: 20px 0 15px;">⚡ إجراءات سريعة</h3>
+                <button class="scan-button" style="font-size: 1em; padding: 12px;" onclick="exportReport()">
+                    📥 تصدير التقرير
+                </button>
+                <button class="scan-button" style="font-size: 1em; padding: 12px; background: linear-gradient(135deg, #28a745 0%, #20c997 100%);" onclick="sendNotifications()">
+                    📧 إرسال إشعارات
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let students = [
+            { id: 1, name: 'محمد أحمد', class: '2', avatar: '👨', status: 'pending' },
+            { id: 2, name: 'سارة علي', class: '2', avatar: '👩', status: 'pending' },
+            { id: 3, name: 'أحمد خالد', class: '1', avatar: '👨', status: 'pending' },
+            { id: 4, name: 'فاطمة حسن', class: '3', avatar: '👩', status: 'pending' },
+            { id: 5, name: 'عمر محمود', class: '2', avatar: '👨', status: 'pending' },
+            { id: 6, name: 'مريم عبدالله', class: '1', avatar: '👩', status: 'pending' },
+            { id: 7, name: 'خالد سعيد', class: '3', avatar: '👨', status: 'pending' },
+            { id: 8, name: 'نورة إبراهيم', class: '2', avatar: '👩', status: 'pending' },
+            { id: 9, name: 'يوسف علي', class: '1', avatar: '👨', status: 'pending' },
+            { id: 10, name: 'هند محمد', class: '3', avatar: '👩', status: 'pending' },
+            { id: 11, name: 'عبدالله حسين', class: '2', avatar: '👨', status: 'pending' },
+            { id: 12, name: 'ليلى أحمد', class: '1', avatar: '👩', status: 'pending' }
+        ];
+
+        let attendanceRecords = [];
+        let isScanning = false;
+        let currentFilter = 'all';
+
+        function displayAttendance() {
+            const list = document.getElementById('attendanceList');
+            const classFilter = document.getElementById('classSelector').value;
+            
+            let filtered = students.filter(s => {
+                if (classFilter !== 'all' && s.class !== classFilter) return false;
+                if (currentFilter === 'present') return s.status === 'present';
+                if (currentFilter === 'absent') return s.status === 'absent';
+                if (currentFilter === 'late') return s.status === 'late';
+                return true;
+            });
+
+            list.innerHTML = filtered.map(student => {
+                const record = attendanceRecords.find(r => r.studentId === student.id);
+                const time = record ? record.time : '';
+                
+                return `
+                    <div class="attendance-item ${student.status}">
+                        <div class="student-avatar">${student.avatar}</div>
+                        <div class="student-info">
+                            <div class="student-name">${student.name}</div>
+                            <div class="student-class">الصف ${getClassName(student.class)}</div>
+                            ${time ? `<div class="attendance-time">⏰ ${time}</div>` : ''}
+                        </div>
+                        <span class="status-badge status-${student.status}">
+                            ${getStatusLabel(student.status)}
+                        </span>
+                    </div>
+                `;
+            }).join('');
+
+            updateStats();
+        }
+
+        function getClassName(classNum) {
+            const names = { '1': 'الأول المتوسط', '2': 'الثاني المتوسط', '3': 'الثالث المتوسط' };
+            return names[classNum] || '';
+        }
+
+        function getStatusLabel(status) {
+            const labels = {
+                'present': '✅ حاضر',
+                'absent': '❌ غائب',
+                'late': '⏰ متأخر',
+                'pending': '⏳ في الانتظار'
+            };
+            return labels[status];
+        }
+
+        function updateStats() {
+            const present = students.filter(s => s.status === 'present').length;
+            const absent = students.filter(s => s.status === 'absent').length;
+            const late = students.filter(s => s.status === 'late').length;
+            const total = students.length;
+            const rate = total > 0 ? Math.round((present / total) * 100) : 0;
+
+            document.getElementById('presentCount').textContent = present;
+            document.getElementById('absentCount').textContent = absent;
+            document.getElementById('lateCount').textContent = late;
+            document.getElementById('attendanceRate').textContent = rate + '%';
+            document.getElementById('totalStudents').textContent = total;
+        }
+
+        function startScanning() {
+            if (isScanning) return;
+            
+            isScanning = true;
+            const button = document.getElementById('scanButton');
+            const cameraView = document.getElementById('cameraView');
+            const resultDiv = document.getElementById('recognitionResult');
+            
+            button.textContent = '🔄 جاري المسح...';
+            button.classList.add('scanning');
+            button.disabled = true;
+
+            // Simulate scanning animation
+            cameraView.innerHTML = `
+                <div style="width: 80%; height: 80%; border: 3px dashed #00ff00; border-radius: 10px; display: flex; align-items: center; justify-content: center; animation: pulse 1s infinite;">
+                    <div style="text-align: center; color: white;">
+                        <div style="font-size: 4em; margin-bottom: 10px;">🔍</div>
+                        <div style="font-size: 1.2em;">جاري التعرف على الوجه...</div>
+                        <svg class="progress-ring" style="margin-top: 20px;">
+                            <circle class="progress-ring-circle" cx="60" cy="60" r="45"></circle>
+                        </svg>
+                    </div>
+                </div>
+            `;
+
+            // Simulate face recognition after 2 seconds
+            setTimeout(() => {
+                const pendingStudents = students.filter(s => s.status === 'pending');
+                
+                if (pendingStudents.length > 0) {
+                    const randomStudent = pendingStudents[Math.floor(Math.random() * pendingStudents.length)];
+                    const currentTime = new Date();
+                    const hours = currentTime.getHours();
+                    const minutes = currentTime.getMinutes();
+                    const timeString = `${hours}:${minutes.toString().padStart(2, '0')}`;
+                    
+                    // Determine if late (after 8:00 AM)
+                    const isLate = hours > 8 || (hours === 8 && minutes > 0);
+                    randomStudent.status = isLate ? 'late' : 'present';
+                    
+                    attendanceRecords.push({
+                        studentId: randomStudent.id,
+                        time: timeString,
+                        status: randomStudent.status
+                    });
+
+                    // Show recognition result
+                    cameraView.innerHTML = `
+                        <div style="text-align: center; color: white;">
+                            <div style="font-size: 5em; margin-bottom: 15px; animation: bounce 0.5s;">✅</div>
+                            <div style="font-size: 1.5em; font-weight: bold;">${randomStudent.name}</div>
+                            <div style="margin-top: 10px;">الصف ${getClassName(randomStudent.class)}</div>
+                            <div style="margin-top: 15px; font-size: 1.2em;">
+                                ${isLate ? '⏰ متأخر' : '✅ في الوقت المحدد'}
+                            </div>
+                        </div>
+                    `;
+
+                    document.getElementById('resultName').textContent = randomStudent.name;
+                    document.getElementById('resultClass').textContent = 'الصف ' + getClassName(randomStudent.class);
+                    document.getElementById('resultTime').textContent = timeString;
+                    resultDiv.classList.add('show');
+
+                    setTimeout(() => {
+                        resultDiv.classList.remove('show');
+                    }, 3000);
+
+                    displayAttendance();
+                } else {
+                    cameraView.innerHTML = `
+                        <div style="text-align: center; color: white;">
+                            <div style="font-size: 4em; margin-bottom: 15px;">✅</div>
+                            <div style="font-size: 1.3em;">تم تسجيل حضور جميع الطلاب!</div>
+                        </div>
+                    `;
+                }
+
+                // Reset button after 2 seconds
+                setTimeout(() => {
+                    button.textContent = '🔍 بدء المسح';
+                    button.classList.remove('scanning');
+                    button.disabled = false;
+                    isScanning = false;
+                    
+                    cameraView.innerHTML = `
+                        <div class="camera-icon">📸</div>
+                        <p style="font-size: 1.2em;">جاهز للمسح</p>
+                        <p style="opacity: 0.7; margin-top: 10px;">اضغط على "بدء المسح" للتعرف على الوجوه</p>
+                    `;
+                }, 2000);
+            }, 2000);
+        }
+
+        function filterAttendance(filter) {
+            currentFilter = filter;
+            
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            displayAttendance();
+        }
+
+        function createWeeklyChart() {
+            const chart = document.getElementById('weeklyChart');
+            const data = [85, 92, 88, 95, 90, 87, 93];
+            const days = ['السبت', 'الأحد', 'الاثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة'];
+            const maxHeight = 120;
+
+            chart.innerHTML = data.map((value, index) => {
+                const height = (value / 100) * maxHeight;
+                return `
+                    <div style="position: relative;">
+                        <div class="chart-bar" style="height: ${height}px;">
+                            <div style="position: absolute; top: -25px; left: 50%; transform: translateX(-50%); font-size: 0.8em; font-weight: bold; color: #667eea;">
+                                ${value}%
+                            </div>
+                        </div>
+                        <div class="chart-label">${days[index]}</div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function exportReport() {
+            const present = students.filter(s => s.status === 'present').length;
+            const absent = students.filter(s => s.status === 'absent').length;
+            const late = students.filter(s => s.status === 'late').length;
+            
+            const report = `
+تقرير الحضور اليومي
+التاريخ: ${new Date().toLocaleDateString('ar-SA')}
+----------------------------------
+إجمالي الطلاب: ${students.length}
+الحاضرون: ${present}
+الغائبون: ${absent}
+المتأخرون: ${late}
+نسبة الحضور: ${Math.round((present / students.length) * 100)}%
+----------------------------------
+
+تفاصيل الحضور:
+${students.map(s => {
+    const record = attendanceRecords.find(r => r.studentId === s.id);
+    return `${s.name} - ${getClassName(s.class)} - ${getStatusLabel(s.status)} ${record ? record.time : ''}`;
+}).join('\n')}
+            `;
+            
+            const blob = new Blob([report], { type: 'text/plain;charset=utf-8' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `attendance-report-${Date.now()}.txt`;
+            a.click();
+            
+            alert('✅ تم تصدير التقرير بنجاح!');
+        }
+
+        function sendNotifications() {
+            const absent = students.filter(s => s.status === 'absent' || s.status === 'pending');
+            
+            if (absent.length > 0) {
+                alert(`📧 سيتم إرسال إشعارات لأولياء أمور ${absent.length} طالب غائب`);
+                
+                // Simulate sending notifications
+                setTimeout(() => {
+                    alert('✅ تم إرسال الإشعارات بنجاح!');
+                }, 1000);
+            } else {
+                alert('✅ جميع الطلاب حاضرون! لا توجد إشعارات للإرسال.');
+            }
+        }
+
+        // Auto-mark some students as absent after 10 seconds for demo
+        setTimeout(() => {
+            students.forEach((student, index) => {
+                if (student.status === 'pending' && Math.random() > 0.7) {
+                    student.status = 'absent';
+                }
+            });
+            displayAttendance();
+        }, 10000);
+
+        // Initialize
+        document.getElementById('classSelector').addEventListener('change', displayAttendance);
+        displayAttendance();
+        createWeeklyChart();
+        updateStats();
+    </script>
+</body>
+</html>
