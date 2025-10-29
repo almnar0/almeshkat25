@@ -185,6 +185,18 @@
       .reviews-list { margin-top: 16px; display: grid; gap: 10px; }
       .review-item { background: var(--bg-secondary); border: 1px solid var(--card-border); border-radius: 12px; padding: 12px; }
       .review-item .meta { color: var(--text-muted); font-size: .85rem; margin-bottom: 6px; display: flex; gap: 8px; align-items: center; }
+
+      /* Visitors section */
+      .visitors-section { margin: 30px 0 10px; background: var(--card-bg); color: var(--text); border: 1px solid var(--card-border); border-radius: 16px; box-shadow: 0 8px 24px var(--shadow-1); padding: 20px; }
+      .visitors-header { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+      .visitors-meta { color: var(--text-muted); font-size: .9rem; }
+      .visitor-chips { display: flex; gap: 8px; flex-wrap: wrap; margin: 12px 0; }
+      .visitor-chip { display: inline-flex; align-items: center; gap: 8px; background: var(--bg-secondary); color: var(--text); border: 1px solid var(--card-border); border-radius: 999px; padding: 6px 10px; box-shadow: 0 4px 14px var(--shadow-1); }
+      .visitor-chip .flag { font-size: 1.1rem; }
+      .visitors-table { width: 100%; border-collapse: collapse; margin-top: 8px; }
+      .visitors-table th, .visitors-table td { text-align: right; border-bottom: 1px solid var(--card-border); padding: 10px; }
+      .visitors-table th { color: var(--text-muted); font-weight: 700; background: var(--surface); }
+      .visitors-table tr:hover { background: var(--surface); }
     `;
     document.head.appendChild(style);
   }
@@ -392,8 +404,104 @@
     refresh();
   }
 
+  // VISITORS: Log visits locally with timestamp and country (via ipwho.is)
+  const VISITOR_LOG_KEY = 'mishkat-visitor-log';
+  function getVisitorLogs() {
+    try { return JSON.parse(localStorage.getItem(VISITOR_LOG_KEY) || '[]'); } catch { return []; }
+  }
+  function setVisitorLogs(list) {
+    localStorage.setItem(VISITOR_LOG_KEY, JSON.stringify(list));
+  }
+  async function detectVisitorInfo() {
+    try {
+      const res = await fetch('https://ipwho.is/?lang=ar');
+      const data = await res.json();
+      if (!data || data.success === false) throw new Error('geo failed');
+      const countryName = data.country || 'غير معروف';
+      const countryCode = data.country_code || '';
+      const city = data.city || '';
+      const flag = data.flag && data.flag.emoji ? data.flag.emoji : '';
+      const ip = data.ip || '';
+      return { countryName, countryCode, city, flag, ip };
+    } catch {
+      return { countryName: 'غير معروف', countryCode: '', city: '', flag: '', ip: '' };
+    }
+  }
+  function formatDateTime(iso) {
+    try { return new Date(iso).toLocaleString('ar-SA', { dateStyle: 'medium', timeStyle: 'short' }); } catch { return iso; }
+  }
+  function renderVisitors(sectionEl) {
+    const logs = getVisitorLogs();
+    const latest = logs.slice(-8).reverse();
+    const chipsHtml = latest.map(item => `
+      <span class="visitor-chip" title="${item.city ? item.city + ' • ' : ''}${item.countryName}">
+        <span class="flag">${item.flag || '🌍'}</span>
+        <span>${item.countryName}</span>
+      </span>
+    `).join('');
+    sectionEl.querySelector('#visitorChips').innerHTML = chipsHtml || '<span style="color:var(--text-muted)">لا توجد زيارات بعد</span>';
+    const rowsHtml = logs.slice().reverse().map(item => `
+      <tr>
+        <td>${formatDateTime(item.timestamp)}</td>
+        <td>${item.countryName}${item.city ? ' — ' + item.city : ''}</td>
+      </tr>
+    `).join('');
+    sectionEl.querySelector('#visitorsTableBody').innerHTML = rowsHtml || '<tr><td colspan="2" style="color:var(--text-muted); text-align:center; padding:12px;">لا توجد بيانات</td></tr>';
+    const count = logs.length;
+    sectionEl.querySelector('#visitorsCount').textContent = count ? `${count} زيارة مسجلة محلياً` : 'لا توجد زيارات مسجلة بعد';
+  }
+  function initVisitorsSectionIfNeeded() {
+    const onIndex = document.title.includes('قسم التقنية');
+    if (!onIndex) return;
+    if (document.querySelector('.visitors-section')) return;
+
+    const container = document.getElementById('mainContent');
+    if (!container) return;
+    const footer = container.querySelector('footer');
+
+    const section = document.createElement('section');
+    section.className = 'visitors-section';
+    section.innerHTML = `
+      <div class="visitors-header">
+        <h2 style="margin:0;">👣 سجل الزوار</h2>
+        <div class="visitors-meta" id="visitorsCount"></div>
+      </div>
+      <div class="visitor-chips" id="visitorChips"></div>
+      <div style="overflow:auto; border-radius: 10px;">
+        <table class="visitors-table" aria-label="سجل الزوار">
+          <thead>
+            <tr>
+              <th style="width: 40%;">التاريخ والوقت</th>
+              <th>الدولة / المدينة</th>
+            </tr>
+          </thead>
+          <tbody id="visitorsTableBody"></tbody>
+        </table>
+      </div>
+      <div style="color: var(--text-muted); font-size: .85rem; margin-top:8px;">
+        يتم حفظ السجل محلياً على جهازك فقط. لعرض جميع الزوار عبر الموقع، نحتاج إلى ربط قاعدة بيانات لاحقاً.
+      </div>
+    `;
+    container.insertBefore(section, footer);
+
+    // Initial render from existing local data
+    renderVisitors(section);
+
+    // Record this visit then refresh
+    (async () => {
+      const info = await detectVisitorInfo();
+      const logs = getVisitorLogs();
+      logs.push({ timestamp: new Date().toISOString(), ...info });
+      const MAX = 100;
+      const trimmed = logs.slice(-MAX);
+      setVisitorLogs(trimmed);
+      renderVisitors(section);
+    })();
+  }
+
   // Boot new features
   initTheme();
   injectTechLogoIfNeeded();
   initReviewsSectionIfNeeded();
+  initVisitorsSectionIfNeeded();
 })();
