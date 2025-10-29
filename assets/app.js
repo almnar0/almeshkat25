@@ -197,6 +197,23 @@
       .visitors-table th, .visitors-table td { text-align: right; border-bottom: 1px solid var(--card-border); padding: 10px; }
       .visitors-table th { color: var(--text-muted); font-weight: 700; background: var(--surface); }
       .visitors-table tr:hover { background: var(--surface); }
+
+      /* Mishkat gallery section */
+      .mishkat-section { margin: 30px 0 10px; background: var(--card-bg); color: var(--text); border: 1px solid var(--card-border); border-radius: 16px; box-shadow: 0 8px 24px var(--shadow-1); padding: 20px; }
+      .mishkat-header { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+      .mishkat-actions { display: inline-flex; gap: 8px; align-items: center; }
+      .mishkat-add { background: linear-gradient(135deg, var(--primary) 0%, var(--primary-2) 100%); color: #fff; border: none; border-radius: 10px; padding: 10px 12px; font-weight: 700; cursor: pointer; box-shadow: 0 6px 18px var(--shadow-1); }
+      .mishkat-add:hover { filter: brightness(1.03); }
+      .mishkat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; margin-top: 12px; }
+      .mishkat-item { position: relative; border-radius: 12px; overflow: hidden; background: var(--bg-secondary); border: 1px solid var(--card-border); box-shadow: 0 6px 18px var(--shadow-1); }
+      .mishkat-item img { width: 100%; height: 140px; object-fit: cover; display: block; }
+      .mishkat-remove { position: absolute; top: 8px; left: 8px; background: rgba(0,0,0,.55); color: #fff; border: none; border-radius: 8px; font-size: 12px; padding: 6px 8px; cursor: pointer; }
+      .mishkat-remove:hover { background: rgba(0,0,0,.7); }
+
+      /* Mouse follower */
+      .mouse-follower { position: fixed; top: 0; left: 0; width: 22px; height: 22px; border-radius: 50%; pointer-events: none; z-index: 3000; box-shadow: 0 10px 30px var(--shadow-2); background: radial-gradient(circle at 30% 30%, var(--primary-2), var(--primary)); opacity: .9; transform: translate3d(-9999px, -9999px, 0); transition: width .12s ease, height .12s ease, opacity .2s ease; mix-blend-mode: screen; }
+      .mouse-follower.hidden { opacity: 0; }
+      .mouse-follower.click { width: 30px; height: 30px; }
     `;
     document.head.appendChild(style);
   }
@@ -499,9 +516,145 @@
     })();
   }
 
+  // MISHKAT: Simple image gallery section with local persistence
+  const MISHKAT_GALLERY_KEY = 'mishkat-gallery-images';
+  function getMishkatImages() {
+    try { return JSON.parse(localStorage.getItem(MISHKAT_GALLERY_KEY) || '[]'); } catch { return []; }
+  }
+  function setMishkatImages(list) {
+    localStorage.setItem(MISHKAT_GALLERY_KEY, JSON.stringify(list));
+  }
+  function initMishkatSectionIfNeeded() {
+    const onIndex = document.title.includes('قسم التقنية');
+    if (!onIndex) return;
+    if (document.querySelector('.mishkat-section')) return;
+
+    const container = document.getElementById('mainContent');
+    if (!container) return;
+    const footer = container.querySelector('footer');
+
+    const section = document.createElement('section');
+    section.className = 'mishkat-section';
+    section.innerHTML = `
+      <div class="mishkat-header">
+        <h2 style="margin:0;">🖼️ المشكاة</h2>
+        <div class="mishkat-actions">
+          <button class="mishkat-add" id="mishkatAddBtn" type="button">إضافة صور</button>
+          <input id="mishkatFileInput" type="file" accept="image/*" multiple style="display:none" />
+        </div>
+      </div>
+      <div class="mishkat-grid" id="mishkatGrid"></div>
+      <div style="color: var(--text-muted); font-size: .85rem; margin-top:8px;">يمكنك إضافة الصور من جهازك، تُحفظ محلياً في المتصفح.</div>
+    `;
+    container.insertBefore(section, footer);
+
+    const grid = section.querySelector('#mishkatGrid');
+    const addBtn = section.querySelector('#mishkatAddBtn');
+    const fileInput = section.querySelector('#mishkatFileInput');
+
+    function render() {
+      const images = getMishkatImages();
+      grid.innerHTML = images.map(img => `
+        <div class="mishkat-item" data-id="${img.id}">
+          <img src="${img.dataUrl}" alt="صورة من قسم المشكاة" />
+          <button class="mishkat-remove" type="button" aria-label="حذف">حذف</button>
+        </div>
+      `).join('');
+    }
+
+    grid.addEventListener('click', (e) => {
+      const target = e.target;
+      if (!(target instanceof Element)) return;
+      if (target.classList.contains('mishkat-remove')) {
+        const parent = target.closest('.mishkat-item');
+        if (!parent) return;
+        const id = parent.getAttribute('data-id');
+        const list = getMishkatImages().filter(item => item.id !== id);
+        setMishkatImages(list);
+        render();
+      }
+    });
+
+    addBtn.addEventListener('click', () => fileInput.click());
+    fileInput.addEventListener('change', async () => {
+      const files = Array.from(fileInput.files || []);
+      if (!files.length) return;
+      const MAX_SIZE = 2.5 * 1024 * 1024; // ~2.5MB per image
+      const toRead = files.filter(f => f.type.startsWith('image/'));
+      const oversized = toRead.filter(f => f.size > MAX_SIZE);
+      if (oversized.length) {
+        alert('بعض الصور كبيرة جداً (> 2.5MB)، تم تجاهلها.');
+      }
+      const okFiles = toRead.filter(f => f.size <= MAX_SIZE);
+      const readAsDataURL = (file) => new Promise((resolve, reject) => {
+        const fr = new FileReader();
+        fr.onload = () => resolve(fr.result);
+        fr.onerror = reject;
+        fr.readAsDataURL(file);
+      });
+      try {
+        const dataUrls = await Promise.all(okFiles.map(readAsDataURL));
+        const list = getMishkatImages();
+        const newItems = dataUrls.map((dataUrl, idx) => ({ id: `${Date.now()}-${idx}-${Math.random().toString(36).slice(2,8)}`, dataUrl }));
+        const combined = list.concat(newItems).slice(-48); // keep last 48 items max
+        setMishkatImages(combined);
+        render();
+      } catch {}
+      fileInput.value = '';
+    });
+
+    render();
+  }
+
+  // INTERACTIVE: Mouse follower element that tracks the cursor on index page
+  function initMouseFollowerIfNeeded() {
+    const onIndex = document.title.includes('قسم التقنية');
+    if (!onIndex) return;
+    try {
+      if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    } catch {}
+    if (document.querySelector('.mouse-follower')) return;
+
+    const follower = document.createElement('div');
+    follower.className = 'mouse-follower hidden';
+    follower.setAttribute('aria-hidden', 'true');
+    document.body.appendChild(follower);
+
+    let targetX = -9999;
+    let targetY = -9999;
+    let currentX = targetX;
+    let currentY = targetY;
+    const size = 22;
+
+    function onMove(event) {
+      targetX = event.clientX - size / 2;
+      targetY = event.clientY - size / 2;
+      follower.classList.remove('hidden');
+    }
+    function onLeave() { follower.classList.add('hidden'); }
+    function onDown() { follower.classList.add('click'); }
+    function onUp() { follower.classList.remove('click'); }
+
+    window.addEventListener('mousemove', onMove, { passive: true });
+    window.addEventListener('mouseleave', onLeave, { passive: true });
+    window.addEventListener('mousedown', onDown, { passive: true });
+    window.addEventListener('mouseup', onUp, { passive: true });
+
+    function animate() {
+      // Smoothly approach the target position
+      currentX += (targetX - currentX) * 0.18;
+      currentY += (targetY - currentY) * 0.18;
+      follower.style.transform = `translate3d(${currentX}px, ${currentY}px, 0)`;
+      requestAnimationFrame(animate);
+    }
+    animate();
+  }
+
   // Boot new features
   initTheme();
   injectTechLogoIfNeeded();
   initReviewsSectionIfNeeded();
   initVisitorsSectionIfNeeded();
+  initMishkatSectionIfNeeded();
+  initMouseFollowerIfNeeded();
 })();
