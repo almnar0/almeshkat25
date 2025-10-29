@@ -159,6 +159,20 @@
       .theme-toggle .icon { font-size: 1.1rem; }
       .theme-toggle .label { font-weight: 700; font-size: 0.95rem; }
 
+      /* شعار المدرسة في رأس الصفحة (الواجهة) */
+      .header-logo {
+        display: block;
+        width: 84px;
+        height: 84px;
+        object-fit: contain;
+        margin: 0 auto 8px;
+        border-radius: 50%;
+        background: var(--card-bg);
+        padding: 6px;
+        box-shadow: 0 6px 18px var(--shadow-1);
+        border: 1px solid var(--card-border);
+      }
+
       /* Animated Tech logo styles (only used on main page if injected) */
       .tech-logo {
         width: 56px; height: 56px; margin: 0 auto 8px; position: relative;
@@ -304,27 +318,22 @@
     }
   }
 
-  // BRAND LOGO: Inject a distinctive, static logo on the main index page header
+  // BRAND LOGO: Inject school logo in the main index page header
   function injectTechLogoIfNeeded() {
     const onIndex = document.title.includes('قسم التقنية');
     if (!onIndex) return;
     const header = document.querySelector('header');
     if (!header) return;
-    if (header.querySelector('.tech-logo')) return;
-    const logo = document.createElement('div');
-    logo.className = 'tech-logo';
-    logo.setAttribute('aria-label', 'شعار قسم التقنية');
-    // Static, high-contrast brand mark (no animations)
-    logo.innerHTML = `
-      <svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg" role="img" aria-hidden="true" focusable="false">
-        <!-- Outer hexagon with a vivid, clear color -->
-        <path d="M60 10 L98 35 L98 85 L60 110 L22 85 L22 35 Z" fill="#00D1FF"/>
-        <!-- Inner circuit M-shape for a tech feel -->
-        <path d="M38 76 L60 44 L82 76" fill="none" stroke="#FFFFFF" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
-        <circle cx="60" cy="44" r="5" fill="#FFFFFF"/>
-      </svg>
-    `;
-    header.insertBefore(logo, header.firstChild);
+    // Do not inject if a logo already exists
+    if (header.querySelector('.header-logo, .school-logo, img[alt="شعار مدارس المشكاة"]')) return;
+    const img = document.createElement('img');
+    img.className = 'header-logo';
+    img.src = '/assets/logo.svg';
+    img.alt = 'شعار مدارس المشكاة';
+    img.decoding = 'async';
+    img.loading = 'eager';
+    img.addEventListener('error', () => img.remove());
+    header.insertBefore(img, header.firstChild);
   }
 
   // REVIEWS: Star rating + testimonials stored in localStorage
