@@ -778,6 +778,22 @@
         // Initialize chart
         createChart();
     </script>
+    <script>
+        (function(){
+            function post(type, e){
+                try {
+                    if (window.parent) {
+                        window.parent.postMessage({ __fromProjectFrame: true, type, x: e && e.clientX, y: e && e.clientY }, '*');
+                    }
+                } catch {}
+            }
+            window.addEventListener('mousemove', (e) => post('cursor-move', e), { passive: true });
+            window.addEventListener('mouseenter', (e) => post('cursor-enter', e), { passive: true });
+            window.addEventListener('mouseleave', () => post('cursor-leave'), { passive: true });
+            window.addEventListener('mousedown', (e) => post('cursor-down', e), { passive: true });
+            window.addEventListener('mouseup', (e) => post('cursor-up', e), { passive: true });
+        })();
+    </script>
     <script src="assets/app.js" defer></script>
     <script src="assets/ai-assistant.js" defer></script>
 </body>
