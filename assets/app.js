@@ -328,7 +328,7 @@
     if (header.querySelector('.header-logo, .school-logo, img[alt="شعار مدارس المشكاة"]')) return;
     const img = document.createElement('img');
     img.className = 'header-logo';
-    img.src = '/assets/logo.svg';
+    img.src = 'assets/logo.svg';
     img.alt = 'شعار مدارس المشكاة';
     img.decoding = 'async';
     img.loading = 'eager';
@@ -726,7 +726,7 @@
       if (document.querySelector('.school-logo, .school-logo-fixed')) return;
       const img = document.createElement('img');
       img.className = 'school-logo-fixed';
-      img.src = '/assets/logo.svg';
+      img.src = 'assets/logo.svg';
       img.alt = 'شعار مدارس المشكاة';
       img.decoding = 'async';
       img.loading = 'eager';

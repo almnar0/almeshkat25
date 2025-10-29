@@ -1,4 +1,4 @@
-const CACHE_NAME = 'mishkat-tech-v1';
+const CACHE_NAME = 'mishkat-tech-v2';
 const PRECACHE_URLS = [
   '/',
   '/index.html',
@@ -9,6 +9,7 @@ const PRECACHE_URLS = [
   '/assets/app.js',
   '/assets/ai-assistant.js',
   '/assets/logo.svg',
+  'assets/logo.svg',
   '/manifest.webmanifest'
 ];
 
