@@ -204,6 +204,10 @@
       .mishkat-actions { display: inline-flex; gap: 8px; align-items: center; }
       .mishkat-add { background: linear-gradient(135deg, var(--primary) 0%, var(--primary-2) 100%); color: #fff; border: none; border-radius: 10px; padding: 10px 12px; font-weight: 700; cursor: pointer; box-shadow: 0 6px 18px var(--shadow-1); }
       .mishkat-add:hover { filter: brightness(1.03); }
+      .mishkat-file { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); border: 0; }
+      .mishkat-drop { margin-top: 12px; padding: 18px; border: 2px dashed var(--card-border); border-radius: 12px; background: var(--surface); color: var(--text-muted); text-align: center; transition: border-color .2s ease, background .2s ease; }
+      .mishkat-drop strong { color: var(--text); }
+      .mishkat-drop.active { border-color: var(--primary); background: rgba(99, 102, 241, .06); }
       .mishkat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; margin-top: 12px; }
       .mishkat-item { position: relative; border-radius: 12px; overflow: hidden; background: var(--bg-secondary); border: 1px solid var(--card-border); box-shadow: 0 6px 18px var(--shadow-1); }
       .mishkat-item img { width: 100%; height: 140px; object-fit: cover; display: block; }
@@ -531,7 +535,7 @@
 
     const container = document.getElementById('mainContent');
     if (!container) return;
-    const footer = container.querySelector('footer');
+    const header = container.querySelector('header');
 
     const section = document.createElement('section');
     section.className = 'mishkat-section';
@@ -539,17 +543,23 @@
       <div class="mishkat-header">
         <h2 style="margin:0;">🖼️ المشكاة</h2>
         <div class="mishkat-actions">
-          <button class="mishkat-add" id="mishkatAddBtn" type="button">إضافة صور</button>
-          <input id="mishkatFileInput" type="file" accept="image/*" multiple style="display:none" />
+          <label class="mishkat-add" for="mishkatFileInput">إضافة صور</label>
+          <input id="mishkatFileInput" class="mishkat-file" type="file" accept="image/*" multiple />
         </div>
       </div>
+      <div class="mishkat-drop" id="mishkatDrop">اسحب الصور هنا أو اضغط <strong>إضافة صور</strong></div>
       <div class="mishkat-grid" id="mishkatGrid"></div>
       <div style="color: var(--text-muted); font-size: .85rem; margin-top:8px;">يمكنك إضافة الصور من جهازك، تُحفظ محلياً في المتصفح.</div>
     `;
-    container.insertBefore(section, footer);
+    if (header && header.parentNode) {
+      header.parentNode.insertBefore(section, header.nextSibling);
+    } else {
+      const footer = container.querySelector('footer');
+      container.insertBefore(section, footer);
+    }
 
     const grid = section.querySelector('#mishkatGrid');
-    const addBtn = section.querySelector('#mishkatAddBtn');
+    const drop = section.querySelector('#mishkatDrop');
     const fileInput = section.querySelector('#mishkatFileInput');
 
     function render() {
@@ -575,17 +585,16 @@
       }
     });
 
-    addBtn.addEventListener('click', () => fileInput.click());
-    fileInput.addEventListener('change', async () => {
-      const files = Array.from(fileInput.files || []);
-      if (!files.length) return;
+    async function handleFiles(files) {
+      const listFiles = Array.from(files || []);
+      if (!listFiles.length) return;
       const MAX_SIZE = 2.5 * 1024 * 1024; // ~2.5MB per image
-      const toRead = files.filter(f => f.type.startsWith('image/'));
-      const oversized = toRead.filter(f => f.size > MAX_SIZE);
+      const imageFiles = listFiles.filter(f => f.type.startsWith('image/'));
+      const oversized = imageFiles.filter(f => f.size > MAX_SIZE);
       if (oversized.length) {
         alert('بعض الصور كبيرة جداً (> 2.5MB)، تم تجاهلها.');
       }
-      const okFiles = toRead.filter(f => f.size <= MAX_SIZE);
+      const okFiles = imageFiles.filter(f => f.size <= MAX_SIZE);
       const readAsDataURL = (file) => new Promise((resolve, reject) => {
         const fr = new FileReader();
         fr.onload = () => resolve(fr.result);
@@ -596,11 +605,26 @@
         const dataUrls = await Promise.all(okFiles.map(readAsDataURL));
         const list = getMishkatImages();
         const newItems = dataUrls.map((dataUrl, idx) => ({ id: `${Date.now()}-${idx}-${Math.random().toString(36).slice(2,8)}`, dataUrl }));
-        const combined = list.concat(newItems).slice(-48); // keep last 48 items max
+        const combined = list.concat(newItems).slice(-48);
         setMishkatImages(combined);
         render();
       } catch {}
+    }
+
+    fileInput.addEventListener('change', async () => {
+      await handleFiles(fileInput.files);
       fileInput.value = '';
+    });
+
+    drop.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      drop.classList.add('active');
+    });
+    drop.addEventListener('dragleave', () => drop.classList.remove('active'));
+    drop.addEventListener('drop', async (e) => {
+      e.preventDefault();
+      drop.classList.remove('active');
+      await handleFiles(e.dataTransfer && e.dataTransfer.files);
     });
 
     render();
@@ -610,9 +634,7 @@
   function initMouseFollowerIfNeeded() {
     const onIndex = document.title.includes('قسم التقنية');
     if (!onIndex) return;
-    try {
-      if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-    } catch {}
+    // Always enable follower for better visibility across pages
     if (document.querySelector('.mouse-follower')) return;
 
     const follower = document.createElement('div');
@@ -639,6 +661,36 @@
     window.addEventListener('mouseleave', onLeave, { passive: true });
     window.addEventListener('mousedown', onDown, { passive: true });
     window.addEventListener('mouseup', onUp, { passive: true });
+
+    // Receive cursor events from project iframes to keep tracking active over iframe content
+    window.addEventListener('message', (e) => {
+      const data = e && e.data;
+      if (!data || !data.__fromProjectFrame) return;
+      const frame = document.getElementById('projectFrame');
+      const rect = frame ? frame.getBoundingClientRect() : { left: 0, top: 0 };
+      switch (data.type) {
+        case 'cursor-move':
+        case 'cursor-enter': {
+          const px = rect.left + (Number(data.x) || 0);
+          const py = rect.top + (Number(data.y) || 0);
+          targetX = px - size / 2;
+          targetY = py - size / 2;
+          follower.classList.remove('hidden');
+          break;
+        }
+        case 'cursor-leave':
+          follower.classList.add('hidden');
+          break;
+        case 'cursor-down':
+          follower.classList.add('click');
+          break;
+        case 'cursor-up':
+          follower.classList.remove('click');
+          break;
+        default:
+          break;
+      }
+    }, { passive: true });
 
     function animate() {
       // Smoothly approach the target position
