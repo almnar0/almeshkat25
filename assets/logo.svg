@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" role="img" aria-labelledby="title desc">
+  <title>شعار مدارس المشكاة</title>
+  <desc>شعار بسيط لمدارس المشكاة: دائرة، كتاب أخضر، ونص عربي باللون الأحمر.</desc>
+  <defs>
+    <linearGradient id="g1" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0" stop-color="#67e28b"/>
+      <stop offset="1" stop-color="#3aa34b"/>
+    </linearGradient>
+    <linearGradient id="g2" x1="0" x2="0" y1="0" y2="1">
+      <stop offset="0" stop-color="#00d1ff"/>
+      <stop offset="1" stop-color="#667eea"/>
+    </linearGradient>
+  </defs>
+
+  <!-- خلفية دائرية خفيفة -->
+  <circle cx="128" cy="128" r="120" fill="#ffffff" stroke="#c9ccd1" stroke-width="6"/>
+
+  <!-- عنصر علوي (دائرة خضراء) -->
+  <circle cx="128" cy="72" r="20" fill="url(#g1)"/>
+
+  <!-- كتاب مبسّط باللون الأخضر -->
+  <g transform="translate(128,106)">
+    <path d="M -84 20 C -46 -4 -22 -8 0 0 C 22 -8 46 -4 84 20" fill="none" stroke="#2e7d32" stroke-width="10" stroke-linecap="round"/>
+    <path d="M -72 26 C -40 6 -22 4 0 12 C 22 4 40 6 72 26" fill="none" stroke="#66bb6a" stroke-width="8" stroke-linecap="round"/>
+    <path d="M -60 32 C -34 18 -18 16 0 22 C 18 16 34 18 60 32" fill="none" stroke="#81c784" stroke-width="6" stroke-linecap="round"/>
+  </g>
+
+  <!-- نص عربي (قد يظهر بخط النظام) -->
+  <g font-family="'Amiri', 'Cairo', 'Segoe UI', 'Tahoma', sans-serif" font-weight="700" fill="#d62828">
+    <text x="128" y="172" font-size="44" text-anchor="middle" direction="rtl">المشكاة</text>
+  </g>
+
+  <!-- زخرفة سفلية بسيطة -->
+  <g stroke="#1b5e20" stroke-width="5" fill="none" transform="translate(128,192)">
+    <path d="M -70 0 H 70"/>
+    <path d="M 0 0 l -8 10 m 8 -10 l 8 10" stroke-width="4"/>
+  </g>
+</svg>

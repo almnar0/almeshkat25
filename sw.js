@@ -8,6 +8,7 @@ const PRECACHE_URLS = [
   '/project7.html',
   '/assets/app.js',
   '/assets/ai-assistant.js',
+  '/assets/logo.svg',
   '/manifest.webmanifest'
 ];
 

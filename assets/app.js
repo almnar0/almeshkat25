@@ -218,6 +218,21 @@
       .mouse-follower { position: fixed; top: 0; left: 0; width: 22px; height: 22px; border-radius: 50%; pointer-events: none; z-index: 3000; box-shadow: 0 10px 30px var(--shadow-2); background: radial-gradient(circle at 30% 30%, var(--primary-2), var(--primary)); opacity: .9; transform: translate3d(-9999px, -9999px, 0); transition: width .12s ease, height .12s ease, opacity .2s ease; mix-blend-mode: screen; }
       .mouse-follower.hidden { opacity: 0; }
       .mouse-follower.click { width: 30px; height: 30px; }
+
+      /* شعار المدرسة العائم لإظهاره على جميع الصفحات */
+      .school-logo-fixed {
+        position: fixed;
+        top: 16px;
+        left: 16px;
+        width: 56px;
+        height: 56px;
+        z-index: 950; /* أقل من زر الرجوع */
+        border-radius: 50%;
+        background: var(--card-bg);
+        padding: 6px;
+        box-shadow: 0 6px 18px var(--shadow-1);
+        border: 1px solid var(--card-border);
+      }
     `;
     document.head.appendChild(style);
   }
@@ -695,6 +710,23 @@
     animate();
   }
 
+  // Inject the school logo in a fixed position across all pages
+  function injectSchoolLogoFixed() {
+    try {
+      // إذا الصفحة تحتوي بالفعل على عنصر شعار داخل الواجهة فلا نكرر
+      if (document.querySelector('.school-logo, .school-logo-fixed')) return;
+      const img = document.createElement('img');
+      img.className = 'school-logo-fixed';
+      img.src = '/assets/logo.svg';
+      img.alt = 'شعار مدارس المشكاة';
+      img.decoding = 'async';
+      img.loading = 'eager';
+      // في حال فشل التحميل، لا نعرض شيء بدلاً من نص مكسور
+      img.addEventListener('error', () => img.remove());
+      document.body.appendChild(img);
+    } catch {}
+  }
+
   // Boot new features
   initTheme();
   injectTechLogoIfNeeded();
@@ -702,4 +734,5 @@
   initVisitorsSectionIfNeeded();
   initMishkatSectionIfNeeded();
   initMouseFollowerIfNeeded();
+  injectSchoolLogoFixed();
 })();
