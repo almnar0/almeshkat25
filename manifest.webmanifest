@@ -1,0 +1,13 @@
+{
+  "name": "قسم التقنية - مدارس المشكاة",
+  "short_name": "المشكاة تقنية",
+  "dir": "rtl",
+  "lang": "ar",
+  "start_url": "/index.html",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#667eea",
+  "description": "معرض أعمال الطلاب ومشاريع تقنية تفاعلية مع مساعد برمجي ذكي.",
+  "icons": []
+}
