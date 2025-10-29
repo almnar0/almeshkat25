@@ -289,7 +289,7 @@
     }
   }
 
-  // TECH LOGO: Inject animated logo on main index page header
+  // BRAND LOGO: Inject a distinctive, static logo on the main index page header
   function injectTechLogoIfNeeded() {
     const onIndex = document.title.includes('قسم التقنية');
     if (!onIndex) return;
@@ -298,22 +298,15 @@
     if (header.querySelector('.tech-logo')) return;
     const logo = document.createElement('div');
     logo.className = 'tech-logo';
-    logo.setAttribute('aria-label', 'Tech');
+    logo.setAttribute('aria-label', 'شعار قسم التقنية');
+    // Static, high-contrast brand mark (no animations)
     logo.innerHTML = `
-      <svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
-        <defs>
-          <linearGradient id="tl-grad" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stop-color="var(--primary)"/>
-            <stop offset="100%" stop-color="var(--primary-2)"/>
-          </linearGradient>
-        </defs>
-        <circle cx="60" cy="60" r="40" fill="none" stroke="url(#tl-grad)" stroke-width="6" class="pulse" />
-        <g class="orbit">
-          <circle cx="60" cy="20" r="6" fill="url(#tl-grad)"/>
-          <circle cx="95" cy="70" r="5" fill="url(#tl-grad)"/>
-          <circle cx="25" cy="70" r="5" fill="url(#tl-grad)"/>
-        </g>
-        <path d="M45 55 h30 M60 40 v40" stroke="url(#tl-grad)" stroke-width="6" stroke-linecap="round"/>
+      <svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg" role="img" aria-hidden="true" focusable="false">
+        <!-- Outer hexagon with a vivid, clear color -->
+        <path d="M60 10 L98 35 L98 85 L60 110 L22 85 L22 35 Z" fill="#00D1FF"/>
+        <!-- Inner circuit M-shape for a tech feel -->
+        <path d="M38 76 L60 44 L82 76" fill="none" stroke="#FFFFFF" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
+        <circle cx="60" cy="44" r="5" fill="#FFFFFF"/>
       </svg>
     `;
     header.insertBefore(logo, header.firstChild);
