@@ -4,10 +4,29 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="theme-color" content="#667eea">
-    <meta name="description" content="قسم التقنية - مدارس المشكاة: معرض أعمال الطلاب ومشاريع تقنية تفاعلية مع مساعد برمجي ذكي.">
+    <meta name="description" content="قسم التقنية - مدارس المشكاة: منصة رقمية تعرض مشاريع وإبداعات الطلاب مع تجربة تفاعلية متقدمة.">
     <link rel="manifest" href="manifest.webmanifest">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <title>قسم التقنية - مدارس المشكاة</title>
     <style>
+        :root {
+            --bg: #0b1021;
+            --bg-secondary: rgba(15, 23, 42, 0.55);
+            --text: #f8fafc;
+            --text-muted: rgba(226, 232, 240, 0.78);
+            --card-bg: rgba(15, 23, 42, 0.82);
+            --card-border: rgba(99, 102, 241, 0.28);
+            --shadow-1: rgba(12, 18, 38, 0.28);
+            --shadow-2: rgba(12, 18, 38, 0.46);
+            --tag-bg: rgba(99, 102, 241, 0.12);
+            --tag-text: #c7d2fe;
+            --primary: #6366f1;
+            --primary-2: #8b5cf6;
+            --accent: #fbbf24;
+        }
+
         * {
             margin: 0;
             padding: 0;
@@ -15,180 +34,765 @@
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: 'Cairo', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background:
+                radial-gradient(circle at 20% 20%, rgba(99, 102, 241, 0.22), transparent 55%),
+                radial-gradient(circle at 80% 0%, rgba(139, 92, 246, 0.25), transparent 45%),
+                linear-gradient(135deg, var(--primary) 0%, var(--primary-2) 100%);
             min-height: 100vh;
-            padding: 20px;
+            padding: clamp(18px, 4vw, 38px);
+            color: var(--text);
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        body::before,
+        body::after {
+            content: '';
+            position: fixed;
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: -2;
+        }
+
+        body::before {
+            width: 540px;
+            height: 540px;
+            background: radial-gradient(circle, rgba(139, 92, 246, 0.35), rgba(99, 102, 241, 0));
+            top: -120px;
+            inset-inline-start: -160px;
+            opacity: 0.7;
+        }
+
+        body::after {
+            width: 420px;
+            height: 420px;
+            background: radial-gradient(circle, rgba(251, 191, 36, 0.25), rgba(99, 102, 241, 0));
+            bottom: -140px;
+            inset-inline-end: -140px;
+            opacity: 0.6;
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
         }
 
         .container {
             max-width: 1200px;
             margin: 0 auto;
+            position: relative;
         }
 
-        header {
-            text-align: center;
-            color: white;
-            margin-bottom: 50px;
-            padding: 40px 20px;
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
-            border-radius: 20px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        .hero {
+            position: relative;
+            background: linear-gradient(145deg, rgba(15, 23, 42, 0.82), rgba(15, 23, 42, 0.65));
+            border: 1px solid var(--card-border);
+            border-radius: 36px;
+            padding: clamp(32px, 6vw, 64px);
+            margin-bottom: clamp(44px, 6vw, 76px);
+            box-shadow: 0 40px 90px var(--shadow-2);
+            backdrop-filter: blur(24px);
+            overflow: hidden;
         }
 
-        h1 {
-            font-size: 3em;
-            margin-bottom: 10px;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+        .hero::before {
+            content: '';
+            position: absolute;
+            inset: -140px -200px auto auto;
+            width: 420px;
+            height: 420px;
+            background: radial-gradient(circle, rgba(99, 102, 241, 0.4), transparent 65%);
+            opacity: 0.7;
+            z-index: 0;
         }
 
-        /* شعار المدرسة في رأس الصفحة */
-        .header-logo {
-            display: block;
-            width: 84px;
-            height: 84px;
-            object-fit: contain;
-            margin: 0 auto 10px;
+        .site-nav {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 24px;
+            margin-bottom: clamp(32px, 4vw, 48px);
+        }
+
+        .brand {
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: 800;
+            font-size: 1.2rem;
+            color: var(--text);
+        }
+
+        .brand-mark {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 44px;
+            height: 44px;
+            border-radius: 14px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-2) 100%);
+            color: #ffffff;
+            font-size: 1.4rem;
+            box-shadow: 0 12px 24px rgba(99, 102, 241, 0.35);
+        }
+
+        .brand-text {
+            letter-spacing: 0.03em;
+            font-size: 1.05rem;
+        }
+
+        .nav-actions {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+            flex-wrap: wrap;
+            justify-content: flex-end;
+        }
+
+        .nav-link {
+            position: relative;
+            font-weight: 600;
+            font-size: 0.98rem;
+            color: var(--text-muted);
+            padding: 8px 0;
+            transition: color 0.3s ease;
+        }
+
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            inset-inline-start: 0;
+            inset-inline-end: auto;
+            bottom: -6px;
+            height: 3px;
+            width: 0;
+            border-radius: 999px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-2));
+            transition: width 0.3s ease;
+        }
+
+        .nav-link:hover {
+            color: var(--text);
+        }
+
+        .nav-link:hover::after {
+            width: 100%;
+        }
+
+        .nav-cta {
+            border: none;
+            border-radius: 999px;
+            padding: 10px 20px;
+            font-weight: 700;
+            font-size: 0.98rem;
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.18), rgba(99, 102, 241, 0.05));
+            color: var(--text);
+            cursor: pointer;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: 0 12px 30px rgba(99, 102, 241, 0.18);
+            backdrop-filter: blur(18px);
+        }
+
+        .nav-cta:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 18px 40px rgba(99, 102, 241, 0.28);
+        }
+
+        .hero-body {
+            position: relative;
+            z-index: 1;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: clamp(40px, 6vw, 60px);
+            align-items: center;
+        }
+
+        .hero-copy {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        .hero-badge {
+            align-self: flex-start;
+            padding: 6px 16px;
+            border-radius: 999px;
+            background: rgba(251, 191, 36, 0.18);
+            color: #facc15;
+            font-weight: 700;
+            font-size: 0.95rem;
+            letter-spacing: 0.08em;
+            box-shadow: 0 10px 30px rgba(250, 204, 21, 0.25);
+        }
+
+        .hero-title {
+            font-size: clamp(2.6rem, 4vw, 3.4rem);
+            font-weight: 800;
+            line-height: 1.15;
+            color: var(--text);
+        }
+
+        .hero-lead {
+            color: var(--text-muted);
+            font-size: 1.1rem;
+            line-height: 1.9;
+            max-width: 560px;
+        }
+
+        .hero-cta {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        .hero-primary,
+        .hero-secondary {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 16px;
+            font-weight: 700;
+            padding: 14px 28px;
+            font-size: 0.98rem;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .hero-primary {
+            background: linear-gradient(135deg, var(--primary), var(--primary-2));
+            color: #ffffff;
+            box-shadow: 0 18px 40px rgba(99, 102, 241, 0.35);
+        }
+
+        .hero-secondary {
+            background: rgba(255, 255, 255, 0.08);
+            color: var(--text);
+            border: 1px solid rgba(255, 255, 255, 0.14);
+            backdrop-filter: blur(18px);
+        }
+
+        .hero-primary:hover,
+        .hero-secondary:hover {
+            transform: translateY(-3px);
+        }
+
+        .hero-metrics {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 18px;
+        }
+
+        .metric {
+            padding: 16px 18px;
+            border-radius: 18px;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(22px);
+            box-shadow: 0 18px 40px rgba(15, 23, 42, 0.25);
+        }
+
+        .metric dt {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 6px;
+        }
+
+        .metric dd {
+            color: var(--text);
+            font-weight: 800;
+            font-size: 1.8rem;
+            margin: 0;
+        }
+
+        .hero-visual {
+            position: relative;
+            min-height: 260px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .hero-orb {
+            position: absolute;
+            width: clamp(220px, 32vw, 320px);
+            height: clamp(220px, 32vw, 320px);
             border-radius: 50%;
-            background: rgba(255, 255, 255, 0.95);
-            padding: 6px;
-            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.15);
+            background: radial-gradient(circle at 30% 30%, rgba(99, 102, 241, 0.6), rgba(15, 23, 42, 0));
+            animation: float 6s ease-in-out infinite;
         }
 
-        .subtitle {
-            font-size: 1.3em;
-            opacity: 0.9;
+        .hero-logo {
+            position: relative;
+            width: clamp(140px, 22vw, 200px);
+            height: clamp(140px, 22vw, 200px);
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.88);
+            padding: clamp(22px, 3vw, 32px);
+            box-shadow: 0 24px 60px rgba(99, 102, 241, 0.3);
+        }
+
+        .hero-ring {
+            position: absolute;
+            width: clamp(280px, 36vw, 360px);
+            height: clamp(280px, 36vw, 360px);
+            border-radius: 50%;
+            border: 2px dashed rgba(255, 255, 255, 0.18);
+            animation: pulse 8s linear infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-12px); }
+        }
+
+        @keyframes pulse {
+            from { transform: rotate(0deg); opacity: 0.7; }
+            to { transform: rotate(360deg); opacity: 0.4; }
+        }
+
+        .section-heading {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            margin-bottom: clamp(28px, 4vw, 38px);
+            max-width: 760px;
+        }
+
+        .section-kicker {
+            align-self: flex-start;
+            padding: 6px 16px;
+            border-radius: 999px;
+            background: rgba(99, 102, 241, 0.12);
+            color: var(--tag-text);
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            font-size: 0.9rem;
+        }
+
+        .section-heading h2 {
+            font-size: clamp(2rem, 3vw, 2.6rem);
+            font-weight: 800;
+            line-height: 1.3;
+            color: var(--text);
+        }
+
+        .section-heading p {
+            color: var(--text-muted);
+            line-height: 1.8;
+            font-size: 1.03rem;
+        }
+
+        .signature-section {
+            background: rgba(15, 23, 42, 0.72);
+            border-radius: 32px;
+            border: 1px solid var(--card-border);
+            padding: clamp(32px, 6vw, 56px);
+            box-shadow: 0 30px 80px var(--shadow-1);
+            backdrop-filter: blur(22px);
+            margin-bottom: clamp(46px, 6vw, 72px);
+        }
+
+        .signature-grid {
+            display: grid;
+            gap: 28px;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+        }
+
+        .signature-card {
+            position: relative;
+            background: rgba(255, 255, 255, 0.04);
+            border-radius: 24px;
+            padding: 28px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 20px 50px rgba(12, 18, 38, 0.25);
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            transition: transform 0.35s ease, box-shadow 0.35s ease;
+            overflow: hidden;
+        }
+
+        .signature-card::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: inherit;
+            background: linear-gradient(145deg, rgba(99, 102, 241, 0.22), transparent 65%);
+            opacity: 0;
+            transition: opacity 0.35s ease;
+            z-index: 0;
+        }
+
+        .signature-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 30px 70px rgba(12, 18, 38, 0.35);
+        }
+
+        .signature-card:hover::before {
+            opacity: 1;
+        }
+
+        .signature-card > * {
+            position: relative;
+            z-index: 1;
+        }
+
+        .signature-icon {
+            font-size: 2rem;
+            width: 56px;
+            height: 56px;
+            border-radius: 18px;
+            background: rgba(99, 102, 241, 0.18);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 12px 30px rgba(99, 102, 241, 0.35);
+        }
+
+        .signature-card h3 {
+            font-size: 1.35rem;
+            font-weight: 700;
+            color: var(--text);
+        }
+
+        .signature-card p {
+            color: var(--text-muted);
+            line-height: 1.7;
+        }
+
+        .signature-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .signature-list li {
+            position: relative;
+            padding-inline-start: 18px;
+            color: var(--text);
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+
+        .signature-list li::before {
+            content: '•';
+            position: absolute;
+            inset-inline-start: 0;
+            color: var(--primary-2);
+            font-size: 1.2rem;
+            top: -2px;
+        }
+
+        .projects-section {
+            margin-bottom: clamp(46px, 6vw, 72px);
+        }
+
+        .projects-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: clamp(22px, 3vw, 28px);
+        }
+
+        .project-card {
+            position: relative;
+            padding: 28px;
+            border-radius: 26px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 24px 60px rgba(12, 18, 38, 0.32);
+            background: var(--card-bg);
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+            transition: transform 0.35s ease, box-shadow 0.35s ease;
+            overflow: hidden;
+        }
+
+        .project-card::after {
+            content: '';
+            position: absolute;
+            inset: auto -30% -30% -30%;
+            height: 50%;
+            background: radial-gradient(circle, rgba(99, 102, 241, 0.35), transparent 70%);
+            opacity: 0;
+            transition: opacity 0.35s ease;
+        }
+
+        .project-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 36px 80px rgba(12, 18, 38, 0.45);
+        }
+
+        .project-card:hover::after {
+            opacity: 1;
+        }
+
+        .project-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+        }
+
+        .project-category {
+            font-weight: 700;
+            font-size: 0.9rem;
+            padding: 6px 16px;
+            border-radius: 999px;
+            background: rgba(99, 102, 241, 0.16);
+            color: var(--tag-text);
+        }
+
+        .project-icon {
+            font-size: 2.2rem;
+        }
+
+        .project-title {
+            font-size: 1.45rem;
+            font-weight: 800;
+            line-height: 1.4;
+            color: var(--text);
+        }
+
+        .project-description {
+            color: var(--text-muted);
+            line-height: 1.8;
+        }
+
+        .project-insight {
+            color: var(--text);
+            font-weight: 600;
+            line-height: 1.6;
+            background: rgba(99, 102, 241, 0.12);
+            padding: 12px 16px;
+            border-radius: 18px;
+        }
+
+        .project-highlight {
+            font-weight: 700;
+            color: #facc15;
+            background: rgba(250, 204, 21, 0.15);
+            border-radius: 16px;
+            padding: 10px 16px;
+            box-shadow: 0 12px 30px rgba(250, 204, 21, 0.25);
+        }
+
+        .tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .tag {
+            background: var(--tag-bg);
+            color: var(--tag-text);
+            padding: 6px 14px;
+            border-radius: 14px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .project-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            justify-content: space-between;
+            color: var(--text-muted);
+            font-weight: 600;
+        }
+
+        .project-team,
+        .project-date {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .view-button {
+            margin-top: auto;
+            padding: 12px 24px;
+            border-radius: 16px;
+            font-weight: 700;
+            border: none;
+            cursor: pointer;
+            transition: transform 0.3s ease, opacity 0.3s ease;
+        }
+
+        .project-card .view-button:hover {
+            transform: translateY(-4px);
+        }
+
+        .timeline-section {
+            background: rgba(15, 23, 42, 0.72);
+            border-radius: 32px;
+            border: 1px solid var(--card-border);
+            padding: clamp(32px, 6vw, 56px);
+            box-shadow: 0 30px 80px var(--shadow-1);
+            backdrop-filter: blur(22px);
+            margin-bottom: clamp(46px, 6vw, 72px);
+        }
+
+        .timeline-list {
+            list-style: none;
+            display: grid;
+            gap: 20px;
+        }
+
+        .timeline-item {
+            position: relative;
+            padding: 24px 28px;
+            border-radius: 24px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            background: rgba(255, 255, 255, 0.04);
+            box-shadow: 0 22px 60px rgba(12, 18, 38, 0.28);
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            inset-inline-end: 18px;
+            inset-block-start: 20px;
+            width: 4px;
+            height: calc(100% - 40px);
+            background: linear-gradient(180deg, var(--primary), transparent);
+            border-radius: 999px;
+            opacity: 0.6;
+        }
+
+        .timeline-year {
+            align-self: flex-start;
+            font-weight: 800;
+            font-size: 1.1rem;
+            color: var(--tag-text);
+            padding: 6px 16px;
+            border-radius: 999px;
+            background: rgba(99, 102, 241, 0.15);
+        }
+
+        .timeline-item h3 {
+            font-size: 1.4rem;
+            font-weight: 800;
+            color: var(--text);
+        }
+
+        .timeline-item p {
+            color: var(--text-muted);
+            line-height: 1.8;
+        }
+
+        .cta-section {
+            margin-bottom: clamp(46px, 6vw, 72px);
+        }
+
+        .cta-card {
+            position: relative;
+            border-radius: 32px;
+            padding: clamp(32px, 6vw, 48px);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            background: linear-gradient(145deg, rgba(99, 102, 241, 0.35), rgba(15, 23, 42, 0.6));
+            box-shadow: 0 30px 70px rgba(12, 18, 38, 0.35);
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+            overflow: hidden;
+        }
+
+        .cta-card::after {
+            content: '';
+            position: absolute;
+            inset: -30% -30% auto auto;
+            width: 60%;
+            height: 60%;
+            background: radial-gradient(circle, rgba(250, 204, 21, 0.25), transparent 75%);
+            opacity: 0.6;
+            pointer-events: none;
+        }
+
+        .cta-card h2 {
+            font-size: clamp(2rem, 3vw, 2.6rem);
+            font-weight: 800;
+            color: #ffffff;
+        }
+
+        .cta-card p {
+            color: rgba(248, 250, 252, 0.85);
+            line-height: 1.9;
+            max-width: 640px;
+        }
+
+        .cta-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        .cta-card .hero-primary,
+        .cta-card .hero-secondary {
+            padding-inline: 24px;
+        }
+
+        .cta-card .hero-primary {
+            background: #fbbf24;
+            color: #0b1021;
+            box-shadow: 0 20px 50px rgba(250, 204, 21, 0.45);
+        }
+
+        .cta-card .hero-primary:hover {
+            transform: translateY(-4px);
+        }
+
+        .anchor-spacer {
+            width: 100%;
+            height: 1px;
+            margin-top: -64px;
+            padding-top: 64px;
+        }
+
+        footer {
+            text-align: center;
+            color: rgba(248, 250, 252, 0.85);
+            padding: 24px 0 12px;
+            font-size: 0.95rem;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .footer-sub {
+            color: rgba(226, 232, 240, 0.6);
+            font-size: 0.85rem;
         }
 
         .back-button {
             position: fixed;
-            top: 20px;
-            left: 20px;
-            background: white;
-            color: #667eea;
+            top: clamp(16px, 4vw, 24px);
+            left: clamp(16px, 4vw, 28px);
+            background: rgba(255, 255, 255, 0.92);
+            color: #1f2a6b;
             border: none;
-            padding: 12px 25px;
-            border-radius: 25px;
+            padding: 12px 26px;
+            border-radius: 999px;
             cursor: pointer;
-            font-size: 1.1em;
-            font-weight: bold;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-            transition: all 0.3s ease;
+            font-size: 1.05rem;
+            font-weight: 700;
+            box-shadow: 0 20px 40px rgba(15, 23, 42, 0.28);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
             z-index: 1000;
             display: none;
         }
 
         .back-button:hover {
-            transform: scale(1.05);
-            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
-        }
-
-        .projects-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-            gap: 30px;
-            margin-bottom: 50px;
-        }
-
-        .project-card {
-            background: white;
-            border-radius: 15px;
-            overflow: hidden;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            cursor: pointer;
-        }
-
-        .project-card:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
-        }
-
-        .project-image {
-            width: 100%;
-            height: 200px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 4em;
-            color: white;
-        }
-
-        .project-content {
-            padding: 25px;
-        }
-
-        .project-title {
-            font-size: 1.5em;
-            color: #333;
-            margin-bottom: 10px;
-            font-weight: bold;
-        }
-
-        .project-description {
-            color: #666;
-            line-height: 1.6;
-            margin-bottom: 15px;
-        }
-
-        .project-meta {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-top: 20px;
-            padding-top: 15px;
-            border-top: 1px solid #eee;
-        }
-
-        .project-students {
-            color: #667eea;
-            font-weight: bold;
-        }
-
-        .project-date {
-            color: #999;
-            font-size: 0.9em;
-        }
-
-        .view-button {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border: none;
-            padding: 10px 25px;
-            border-radius: 25px;
-            cursor: pointer;
-            font-size: 1em;
-            transition: opacity 0.3s ease;
-            margin-top: 10px;
-            width: 100%;
-        }
-
-        .view-button:hover {
-            opacity: 0.9;
-        }
-
-        .tags {
-            display: flex;
-            gap: 8px;
-            flex-wrap: wrap;
-            margin-top: 15px;
-        }
-
-        .tag {
-            background: #f0f0f0;
-            padding: 5px 12px;
-            border-radius: 15px;
-            font-size: 0.85em;
-            color: #666;
-        }
-
-        footer {
-            text-align: center;
-            color: white;
-            padding: 20px;
-            margin-top: 50px;
+            transform: translateY(-3px);
+            box-shadow: 0 26px 60px rgba(15, 23, 42, 0.35);
         }
 
         .project-viewer {
@@ -198,7 +802,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: white;
+            background: #ffffff;
             z-index: 999;
             overflow: auto;
         }
@@ -214,40 +818,197 @@
             border: none;
         }
 
-        @media (max-width: 768px) {
-            h1 {
-                font-size: 2em;
+        @media (max-width: 992px) {
+            .site-nav {
+                flex-direction: column;
+                align-items: flex-start;
             }
 
-            .subtitle {
-                font-size: 1em;
+            .nav-actions {
+                width: 100%;
+                justify-content: flex-start;
             }
 
-            .projects-grid {
+            .hero-body {
                 grid-template-columns: 1fr;
             }
 
-            .back-button {
-                padding: 10px 20px;
-                font-size: 1em;
+            .hero-visual {
+                order: -1;
+            }
+        }
+
+        @media (max-width: 640px) {
+            body {
+                padding: 16px;
+            }
+
+            .hero,
+            .signature-section,
+            .timeline-section,
+            .cta-card {
+                padding: 28px;
+            }
+
+            .nav-actions {
+                gap: 12px;
+            }
+
+            .nav-cta,
+            .hero-primary,
+            .hero-secondary {
+                flex: 1;
+                min-width: 160px;
+                justify-content: center;
+            }
+
+            .metric dd {
+                font-size: 1.6rem;
+            }
+
+            .project-card {
+                padding: 24px;
             }
         }
     </style>
 </head>
 <body>
-    <button class="back-button" onclick="goBack()">← العودة للمشاريع</button>
+    <button class="back-button" aria-hidden="true" onclick="goBack()">← العودة للمشاريع</button>
 
     <div class="container" id="mainContent">
-        <header>
-            <img src="assets/logo.svg" alt="شعار مدارس المشكاة" class="header-logo" />
-            <h1>🖥️ قسم التقنية</h1>
-            <p class="subtitle"> مدارس المشكاة - ثانوية المنار - موقع أعمال الطالب طلال مساعد الحارثي</p>
+        <header class="hero">
+            <nav class="site-nav">
+                <a href="#" class="brand" aria-label="الرئيسية">
+                    <span class="brand-mark">م</span>
+                    <span class="brand-text">قسم التقنية</span>
+                </a>
+                <div class="nav-actions">
+                    <a class="nav-link" href="#projects">المشاريع</a>
+                    <a class="nav-link" href="#vision">رؤية القسم</a>
+                    <a class="nav-link" href="#timeline">رحلة الإنجاز</a>
+                    <button class="nav-cta" type="button" onclick="document.getElementById('reviewsAnchor').scrollIntoView({ behavior: 'smooth' });">أصوات الزوار</button>
+                </div>
+            </nav>
+
+            <div class="hero-body">
+                <div class="hero-copy">
+                    <span class="hero-badge">مركز التميز الرقمي 2025</span>
+                    <h1 class="hero-title">قسم التقنية - مدارس المشكاة</h1>
+                    <p class="hero-lead">نمنح طلابنا مساحة لصناعة حلول رقمية مبتكرة تربط بين الذكاء الاصطناعي، إنترنت الأشياء، وتجارب التعلم التفاعلية، لنهيئهم لقيادة مستقبل التقنية في المملكة.</p>
+                    <div class="hero-cta">
+                        <a class="hero-primary" href="#projects">استكشف المشاريع</a>
+                        <a class="hero-secondary" href="#vision">تعرف على رؤيتنا</a>
+                    </div>
+                    <dl class="hero-metrics">
+                        <div class="metric">
+                            <dt>مشاريع استراتيجية</dt>
+                            <dd>12</dd>
+                        </div>
+                        <div class="metric">
+                            <dt>الطلاب المشاركون</dt>
+                            <dd>38</dd>
+                        </div>
+                        <div class="metric">
+                            <dt>شراكات موقعة</dt>
+                            <dd>7</dd>
+                        </div>
+                    </dl>
+                </div>
+                <div class="hero-visual" aria-hidden="true">
+                    <div class="hero-orb"></div>
+                    <img src="assets/logo.svg" alt="شعار مدارس المشكاة" class="hero-logo">
+                    <div class="hero-ring"></div>
+                </div>
+            </div>
         </header>
 
-        <div class="projects-grid" id="projectsGrid"></div>
+        <section class="signature-section" id="vision">
+            <div class="section-heading">
+                <span class="section-kicker">رؤية واضحة.. أثر مستدام</span>
+                <h2>رحلة تعليمية تصنع قادة التقنية في مدارس المشكاة</h2>
+                <p>نقود تحولاً رقمياً شاملاً يربط المناهج الدراسية بمختبرات الابتكار، ويمنح الطلبة تجربة تعلم شخصية، مدعومة ببيانات حقيقية وبيئة تشاركية تُثري مهارات القرن الحادي والعشرين.</p>
+            </div>
+            <div class="signature-grid">
+                <article class="signature-card">
+                    <div class="signature-icon">🤖</div>
+                    <h3>ذكاء اصطناعي مُستدام</h3>
+                    <p>نطوّر حلولاً تعتمد على الرؤية الحاسوبية وتحليل البيانات لدعم المجتمع المدرسي بإجابات ذكية ومؤشرات دقيقة.</p>
+                    <ul class="signature-list">
+                        <li>منصات تعلم تتنبأ باحتياجات الطالب</li>
+                        <li>نماذج تصنيف كتب تعتمد على التعلم الآلي</li>
+                    </ul>
+                </article>
+                <article class="signature-card">
+                    <div class="signature-icon">🧠</div>
+                    <h3>تجارب تعليمية غنية</h3>
+                    <p>نجمع بين الألعاب التعليمية، المختبرات الافتراضية، وواجهات الاستخدام العربية لرفع تفاعل الطلبة داخل الصفوف.</p>
+                    <ul class="signature-list">
+                        <li>مختبر تحديات رياضية معززة بالواقع</li>
+                        <li>برامج إرشاد رقمي للرحلات العلمية</li>
+                    </ul>
+                </article>
+                <article class="signature-card">
+                    <div class="signature-icon">🌍</div>
+                    <h3>مبادرات وشراكات</h3>
+                    <p>نبني جسور تعاون مع الجامعات والشركات الناشئة لتوفير فرص تدريب وورش عمل تخصصية للطلاب.</p>
+                    <ul class="signature-list">
+                        <li>شراكات مع 3 حاضنات أعمال تعليمية</li>
+                        <li>مجالس طلابية للابتكار المجتمعي</li>
+                    </ul>
+                </article>
+            </div>
+        </section>
+
+        <section class="projects-section" id="projects">
+            <div class="section-heading">
+                <span class="section-kicker">المعرض الرقمي</span>
+                <h2>مكتبة أعمال تبرز تميّز طلابنا</h2>
+                <p>استكشف مشاريع مترابطة تعكس مهارات التصميم، البرمجة، تحليل البيانات، وتجربة المستخدم؛ كلها نُفِّذت بإشراف نخبة من المعلمين وبشغف طلاب مدارس المشكاة.</p>
+            </div>
+            <div class="projects-grid" id="projectsGrid"></div>
+        </section>
+
+        <section class="timeline-section" id="timeline">
+            <div class="section-heading">
+                <span class="section-kicker">من فكرة إلى إنجاز</span>
+                <h2>جدول زمني لأهم لحظاتنا التقنية</h2>
+                <p>تطور القسم عبر مبادرات متتابعة؛ من تأسيس معامل الابتكار، إلى إطلاق مسابقات داخلية، وصولاً إلى منصة المشاريع الحالية التي توثق قصص نجاح الطلاب.</p>
+            </div>
+            <ol class="timeline-list">
+                <li class="timeline-item">
+                    <span class="timeline-year">2023</span>
+                    <h3>انطلاقة معامل الابتكار</h3>
+                    <p>تم إنشاء مساحة عمل مشتركة مجهزة بالطابعات ثلاثية الأبعاد، وأجهزة إنترنت الأشياء، مع أول برنامج تدريب مكثف للطلاب.</p>
+                </li>
+                <li class="timeline-item">
+                    <span class="timeline-year">2024</span>
+                    <h3>التحول إلى تجارب تعليمية تفاعلية</h3>
+                    <p>أُطلقت منصة الألعاب التعليمية مع ربط مباشر بنظام الدرجات، وتفعيل أدوات ذكاء اصطناعي لدعم المعلمين في متابعة الأداء.</p>
+                </li>
+                <li class="timeline-item">
+                    <span class="timeline-year">2025</span>
+                    <h3>تدشين منصة الأعمال الرقمية</h3>
+                    <p>أعلن القسم عن المعرض الرقمي الأول، مع نظام مراجعات الزوار وسجل زيارات ذكي، وشراكات مع جامعات محلية لدعم مشاريع التخرج.</p>
+                </li>
+            </ol>
+        </section>
+
+        <section class="cta-section">
+            <div class="cta-card">
+                <h2>هل ترغب بالشراكة أو زيارة القسم؟</h2>
+                <p>نرحب بالجامعات، وشركاء الصناعة، ورواد الأعمال الذين يرغبون في دعم المواهب الشابة. يسعدنا تنسيق زيارات، أو تصميم برامج تدريب متخصصة بالتعاون معكم.</p>
+                <div class="cta-actions">
+                    <a class="hero-primary" href="mailto:tech@mishkat.edu.sa">تواصل معنا</a>
+                    <a class="hero-secondary" href="#projects">تصفح دليل المشاريع</a>
+                </div>
+            </div>
+        </section>
+
+        <div id="reviewsAnchor" class="anchor-spacer" aria-hidden="true"></div>
 
         <footer>
-            <p>© 2025 مدارس المشكاة - قسم التقنية | جميع الحقوق محفوظة</p>
+            <p>© 2025 مدارس المشكاة - قسم التقنية. جميع الحقوق محفوظة.</p>
+            <p class="footer-sub">استثمرنا في تعليم رقمي هادف يوازن بين الإبداع القيمي والتقنيات المستقبلية.</p>
         </footer>
     </div>
 
@@ -261,46 +1022,54 @@
                 id: 1,
                 icon: '💻',
                 title: 'تطبيق إدارة المكتبة الذكية',
-                shortDesc: 'نظام متكامل لإدارة استعارة الكتب مع تقنية البحث الذكي والإشعارات التلقائية',
-                students: ' 1 ',
+                shortDesc: 'منصة رقمية تنظّم استعارة الكتب، وتولّد تقارير فورية لإدارة المدرسة بتكامل مع بيانات الطلبة.',
+                category: 'التحول الرقمي للتعليم',
+                impact: 'يؤتمت أكثر من 500 عملية استعارة سنوياً ويقترح كتباً بناءً على اهتمام كل طالب.',
+                highlight: '97٪ دقة في التوصية بالكتب',
+                teamSize: 1,
                 date: 'أكتوبر 2025',
-                tags: ['تطوير ويب', 'قواعد البيانات', 'واجهات تفاعلية'],
+                tags: ['واجهة ويب متقدمة', 'ذكاء اصطناعي تطبيقي', 'تحليل بيانات'],
                 file: 'project1.html'
             },
-        
             {
                 id: 3,
                 icon: '🎮',
                 title: 'لعبة ماث تشالنج التعليمية',
-                shortDesc: 'لعبة تفاعلية ممتعة تساعد الطلاب على إتقان الرياضيات من خلال التحديات والألغاز',
-                students: '2   ',
+                shortDesc: 'لعبة تفاعلية تعزز مهارات الرياضيات عبر تحديات يومية مدعومة بتقارير تقدم موجهة للمعلمين.',
+                category: 'التعليم التفاعلي',
+                impact: 'ترفع معدل مشاركة الطلاب في حصص الرياضيات بنسبة 45% مع تحفيز تنافسي صحي.',
+                highlight: '120+ تحدي رياضي تفاعلي',
+                teamSize: 2,
                 date: 'أغسطس 2025',
-                tags: ['ألعاب تعليمية', 'برمجة', 'تصميم'],
+                tags: ['ألعاب تعليمية', 'تجربة مستخدم', 'إحصائيات تعلم'],
                 file: 'project3.html'
             },
-           
             {
                 id: 5,
                 icon: '🌱',
                 title: 'نظام الزراعة الذكية المدرسي',
-                shortDesc: 'حل IoT متطور لمراقبة وري النباتات في حديقة المدرسة بشكل آلي وفعال',
-                students: '3   ',
+                shortDesc: 'حل IoT لمراقبة ورَي النباتات في حديقة المدرسة مع لوحات بيانات لحظية ورسائل تنبيه.',
+                category: 'المدارس الذكية',
+                impact: 'يقلل استهلاك المياه بنسبة 35% ويضمن نمو النباتات وفق أفضل المعايير.',
+                highlight: '15 حساس بيئي متصل بالزمن الحقيقي',
+                teamSize: 3,
                 date: 'يونيو 2025',
-                tags: ['IoT', 'بيئة', 'أتمتة'],
+                tags: ['إنترنت الأشياء', 'استدامة', 'أتمتة'],
                 file: 'project5.html'
             },
-            
             {
                 id: 7,
                 icon: '🔐',
                 title: 'نظام الحضور الذكي بالتعرف على الوجه',
-                shortDesc: 'نظام حضور متطور يستخدم الذكاء الاصطناعي للتعرف على وجوه الطلاب تلقائياً',
-                students: '4   ',
+                shortDesc: 'نظام حضور مدعّم بالذكاء الاصطناعي يسجل وصول الطلاب خلال ثوانٍ مع تقارير محدثة للمرشدين.',
+                category: 'حلول الذكاء الاصطناعي',
+                impact: 'يُسجل حضور 400 طالب في أقل من 3 دقائق مع دقة تتجاوز 95٪.',
+                highlight: 'تكامل مباشر مع نظام نور المدرسي',
+                teamSize: 4,
                 date: 'أبريل 2025',
-                tags: ['ذكاء اصطناعي', 'أمن', 'إدارة'],
+                tags: ['رؤية حاسوبية', 'أمن معلومات', 'تحليلات لحظية'],
                 file: 'project7.html'
-            },
-          
+            }
         ];
 
         const grid = document.getElementById('projectsGrid');
@@ -310,29 +1079,38 @@
         const backButton = document.querySelector('.back-button');
 
         function displayProjects() {
-            grid.innerHTML = projects.map(project => `
-                <div class="project-card" onclick="openProject('${project.file}')">
-                    <div class="project-image">${project.icon}</div>
-                    <div class="project-content">
+            grid.innerHTML = projects.map(project => {
+                const teamLabel = project.teamSize === 1 ? 'طالب واحد' : project.teamSize === 2 ? 'طالبان' : `${project.teamSize} طلاب`;
+                const insight = project.impact ? `<p class="project-insight">${project.impact}</p>` : '';
+                const highlight = project.highlight ? `<div class="project-highlight">📊 ${project.highlight}</div>` : '';
+                return `
+                    <article class="project-card" onclick="openProject('${project.file}')">
+                        <div class="project-header">
+                            <span class="project-category">${project.category}</span>
+                            <span class="project-icon">${project.icon}</span>
+                        </div>
                         <h3 class="project-title">${project.title}</h3>
                         <p class="project-description">${project.shortDesc}</p>
+                        ${insight}
+                        ${highlight}
                         <div class="tags">
                             ${project.tags.map(tag => `<span class="tag">${tag}</span>`).join('')}
                         </div>
                         <div class="project-meta">
-                            <span class="project-students">👥 ${project.students}</span>
+                            <span class="project-team">👥 فريق من ${teamLabel}</span>
                             <span class="project-date">📅 ${project.date}</span>
                         </div>
-                        <button class="view-button">تشغيل المشروع 🚀</button>
-                    </div>
-                </div>
-            `).join('');
+                        <button class="view-button" type="button" onclick="event.stopPropagation(); openProject('${project.file}')">تشغيل المشروع 🚀</button>
+                    </article>
+                `;
+            }).join('');
         }
 
         function openProject(filename) {
             mainContent.style.display = 'none';
             projectViewer.classList.add('active');
             backButton.style.display = 'block';
+            backButton.setAttribute('aria-hidden', 'false');
             projectFrame.src = filename;
         }
 
@@ -340,6 +1118,7 @@
             mainContent.style.display = 'block';
             projectViewer.classList.remove('active');
             backButton.style.display = 'none';
+            backButton.setAttribute('aria-hidden', 'true');
             projectFrame.src = '';
         }
 
