@@ -75,6 +75,18 @@
         --shadow-1: rgba(15, 23, 42, 0.08);
         --shadow-2: rgba(15, 23, 42, 0.15);
         --theme-color: #6366f1;
+        --state-success-bg: #dcfce7;
+        --state-success-text: #166534;
+        --state-success-border: rgba(34, 197, 94, 0.35);
+        --state-warning-bg: #fef3c7;
+        --state-warning-text: #92400e;
+        --state-warning-border: rgba(234, 179, 8, 0.35);
+        --state-danger-bg: #fee2e2;
+        --state-danger-text: #b91c1c;
+        --state-danger-border: rgba(220, 38, 38, 0.35);
+        --state-info-bg: #e0f2fe;
+        --state-info-text: #0c4a6e;
+        --state-info-border: rgba(14, 116, 144, 0.25);
       }
 
       :root[data-theme="dark"] {
@@ -92,6 +104,18 @@
         --shadow-1: rgba(0, 0, 0, 0.45);
         --shadow-2: rgba(0, 0, 0, 0.6);
         --theme-color: #0b1324;
+        --state-success-bg: rgba(34, 197, 94, 0.22);
+        --state-success-text: #bbf7d0;
+        --state-success-border: rgba(34, 197, 94, 0.55);
+        --state-warning-bg: rgba(251, 191, 36, 0.2);
+        --state-warning-text: #fde68a;
+        --state-warning-border: rgba(251, 191, 36, 0.45);
+        --state-danger-bg: rgba(248, 113, 113, 0.22);
+        --state-danger-text: #fecaca;
+        --state-danger-border: rgba(248, 113, 113, 0.55);
+        --state-info-bg: rgba(59, 130, 246, 0.18);
+        --state-info-text: #bfdbfe;
+        --state-info-border: rgba(59, 130, 246, 0.45);
       }
 
       /* Map AI assistant palette to site theme */
@@ -109,7 +133,7 @@
       }
 
       /* Unify cards/surfaces across pages */
-      .project-card, .panel, .main-section, .modal-content, .game-container, .report-card, .stat-card, .book-card, .attendance-item, .notification-item {
+      .project-card, .panel, .main-section, .modal-content, .game-container, .report-card, .stat-card, .book-card, .attendance-item {
         background: var(--card-bg) !important;
         color: var(--text) !important;
         box-shadow: 0 8px 24px var(--shadow-1) !important;
@@ -131,10 +155,75 @@
       }
 
       /* Tags and pills */
-      .tag, .book-status, .status-badge {
+      .tag {
         background: var(--tag-bg) !important;
         color: var(--tag-text) !important;
         border: 0 !important;
+      }
+
+      :root[data-theme] .book-status,
+      :root[data-theme] .status-badge,
+      :root[data-theme] .sensor-status,
+      :root[data-theme] .notification-item,
+      :root[data-theme] .alert-box,
+      :root[data-theme] .due-date,
+      :root[data-theme] .attendance-item {
+        border-radius: inherit;
+      }
+
+      :root[data-theme] .notification-item {
+        background: var(--state-info-bg) !important;
+        color: var(--state-info-text) !important;
+        border-right-color: var(--state-info-border) !important;
+      }
+
+      :root[data-theme] .book-status.available,
+      :root[data-theme] .sensor-status.status-good,
+      :root[data-theme] .status-badge.status-present,
+      :root[data-theme] .alert-box.success,
+      :root[data-theme] .attendance-item.present {
+        background: var(--state-success-bg) !important;
+        color: var(--state-success-text) !important;
+      }
+
+      :root[data-theme] .alert-box.success,
+      :root[data-theme] .attendance-item.present {
+        border-right-color: var(--state-success-border) !important;
+      }
+
+      :root[data-theme] .book-status.borrowed,
+      :root[data-theme] .sensor-status.status-warning,
+      :root[data-theme] .status-badge.status-late,
+      :root[data-theme] .alert-box:not(.success):not(.danger),
+      :root[data-theme] .notification-item.warning,
+      :root[data-theme] .due-date,
+      :root[data-theme] .attendance-item.late {
+        background: var(--state-warning-bg) !important;
+        color: var(--state-warning-text) !important;
+      }
+
+      :root[data-theme] .alert-box:not(.success):not(.danger),
+      :root[data-theme] .notification-item.warning,
+      :root[data-theme] .attendance-item.late,
+      :root[data-theme] .due-date {
+        border-right-color: var(--state-warning-border) !important;
+      }
+
+      :root[data-theme] .sensor-status.status-danger,
+      :root[data-theme] .status-badge.status-absent,
+      :root[data-theme] .alert-box.danger,
+      :root[data-theme] .notification-item.urgent,
+      :root[data-theme] .due-date.overdue,
+      :root[data-theme] .attendance-item.absent {
+        background: var(--state-danger-bg) !important;
+        color: var(--state-danger-text) !important;
+      }
+
+      :root[data-theme] .alert-box.danger,
+      :root[data-theme] .notification-item.urgent,
+      :root[data-theme] .attendance-item.absent,
+      :root[data-theme] .due-date.overdue {
+        border-right-color: var(--state-danger-border) !important;
       }
 
       /* Theme toggle control */
