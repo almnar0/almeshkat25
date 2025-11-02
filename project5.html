@@ -26,6 +26,191 @@
             margin: 0 auto;
         }
 
+        .project-brief {
+            background: white;
+            border-radius: 28px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 18px 46px rgba(86, 171, 47, 0.18);
+            display: grid;
+            gap: 24px;
+        }
+
+        .brief-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: linear-gradient(135deg, #56ab2f 0%, #a8e063 100%);
+            color: #0f3d0f;
+            padding: 6px 16px;
+            border-radius: 999px;
+            font-weight: 700;
+            font-size: 0.85em;
+            box-shadow: 0 12px 28px rgba(86, 171, 47, 0.28);
+        }
+
+        .project-brief h1 {
+            font-size: 2.2em;
+            color: #1f3f1f;
+        }
+
+        .project-brief p {
+            color: #3c553c;
+            line-height: 1.8;
+            font-size: 1.05em;
+        }
+
+        .brief-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 20px;
+        }
+
+        .brief-meta {
+            display: grid;
+            gap: 16px;
+        }
+
+        .meta-card {
+            background: linear-gradient(135deg, #f2fce5 0%, #dff7c2 100%);
+            border-radius: 18px;
+            padding: 20px;
+            box-shadow: 0 12px 28px rgba(86, 171, 47, 0.18);
+            display: grid;
+            gap: 8px;
+        }
+
+        .meta-label {
+            color: #4e6c4e;
+            font-size: 0.85em;
+            font-weight: 700;
+            letter-spacing: 0.02em;
+        }
+
+        .meta-value {
+            color: #1f3f1f;
+            font-size: 1.15em;
+            font-weight: 800;
+        }
+
+        .brief-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: grid;
+            gap: 10px;
+        }
+
+        .brief-list li {
+            position: relative;
+            padding-inline-start: 26px;
+            color: #3c553c;
+            font-weight: 600;
+        }
+
+        .brief-list li::before {
+            content: '▹';
+            position: absolute;
+            inset-inline-start: 0;
+            color: #2f8f2f;
+        }
+
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 16px;
+        }
+
+        .summary-card {
+            background: white;
+            border-radius: 16px;
+            padding: 18px;
+            border: 1px solid rgba(86, 171, 47, 0.18);
+            box-shadow: 0 12px 32px rgba(86, 171, 47, 0.18);
+        }
+
+        .summary-card .summary-label {
+            color: #4e6c4e;
+            font-size: 0.85em;
+        }
+
+        .summary-card .summary-value {
+            display: block;
+            margin-top: 6px;
+            font-size: 1.45em;
+            font-weight: 800;
+            color: #1f3f1f;
+        }
+
+        .insights-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 16px;
+            margin: 30px 0;
+        }
+
+        .insight-card {
+            background: white;
+            border-radius: 18px;
+            padding: 20px;
+            box-shadow: 0 14px 32px rgba(86, 171, 47, 0.2);
+            border: 1px solid rgba(86, 171, 47, 0.18);
+        }
+
+        .insight-card h4 {
+            margin-bottom: 8px;
+            color: #1f3f1f;
+            font-size: 1.1em;
+        }
+
+        .insight-card p {
+            margin: 0;
+            color: #4e6c4e;
+            font-size: 0.95em;
+        }
+
+        .trend-chart {
+            position: relative;
+            height: 100%;
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-around;
+            gap: 12px;
+        }
+
+        .event-log {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            max-height: 220px;
+            overflow-y: auto;
+        }
+
+        .event-log-entry {
+            background: #f8f9fa;
+            border-right: 4px solid #56ab2f;
+            border-radius: 12px;
+            padding: 12px 16px;
+            box-shadow: 0 8px 20px rgba(86, 171, 47, 0.15);
+            display: grid;
+            gap: 6px;
+        }
+
+        .event-log-entry.warning {
+            border-right-color: #f6ad55;
+        }
+
+        .event-log-entry.danger {
+            border-right-color: #ef4444;
+        }
+
+        .event-log-entry .meta {
+            display: flex;
+            justify-content: space-between;
+            color: #64748b;
+            font-size: 0.8em;
+        }
+
         .header {
             text-align: center;
             color: white;
@@ -401,10 +586,76 @@
     </style>
 </head>
 <body>
+    <section class="project-brief">
+        <span class="brief-pill">منصة إنترنت الأشياء للمدارس</span>
+        <h1>نظام الزراعة الذكية - بيت تقني مستدام</h1>
+        <p>منصة موحدة تربط الحساسات، الصيانة، والتحليلات لضبط بيئة الحديقة المدرسية وتقديم بيانات تعليمية حية للطلاب.</p>
+        <div class="brief-grid">
+            <div class="brief-meta">
+                <div class="meta-card">
+                    <span class="meta-label">مجال التطبيق</span>
+                    <span class="meta-value">بيت زراعي تعليمي على مساحة 420 م²</span>
+                </div>
+                <div class="meta-card">
+                    <span class="meta-label">الحالة التشغيلية</span>
+                    <span class="meta-value">تشغيل فعلي منذ مايو 2025 مع مراقبة على مدار الساعة</span>
+                </div>
+                <div class="meta-card">
+                    <span class="meta-label">واجهات التكامل</span>
+                    <span class="meta-value">Azure IoT • Power BI • منصة الصيانة المدرسية</span>
+                </div>
+                <ul class="brief-list">
+                    <li>تحكم آلي بالري والإضاءة مبني على قراءة 15 حساساً بيئياً.</li>
+                    <li>لوحة تحليلات تبين استهلاك المياه، والنمو لكل نوع نباتي.</li>
+                    <li>جدولة صيانة ذكية مع تنبيهات فورية لفريق الدعم والطلاب القائمين على المشروع.</li>
+                </ul>
+            </div>
+            <div class="brief-summary">
+                <div class="summary-grid">
+                    <div class="summary-card">
+                        <span class="summary-label">تخفيض استهلاك المياه</span>
+                        <span class="summary-value" id="summaryWaterSaving">37٪</span>
+                    </div>
+                    <div class="summary-card">
+                        <span class="summary-label">تنبيهات تمت معالجتها</span>
+                        <span class="summary-value" id="summaryAlerts">0</span>
+                    </div>
+                    <div class="summary-card">
+                        <span class="summary-label">متوسط رطوبة التربة</span>
+                        <span class="summary-value" id="summaryMoisture">0٪</span>
+                    </div>
+                    <div class="summary-card">
+                        <span class="summary-label">النباتات النشطة</span>
+                        <span class="summary-value">28 نوع</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
     <div class="container">
         <div class="header">
             <h1>🌱 نظام الزراعة الذكية</h1>
             <p>مراقبة وإدارة حديقة المدرسة <span class="live-indicator"></span></p>
+        </div>
+
+        <div class="insights-grid">
+            <div class="insight-card">
+                <h4>مؤشر الاستهلاك اليومي</h4>
+                <p id="insightWaterToday">0 لتر اليوم</p>
+            </div>
+            <div class="insight-card">
+                <h4>متوسط رطوبة التربة</h4>
+                <p id="insightMoisture">0٪</p>
+            </div>
+            <div class="insight-card">
+                <h4>تنبيهات هذا الأسبوع</h4>
+                <p id="insightAlerts">0 تنبيه</p>
+            </div>
+            <div class="insight-card">
+                <h4>أعلى حرارة مسجلة</h4>
+                <p id="insightTemperature">0°</p>
+            </div>
         </div>
 
         <div class="dashboard">
@@ -541,19 +792,8 @@
                 <h2>⚙️ التحكم والتنبيهات</h2>
                 
                 <div style="margin-bottom: 25px;">
-                    <h3 style="color: #333; margin-bottom: 15px;">🔔 التنبيهات النشطة</h3>
-                    <div class="alert-box success">
-                        <span style="font-size: 1.5em;">✅</span>
-                        <span>تم الري التلقائي بنجاح - القطاع A</span>
-                    </div>
-                    <div class="alert-box">
-                        <span style="font-size: 1.5em;">⚠️</span>
-                        <span>الري القادم بعد 3 ساعات - القطاع B</span>
-                    </div>
-                    <div class="alert-box success">
-                        <span style="font-size: 1.5em;">🌱</span>
-                        <span>نباتات الخس جاهزة للحصاد قريباً</span>
-                    </div>
+                    <h3 style="color: #333; margin-bottom: 15px;">🔔 سجل الأحداث اللحظي</h3>
+                    <div id="eventLog" class="event-log"></div>
                 </div>
 
                 <div class="control-section">
@@ -639,17 +879,9 @@
                 <div style="margin-top: 25px;">
                     <h3 style="color: #333; margin-bottom: 15px;">📊 إحصائيات الأسبوع</h3>
                     <div style="position: relative; height: 200px; background: #f8f9fa; border-radius: 10px; padding: 20px;">
-                        <div id="chart" style="position: relative; height: 100%; display: flex; align-items: flex-end; justify-content: space-around;"></div>
+                        <div id="chart" class="trend-chart"></div>
                     </div>
-                    <div style="display: flex; justify-content: space-around; margin-top: 10px; font-size: 0.9em; color: #666;">
-                        <span>السبت</span>
-                        <span>الأحد</span>
-                        <span>الاثنين</span>
-                        <span>الثلاثاء</span>
-                        <span>الأربعاء</span>
-                        <span>الخميس</span>
-                        <span>الجمعة</span>
-                    </div>
+                    <div id="chartLabels" style="display: flex; justify-content: space-around; margin-top: 10px; font-size: 0.9em; color: #666;"></div>
                 </div>
 
                 <div style="margin-top: 25px;">
@@ -657,15 +889,15 @@
                     <div style="background: #f8f9fa; padding: 20px; border-radius: 10px;">
                         <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
                             <span style="color: #666;">اليوم</span>
-                            <span style="font-weight: bold; color: #56ab2f;">45 لتر</span>
+                            <span id="waterTodayValue" style="font-weight: bold; color: #56ab2f;">45 لتر</span>
                         </div>
                         <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
                             <span style="color: #666;">هذا الأسبوع</span>
-                            <span style="font-weight: bold; color: #56ab2f;">320 لتر</span>
+                            <span id="waterWeekValue" style="font-weight: bold; color: #56ab2f;">320 لتر</span>
                         </div>
                         <div style="display: flex; justify-content: space-between;">
                             <span style="color: #666;">هذا الشهر</span>
-                            <span style="font-weight: bold; color: #56ab2f;">1,245 لتر</span>
+                            <span id="waterMonthValue" style="font-weight: bold; color: #56ab2f;">1,245 لتر</span>
                         </div>
                     </div>
                 </div>
@@ -674,6 +906,10 @@
     </div>
 
     <script>
+        const EVENT_LOG_KEY = 'smart-farm-event-log';
+        const MOISTURE_HISTORY_KEY = 'smart-farm-moisture-history';
+        const BASELINE_WATER_USAGE = 72; // لتر كخط أساس يومي قبل الأتمتة
+
         let sensors = {
             soilMoisture: 65,
             temperature: 28,
@@ -689,13 +925,160 @@
             fertilize: false
         };
 
+        let soilMoistureHistory = loadMoistureHistory();
+        let eventLogEntries = loadEventLog();
+        if (!eventLogEntries.length) {
+            eventLogEntries.push({
+                id: `seed-${Date.now()}`,
+                message: 'النظام جاهز وتمت مزامنة الحساسات.',
+                type: 'info',
+                source: 'النظام',
+                timestamp: new Date().toISOString()
+            });
+            saveEventLog();
+        }
+        let dailyWaterUsage = 45; // لتر
+        let weeklyWaterUsage = 320;
+        let monthlyWaterUsage = 1245;
+        let weeklyAlertCount = countRecentAlerts(7);
+        let maxTemperatureRecorded = sensors.temperature;
+        const thresholdFlags = { moisture: 'normal', temperature: 'normal' };
+
+        const summaryRefs = {
+            waterSaving: document.getElementById('summaryWaterSaving'),
+            alerts: document.getElementById('summaryAlerts'),
+            moisture: document.getElementById('summaryMoisture')
+        };
+
+        const insightRefs = {
+            waterToday: document.getElementById('insightWaterToday'),
+            moisture: document.getElementById('insightMoisture'),
+            alerts: document.getElementById('insightAlerts'),
+            temperature: document.getElementById('insightTemperature'),
+            waterTodayValue: document.getElementById('waterTodayValue'),
+            waterWeekValue: document.getElementById('waterWeekValue'),
+            waterMonthValue: document.getElementById('waterMonthValue')
+        };
+
+        function loadEventLog() {
+            try {
+                const raw = localStorage.getItem(EVENT_LOG_KEY);
+                const parsed = raw ? JSON.parse(raw) : [];
+                return Array.isArray(parsed) ? parsed : [];
+            } catch {
+                return [];
+            }
+        }
+
+        function saveEventLog() {
+            localStorage.setItem(EVENT_LOG_KEY, JSON.stringify(eventLogEntries.slice(-20)));
+        }
+
+        function loadMoistureHistory() {
+            try {
+                const raw = localStorage.getItem(MOISTURE_HISTORY_KEY);
+                const parsed = raw ? JSON.parse(raw) : null;
+                if (Array.isArray(parsed) && parsed.length) return parsed;
+            } catch {}
+            const baseline = [65, 72, 68, 75, 80, 78, 85];
+            const now = Date.now();
+            return baseline.map((value, idx) => ({ timestamp: now - (6 - idx) * 60 * 60 * 1000, value }));
+        }
+
+        function saveMoistureHistory() {
+            localStorage.setItem(MOISTURE_HISTORY_KEY, JSON.stringify(soilMoistureHistory.slice(-24)));
+        }
+
+        function addEvent(message, type = 'info', source = 'النظام') {
+            const entry = {
+                id: `${Date.now()}-${Math.random().toString(16).slice(2, 8)}`,
+                message,
+                type,
+                source,
+                timestamp: new Date().toISOString()
+            };
+            eventLogEntries.push(entry);
+            eventLogEntries = eventLogEntries.slice(-20);
+            saveEventLog();
+            renderEventLog();
+            weeklyAlertCount = countRecentAlerts(7);
+            updateInsights();
+        }
+
+        function renderEventLog() {
+            const container = document.getElementById('eventLog');
+            if (!container) return;
+            if (!eventLogEntries.length) {
+                container.innerHTML = '<div class="empty-state">لا توجد أحداث مسجلة بعد.</div>';
+                return;
+            }
+            container.innerHTML = eventLogEntries.slice().reverse().map(entry => `
+                <div class="event-log-entry ${entry.type}">
+                    <div>${entry.message}</div>
+                    <div class="meta">
+                        <span>${entry.source}</span>
+                        <span>${formatTime(entry.timestamp)}</span>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function recordMoisture(value) {
+            soilMoistureHistory.push({ timestamp: Date.now(), value });
+            soilMoistureHistory = soilMoistureHistory.slice(-24);
+            saveMoistureHistory();
+            renderMoistureChart();
+        }
+
+        function renderMoistureChart() {
+            const chart = document.getElementById('chart');
+            const labels = document.getElementById('chartLabels');
+            if (!chart || !labels) return;
+            const data = soilMoistureHistory.slice(-7);
+            if (!data.length) {
+                chart.innerHTML = '<div class="empty-state">لا توجد بيانات بعد.</div>';
+                labels.innerHTML = '';
+                return;
+            }
+            const maxHeight = 140;
+            chart.innerHTML = data.map(item => {
+                const height = (item.value / 100) * maxHeight;
+                return `
+                    <div style="position: relative; width: 40px;">
+                        <div style="
+                            width: 32px;
+                            height: ${height}px;
+                            background: linear-gradient(180deg, #56ab2f 0%, #a8e063 100%);
+                            border-radius: 8px 8px 0 0;
+                            position: relative;
+                            transition: height 0.4s ease;
+                        ">
+                            <div style="position: absolute; top: -22px; left: 50%; transform: translateX(-50%); font-size: 0.75em; font-weight: 700; color: #1f3f1f;">
+                                ${Math.round(item.value)}%
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+            labels.innerHTML = data.map(item => `<span>${formatChartLabel(item.timestamp)}</span>`).join('');
+        }
+
+        function recordWaterUsage(amount) {
+            dailyWaterUsage += amount;
+            weeklyWaterUsage += amount;
+            monthlyWaterUsage += amount;
+            updateInsights();
+        }
+
         function updateSensors() {
-            sensors.soilMoisture = Math.max(40, Math.min(90, sensors.soilMoisture + (Math.random() - 0.5) * 3));
-            sensors.temperature = Math.max(20, Math.min(35, sensors.temperature + (Math.random() - 0.5) * 2));
-            sensors.lightLevel = Math.max(600, Math.min(1200, sensors.lightLevel + (Math.random() - 0.5) * 50));
-            sensors.humidity = Math.max(40, Math.min(80, sensors.humidity + (Math.random() - 0.5) * 4));
-            sensors.ph = Math.max(6.0, Math.min(7.5, sensors.ph + (Math.random() - 0.5) * 0.2));
-            sensors.nutrients = Math.max(60, Math.min(95, sensors.nutrients + (Math.random() - 0.5) * 2));
+            const previous = { ...sensors };
+
+            sensors.soilMoisture = clamp(sensors.soilMoisture + (Math.random() - 0.5) * 3, 40, 90);
+            sensors.temperature = clamp(sensors.temperature + (Math.random() - 0.5) * 2, 20, 36);
+            sensors.lightLevel = clamp(sensors.lightLevel + (Math.random() - 0.5) * 50, 600, 1200);
+            sensors.humidity = clamp(sensors.humidity + (Math.random() - 0.5) * 4, 40, 80);
+            sensors.ph = clamp(sensors.ph + (Math.random() - 0.5) * 0.2, 6.0, 7.5);
+            sensors.nutrients = clamp(sensors.nutrients + (Math.random() - 0.5) * 2, 60, 95);
 
             document.getElementById('soilMoisture').textContent = Math.round(sensors.soilMoisture) + '%';
             document.getElementById('temperature').textContent = sensors.temperature.toFixed(1) + '°C';
@@ -703,80 +1086,148 @@
             document.getElementById('humidity').textContent = Math.round(sensors.humidity) + '%';
             document.getElementById('ph').textContent = sensors.ph.toFixed(1);
             document.getElementById('nutrients').textContent = Math.round(sensors.nutrients) + '%';
+
+            recordMoisture(sensors.soilMoisture);
+            maxTemperatureRecorded = Math.max(maxTemperatureRecorded, sensors.temperature);
+            monitorThresholds(previous);
+            updateInsights();
+        }
+
+        function monitorThresholds(previous) {
+            if (sensors.soilMoisture < 52 && thresholdFlags.moisture !== 'low') {
+                thresholdFlags.moisture = 'low';
+                addEvent(`انخفاض رطوبة التربة إلى ${Math.round(sensors.soilMoisture)}٪`, 'warning', 'حساس الرطوبة');
+                if (autoSystems.water) {
+                    sensors.soilMoisture = Math.min(90, sensors.soilMoisture + 10);
+                    recordWaterUsage(6);
+                    addEvent('تشغيل الري التلقائي لتعويض الرطوبة.', 'info', 'النظام');
+                }
+            } else if (sensors.soilMoisture > 58 && thresholdFlags.moisture !== 'normal') {
+                thresholdFlags.moisture = 'normal';
+                addEvent('رطوبة التربة عادت إلى النطاق المثالي.', 'info', 'النظام');
+            }
+
+            if (sensors.temperature > 32 && thresholdFlags.temperature !== 'high') {
+                thresholdFlags.temperature = 'high';
+                addEvent(`درجة الحرارة تجاوزت ${sensors.temperature.toFixed(1)}°C`, 'danger', 'حساس الحرارة');
+            } else if (sensors.temperature < 31 && thresholdFlags.temperature !== 'normal') {
+                thresholdFlags.temperature = 'normal';
+                addEvent('درجة الحرارة عادت للوضع الطبيعي.', 'info', 'النظام');
+            }
         }
 
         function activateWater() {
-            alert('💧 تم تشغيل نظام الري!\nالوقت المتوقع: 15 دقيقة');
+            addEvent('تم تشغيل نظام الري اليدوي لمدة 15 دقيقة.', 'info', 'المشغل');
+            recordWaterUsage(6);
             sensors.soilMoisture = Math.min(90, sensors.soilMoisture + 15);
             updateSensors();
         }
 
         function activateFertilize() {
-            alert('🌿 تم إضافة السماد!\nسيتم توزيعه تلقائياً على جميع النباتات');
+            addEvent('تمت إضافة السماد لجميع القطاعات.', 'info', 'المشغل');
             sensors.nutrients = Math.min(95, sensors.nutrients + 10);
             updateSensors();
         }
 
         function toggleLight() {
-            alert('💡 تم تبديل حالة الإضاءة الإضافية');
+            autoSystems.light = !autoSystems.light;
+            addEvent(autoSystems.light ? 'تم تفعيل الإضاءة الإضافية.' : 'تم إيقاف الإضاءة الإضافية.', 'info', 'المشغل');
             sensors.lightLevel = sensors.lightLevel < 900 ? 1100 : 750;
             updateSensors();
         }
 
         function toggleAutoWater() {
             autoSystems.water = !autoSystems.water;
-            alert(autoSystems.water ? 'تم تفعيل الري التلقائي ✅' : 'تم إيقاف الري التلقائي ⏸️');
+            addEvent(autoSystems.water ? 'تم تفعيل الري التلقائي.' : 'تم إيقاف الري التلقائي.', 'info', 'النظام');
+            updateInsights();
         }
 
         function toggleAutoLight() {
             autoSystems.light = !autoSystems.light;
-            alert(autoSystems.light ? 'تم تفعيل الإضاءة التلقائية ✅' : 'تم إيقاف الإضاءة التلقائية ⏸️');
+            addEvent(autoSystems.light ? 'تم تفعيل الإضاءة التلقائية.' : 'تم إيقاف الإضاءة التلقائية.', 'info', 'النظام');
         }
 
         function toggleAutoFertilize() {
             autoSystems.fertilize = !autoSystems.fertilize;
-            alert(autoSystems.fertilize ? 'تم تفعيل التسميد التلقائي ✅' : 'تم إيقاف التسميد التلقائي ⏸️');
+            addEvent(autoSystems.fertilize ? 'تم تفعيل التسميد التلقائي.' : 'تم إيقاف التسميد التلقائي.', 'info', 'النظام');
         }
 
-        function createChart() {
-            const chart = document.getElementById('chart');
-            const data = [65, 72, 68, 75, 80, 78, 85];
-            const maxHeight = 140;
+        const numberFormatter = new Intl.NumberFormat('ar-SA');
 
-            chart.innerHTML = data.map((value, index) => {
-                const height = (value / 100) * maxHeight;
-                return `
-                    <div style="position: relative; width: 50px;">
-                        <div style="
-                            width: 40px;
-                            height: ${height}px;
-                            background: linear-gradient(180deg, #56ab2f 0%, #a8e063 100%);
-                            border-radius: 8px 8px 0 0;
-                            transition: height 0.5s ease;
-                            position: relative;
-                        ">
-                            <div style="position: absolute; top: -20px; left: 50%; transform: translateX(-50%); font-size: 0.8em; font-weight: bold; color: #56ab2f;">
-                                ${value}%
-                            </div>
-                        </div>
-                    </div>
-                `;
-            }).join('');
+        function formatLiters(value) {
+            return `${numberFormatter.format(Math.round(value))} لتر`;
         }
 
-        // Update sensors every 3 seconds
+        function updateInsights() {
+            const waterSaving = Math.max(0, Math.round((1 - dailyWaterUsage / BASELINE_WATER_USAGE) * 100));
+            const avgMoisture = soilMoistureHistory.length
+                ? soilMoistureHistory.reduce((sum, item) => sum + item.value, 0) / soilMoistureHistory.length
+                : sensors.soilMoisture;
+
+            if (summaryRefs.waterSaving) summaryRefs.waterSaving.textContent = `${waterSaving}٪`;
+            if (summaryRefs.alerts) summaryRefs.alerts.textContent = weeklyAlertCount;
+            if (summaryRefs.moisture) summaryRefs.moisture.textContent = `${Math.round(avgMoisture)}%`;
+
+            if (insightRefs.waterToday) insightRefs.waterToday.textContent = formatLiters(dailyWaterUsage);
+            if (insightRefs.waterTodayValue) insightRefs.waterTodayValue.textContent = formatLiters(dailyWaterUsage);
+            if (insightRefs.waterWeekValue) insightRefs.waterWeekValue.textContent = formatLiters(weeklyWaterUsage);
+            if (insightRefs.waterMonthValue) insightRefs.waterMonthValue.textContent = formatLiters(monthlyWaterUsage);
+            if (insightRefs.moisture) insightRefs.moisture.textContent = `${Math.round(sensors.soilMoisture)}%`;
+            if (insightRefs.alerts) insightRefs.alerts.textContent = `${weeklyAlertCount} تنبيه`;
+            if (insightRefs.temperature) insightRefs.temperature.textContent = `${maxTemperatureRecorded.toFixed(1)}°C`;
+        }
+
+        function clamp(value, min, max) {
+            return Math.max(min, Math.min(max, value));
+        }
+
+        function formatTime(value) {
+            try {
+                return new Date(value).toLocaleTimeString('ar-SA', { hour: '2-digit', minute: '2-digit' });
+            } catch {
+                return value;
+            }
+        }
+
+        function formatChartLabel(timestamp) {
+            try {
+                return new Date(timestamp).toLocaleTimeString('ar-SA', { hour: '2-digit', minute: '2-digit' });
+            } catch {
+                return '';
+            }
+        }
+
+        function countRecentAlerts(days) {
+            const now = Date.now();
+            const limit = days * 24 * 60 * 60 * 1000;
+            return eventLogEntries.filter(entry => entry.type !== 'info' && now - new Date(entry.timestamp).getTime() <= limit).length;
+        }
+
+        // تحديث المستشعرات كل 3 ثوانٍ
         setInterval(updateSensors, 3000);
 
-        // Auto water when soil moisture is low
+        // ري تلقائي عند انخفاض الرطوبة
         setInterval(() => {
-            if(autoSystems.water && sensors.soilMoisture < 50) {
-                sensors.soilMoisture = Math.min(85, sensors.soilMoisture + 20);
-                console.log('Auto watering activated');
+            if (autoSystems.water && sensors.soilMoisture < 50) {
+                sensors.soilMoisture = Math.min(85, sensors.soilMoisture + 12);
+                recordWaterUsage(4);
+                addEvent('تم تفعيل ري تلقائي للحفاظ على رطوبة التربة.', 'info', 'النظام');
+                updateSensors();
             }
-        }, 10000);
+        }, 12000);
 
-        // Initialize chart
-        createChart();
+        renderEventLog();
+        renderMoistureChart();
+        updateSensors();
+        updateInsights();
+
+        // تعريض الدوال للاستخدام من الواجهة
+        window.activateWater = activateWater;
+        window.activateFertilize = activateFertilize;
+        window.toggleLight = toggleLight;
+        window.toggleAutoWater = toggleAutoWater;
+        window.toggleAutoLight = toggleAutoLight;
+        window.toggleAutoFertilize = toggleAutoFertilize;
     </script>
     <script>
         (function(){

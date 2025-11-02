@@ -75,6 +75,132 @@
             padding: 0 20px;
         }
 
+        .project-brief {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            margin: 30px 0;
+            box-shadow: 0 15px 45px rgba(30, 60, 114, 0.18);
+            display: grid;
+            gap: 24px;
+        }
+
+        .brief-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: linear-gradient(135deg, #2a5298 0%, #667eea 100%);
+            color: white;
+            padding: 6px 14px;
+            border-radius: 999px;
+            font-weight: bold;
+            font-size: 0.85em;
+            box-shadow: 0 10px 25px rgba(42, 82, 152, 0.35);
+        }
+
+        .project-brief h1 {
+            font-size: 2.2em;
+            color: #1e3c72;
+            margin-top: 10px;
+        }
+
+        .project-brief p {
+            color: #445b7a;
+            line-height: 1.8;
+            font-size: 1.05em;
+        }
+
+        .brief-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 20px;
+        }
+
+        .brief-meta {
+            display: grid;
+            gap: 16px;
+        }
+
+        .brief-summary {
+            display: grid;
+            gap: 16px;
+        }
+
+        .meta-card {
+            background: linear-gradient(135deg, #f5f7fa 0%, #dde7ff 100%);
+            border-radius: 18px;
+            padding: 20px;
+            box-shadow: 0 10px 28px rgba(27, 53, 104, 0.18);
+            display: grid;
+            gap: 8px;
+        }
+
+        .meta-card span {
+            display: block;
+        }
+
+        .meta-label {
+            color: #5b6d88;
+            font-size: 0.85em;
+            font-weight: 700;
+            letter-spacing: 0.02em;
+        }
+
+        .meta-value {
+            color: #1e3c72;
+            font-size: 1.15em;
+            font-weight: 800;
+        }
+
+        .brief-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: grid;
+            gap: 10px;
+        }
+
+        .brief-list li {
+            position: relative;
+            padding-inline-start: 26px;
+            color: #365075;
+            font-weight: 600;
+        }
+
+        .brief-list li::before {
+            content: '▹';
+            position: absolute;
+            inset-inline-start: 0;
+            color: #1e3c72;
+        }
+
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 16px;
+        }
+
+        .summary-card {
+            background: white;
+            border-radius: 16px;
+            padding: 18px;
+            border: 1px solid rgba(30, 60, 114, 0.08);
+            box-shadow: 0 12px 30px rgba(30, 60, 114, 0.12);
+        }
+
+        .summary-card .summary-label {
+            color: #5b6d88;
+            font-size: 0.85em;
+        }
+
+        .summary-card .summary-value {
+            display: block;
+            margin-top: 6px;
+            font-size: 1.6em;
+            font-weight: 800;
+            color: #1e3c72;
+        }
+
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
@@ -427,6 +553,96 @@
             font-weight: bold;
         }
 
+        .history-summary {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+
+        .history-timeline {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            max-height: 360px;
+            overflow-y: auto;
+            padding-inline-end: 6px;
+        }
+
+        .history-item {
+            display: grid;
+            grid-template-columns: auto 1fr;
+            gap: 14px;
+            align-items: center;
+            background: linear-gradient(135deg, #f8f9fc 0%, #eef2ff 100%);
+            border-radius: 16px;
+            padding: 16px;
+            border-right: 5px solid #667eea;
+            box-shadow: 0 6px 18px rgba(45, 55, 72, 0.12);
+        }
+
+        .history-item.return {
+            border-right-color: #38b2ac;
+        }
+
+        .history-item.add {
+            border-right-color: #f6ad55;
+        }
+
+        .history-icon {
+            font-size: 1.8em;
+        }
+
+        .history-title {
+            font-weight: 700;
+            color: #1e3c72;
+            margin-bottom: 6px;
+        }
+
+        .history-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            font-size: 0.85em;
+            color: #5b6d88;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 30px;
+            border: 2px dashed rgba(102, 126, 234, 0.35);
+            border-radius: 16px;
+            color: #5b6d88;
+            font-weight: 600;
+        }
+
+        .btn-small:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            inset-inline-end: 30px;
+            background: rgba(30, 60, 114, 0.95);
+            color: white;
+            padding: 14px 22px;
+            border-radius: 14px;
+            box-shadow: 0 14px 28px rgba(0, 0, 0, 0.25);
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.3s ease, transform 0.3s ease;
+            z-index: 1100;
+            pointer-events: none;
+            font-weight: 600;
+        }
+
+        .toast.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
         @media (max-width: 768px) {
             .books-grid {
                 grid-template-columns: 1fr;
@@ -442,17 +658,18 @@
     <div class="navbar">
         <div class="logo">📚 نظام المكتبة الذكية</div>
         <div class="nav-links">
-            <button class="nav-btn active" onclick="showSection('browse')">تصفح الكتب</button>
-            <button class="nav-btn" onclick="showSection('borrowed')">
+            <button class="nav-btn active" data-section="browse" onclick="showSection(event, 'browse')">تصفح الكتب</button>
+            <button class="nav-btn" data-section="borrowed" onclick="showSection(event, 'borrowed')">
                 <span class="notification-badge">
                     استعاراتي
                     <span class="badge" id="borrowedCount">0</span>
                 </span>
             </button>
-            <button class="nav-btn" onclick="showSection('notifications')">
+            <button class="nav-btn" data-section="history" onclick="showSection(event, 'history')">سجل الحركات</button>
+            <button class="nav-btn" data-section="notifications" onclick="showSection(event, 'notifications')">
                 <span class="notification-badge">
                     الإشعارات
-                    <span class="badge" id="notifCount">3</span>
+                    <span class="badge" id="notifCount">0</span>
                 </span>
             </button>
             <button class="btn-primary" onclick="openAddBookModal()">➕ إضافة كتاب</button>
@@ -460,6 +677,53 @@
         <!-- الشعار في الزاوية اليسرى -->
         <img src="assets/logo.svg" alt="شعار مدارس المشكاة" class="school-logo" />
     </div>
+
+    <section class="project-brief">
+        <span class="brief-pill">دراسة حالة تطبيقية</span>
+        <h1>منصة إدارة المعرفة للمكتبة - مدارس المشكاة</h1>
+        <p>منصة واحدة تجمع الجرد، الإعارة، والتقارير التحليلية في تجربة موحدة باللغة العربية، وتتكامل مع أنظمة المدرسة لضمان دقة البيانات وسرعة اتخاذ القرار.</p>
+        <div class="brief-grid">
+            <div class="brief-meta">
+                <div class="meta-card">
+                    <span class="meta-label">الجهة المستفيدة</span>
+                    <span class="meta-value">مكتبة مدارس المشكاة</span>
+                </div>
+                <div class="meta-card">
+                    <span class="meta-label">حالة المشروع</span>
+                    <span class="meta-value">تشغيل فعلي منذ سبتمبر 2025</span>
+                </div>
+                <div class="meta-card">
+                    <span class="meta-label">أنظمة التكامل</span>
+                    <span class="meta-value">نظام نور • Azure AD • البريد المدرسي</span>
+                </div>
+                <ul class="brief-list">
+                    <li>لوحة مؤشرات فورية توضح التزام كل صف بالقراءة المقررة.</li>
+                    <li>محرك توصية يعتمد على سلوك البحث وتاريخ الإعارة خلال 18 شهراً.</li>
+                    <li>سياسة أذونات متعددة المستويات لحماية بيانات الطلبة والمعلمين.</li>
+                </ul>
+            </div>
+            <div class="brief-summary">
+                <div class="summary-grid">
+                    <div class="summary-card">
+                        <span class="summary-label">الوقت الوسطي لتسجيل الإعارة</span>
+                        <span class="summary-value" id="summaryKpiSpeed">12 ثانية</span>
+                    </div>
+                    <div class="summary-card">
+                        <span class="summary-label">المستخدمون النشطون شهرياً</span>
+                        <span class="summary-value" id="summaryKpiUsers">420</span>
+                    </div>
+                    <div class="summary-card">
+                        <span class="summary-label">نسبة الرضا العام</span>
+                        <span class="summary-value" id="summaryKpiSatisfaction">4.7/5</span>
+                    </div>
+                    <div class="summary-card">
+                        <span class="summary-label">تغطية مصادر التعلم</span>
+                        <span class="summary-value">95٪ من مناهج العام الدراسي</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
 
     <div class="container">
         <div class="stats-grid">
@@ -522,6 +786,33 @@
             <h2 style="margin-bottom: 20px; color: #333;">🔔 الإشعارات</h2>
             <div class="notifications-panel" id="notificationsList"></div>
         </div>
+
+        <div class="main-section" id="historySection">
+            <h2 style="margin-bottom: 20px; color: #333;">🗂️ سجل الحركات</h2>
+            <div class="history-summary">
+                <div class="summary-card">
+                    <span class="summary-label">إجمالي الكتب المسجلة</span>
+                    <span class="summary-value" id="summaryTotal">0</span>
+                </div>
+                <div class="summary-card">
+                    <span class="summary-label">كتب قيد الإعارة الآن</span>
+                    <span class="summary-value" id="summaryBorrowed">0</span>
+                </div>
+                <div class="summary-card">
+                    <span class="summary-label">كتب متاحة للاستعارة</span>
+                    <span class="summary-value" id="summaryAvailable">0</span>
+                </div>
+                <div class="summary-card">
+                    <span class="summary-label">حركات آخر 7 أيام</span>
+                    <span class="summary-value" id="summaryRecent">0</span>
+                </div>
+                <div class="summary-card">
+                    <span class="summary-label">أكثر فئة طلباً</span>
+                    <span class="summary-value" id="summaryTopCategory">—</span>
+                </div>
+            </div>
+            <div class="history-timeline" id="historyTimeline"></div>
+        </div>
     </div>
 
     <div class="modal" id="addBookModal">
@@ -556,123 +847,312 @@
         </div>
     </div>
 
+    <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
     <script>
-        let books = [
-            {id: 1, title: 'الذكاء الاصطناعي للجميع', author: 'د. محمد أحمد', category: 'tech', isbn: '978-1234-5678', icon: '🤖', status: 'available'},
-            {id: 2, title: 'رحلة في عالم الفيزياء', author: 'د. سارة علي', category: 'science', isbn: '978-2345-6789', icon: '⚛️', status: 'available'},
-            {id: 3, title: 'قصص من التاريخ الإسلامي', author: 'أحمد حسن', category: 'history', isbn: '978-3456-7890', icon: '📜', status: 'borrowed', dueDate: '2025-11-05'},
-            {id: 4, title: 'البرمجة بلغة Python', author: 'عمر خالد', category: 'tech', isbn: '978-4567-8901', icon: '🐍', status: 'available'},
-            {id: 5, title: 'روائع الأدب العربي', author: 'فاطمة محمود', category: 'literature', isbn: '978-5678-9012', icon: '📝', status: 'available'},
-            {id: 6, title: 'علوم الفضاء والكون', author: 'د. يوسف إبراهيم', category: 'science', isbn: '978-6789-0123', icon: '🚀', status: 'borrowed', dueDate: '2025-11-08'},
-            {id: 7, title: 'فن التصميم الرقمي', author: 'ليلى عبدالله', category: 'tech', isbn: '978-7890-1234', icon: '🎨', status: 'available'},
-            {id: 8, title: 'الفقه الميسر', author: 'د. أحمد الشيخ', category: 'religion', isbn: '978-8901-2345', icon: '📿', status: 'available'},
+        const CATEGORY_LABELS = {
+            science: 'علوم',
+            literature: 'أدب',
+            history: 'تاريخ',
+            tech: 'تقنية',
+            religion: 'دين'
+        };
+
+        const CATEGORY_ICONS = {
+            science: '🔬',
+            literature: '📚',
+            history: '📜',
+            tech: '💻',
+            religion: '📿'
+        };
+
+        const STORAGE_KEYS = {
+            books: 'mishkat-library-books',
+            borrowed: 'mishkat-library-borrowed',
+            history: 'mishkat-library-history'
+        };
+
+        const HISTORY_META = {
+            borrow: { icon: '📘', text: 'تم استعارة' },
+            return: { icon: '📗', text: 'تم إرجاع' },
+            add: { icon: '🆕', text: 'تمت إضافة' }
+        };
+
+        const clone = (value) => JSON.parse(JSON.stringify(value));
+
+        const defaultBooks = [
+            { id: 1, title: 'الذكاء الاصطناعي للجميع', author: 'د. محمد أحمد', category: 'tech', isbn: '978-1234-5678', icon: '🤖', status: 'available' },
+            { id: 2, title: 'رحلة في عالم الفيزياء', author: 'د. سارة علي', category: 'science', isbn: '978-2345-6789', icon: '⚛️', status: 'available' },
+            { id: 3, title: 'قصص من التاريخ الإسلامي', author: 'أحمد حسن', category: 'history', isbn: '978-3456-7890', icon: '📜', status: 'borrowed', dueDate: '2025-11-05' },
+            { id: 4, title: 'البرمجة بلغة Python', author: 'عمر خالد', category: 'tech', isbn: '978-4567-8901', icon: '🐍', status: 'available' },
+            { id: 5, title: 'روائع الأدب العربي', author: 'فاطمة محمود', category: 'literature', isbn: '978-5678-9012', icon: '📝', status: 'available' },
+            { id: 6, title: 'علوم الفضاء والكون', author: 'د. يوسف إبراهيم', category: 'science', isbn: '978-6789-0123', icon: '🚀', status: 'borrowed', dueDate: '2025-11-08' },
+            { id: 7, title: 'فن التصميم الرقمي', author: 'ليلى عبدالله', category: 'tech', isbn: '978-7890-1234', icon: '🎨', status: 'available' },
+            { id: 8, title: 'الفقه الميسر', author: 'د. أحمد الشيخ', category: 'religion', isbn: '978-8901-2345', icon: '📿', status: 'available' },
+            { id: 9, title: 'الزراعة الذكية في المدارس', author: 'م. ابتسام المطيري', category: 'science', isbn: '978-9012-3456', icon: '🌱', status: 'available' },
+            { id: 10, title: 'المختبر الافتراضي للفيزياء', author: 'د. علي السعدي', category: 'science', isbn: '978-0123-4567', icon: '🧪', status: 'available' },
+            { id: 11, title: 'دليل الابتكار التربوي', author: 'أ. مريم السبيعي', category: 'literature', isbn: '978-3210-6543', icon: '💡', status: 'available' },
+            { id: 12, title: 'مهارات البحث العلمي للطلاب', author: 'د. هناء العبدالكريم', category: 'tech', isbn: '978-2109-8765', icon: '📘', status: 'available' }
         ];
 
-        let myBorrowedBooks = [];
-        let notifications = [
-            {id: 1, message: 'تذكير: موعد إرجاع كتاب "قصص من التاريخ الإسلامي" بعد 3 أيام', type: 'warning', date: '2025-10-28'},
-            {id: 2, message: 'كتب جديدة في قسم التقنية! تحقق من المجموعة الجديدة', type: 'info', date: '2025-10-27'},
-            {id: 3, message: 'تأخر في إرجاع كتاب "علوم الفضاء والكون" - يرجى الإرجاع في أقرب وقت', type: 'urgent', date: '2025-10-26'}
+        const baseNotifications = [
+            { id: 'integration', message: 'تم تفعيل ربط البريد المدرسي لإشعارات الإعارة.', type: 'info', date: '2025-10-27' },
+            { id: 'policy', message: 'تذكير: الكتب المتأخرة تُعلّق حساب الطالب بعد 48 ساعة.', type: 'warning', date: '2025-10-26' }
         ];
 
-        function showSection(section) {
-            document.querySelectorAll('.main-section').forEach(s => s.classList.remove('active'));
-            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-            
-            if(section === 'browse') {
-                document.getElementById('browseSection').classList.add('active');
-                event.target.classList.add('active');
-            } else if(section === 'borrowed') {
-                document.getElementById('borrowedSection').classList.add('active');
-                event.target.closest('.nav-btn').classList.add('active');
+        function loadFromStorage(key, fallback) {
+            try {
+                const raw = localStorage.getItem(key);
+                if (!raw) return clone(fallback);
+                const parsed = JSON.parse(raw);
+                if (key === STORAGE_KEYS.books && !Array.isArray(parsed)) return clone(fallback);
+                if ((key === STORAGE_KEYS.borrowed || key === STORAGE_KEYS.history) && !Array.isArray(parsed)) return [];
+                return parsed;
+            } catch {
+                return clone(fallback);
+            }
+        }
+
+        function saveBooks() { localStorage.setItem(STORAGE_KEYS.books, JSON.stringify(books)); }
+        function saveBorrowed() { localStorage.setItem(STORAGE_KEYS.borrowed, JSON.stringify(myBorrowedBooks)); }
+        function saveHistory() { localStorage.setItem(STORAGE_KEYS.history, JSON.stringify(loanHistory)); }
+
+        let books = loadFromStorage(STORAGE_KEYS.books, defaultBooks);
+        let myBorrowedBooks = loadFromStorage(STORAGE_KEYS.borrowed, []);
+        let loanHistory = loadFromStorage(STORAGE_KEYS.history, []);
+
+        const toast = document.getElementById('toast');
+        const summaryRefs = {
+            total: document.getElementById('summaryTotal'),
+            borrowed: document.getElementById('summaryBorrowed'),
+            available: document.getElementById('summaryAvailable'),
+            recent: document.getElementById('summaryRecent'),
+            topCategory: document.getElementById('summaryTopCategory'),
+            kpiSpeed: document.getElementById('summaryKpiSpeed'),
+            kpiUsers: document.getElementById('summaryKpiUsers'),
+            kpiSatisfaction: document.getElementById('summaryKpiSatisfaction')
+        };
+        const notifCountEl = document.getElementById('notifCount');
+        const borrowedBadge = document.getElementById('borrowedCount');
+
+        const booksGrid = document.getElementById('booksGrid');
+        const borrowedList = document.getElementById('borrowedList');
+        const notificationsList = document.getElementById('notificationsList');
+        const historyTimeline = document.getElementById('historyTimeline');
+
+        const searchInput = document.getElementById('searchInput');
+        const categoryFilter = document.getElementById('categoryFilter');
+        const statusFilter = document.getElementById('statusFilter');
+
+        const sections = {
+            browse: document.getElementById('browseSection'),
+            borrowed: document.getElementById('borrowedSection'),
+            notifications: document.getElementById('notificationsSection'),
+            history: document.getElementById('historySection')
+        };
+        const navButtons = Array.from(document.querySelectorAll('.nav-btn'));
+
+        const state = { toastTimeout: null };
+
+        sanitizeData();
+
+        function sanitizeData() {
+            if (!Array.isArray(books) || !books.length) {
+                books = clone(defaultBooks);
+            }
+            books = books.map((book, index) => {
+                const category = CATEGORY_LABELS[book.category] ? book.category : 'literature';
+                const status = book.status === 'borrowed' ? 'borrowed' : 'available';
+                return {
+                    id: typeof book.id === 'number' ? book.id : index + 1,
+                    title: book.title || 'كتاب بدون عنوان',
+                    author: book.author || 'مؤلف غير معروف',
+                    category,
+                    isbn: book.isbn || 'غير متوفر',
+                    icon: book.icon || CATEGORY_ICONS[category] || '📘',
+                    status,
+                    dueDate: book.dueDate || null,
+                    borrower: book.borrower || (status === 'borrowed' ? 'قسم التقنية' : null)
+                };
+            });
+            const validIds = new Set(books.map(book => book.id));
+            if (!Array.isArray(myBorrowedBooks)) myBorrowedBooks = [];
+            myBorrowedBooks = myBorrowedBooks.filter(entry => entry && validIds.has(entry.id));
+            myBorrowedBooks.forEach(entry => {
+                const book = books.find(b => b.id === entry.id);
+                if (!book) return;
+                book.status = 'borrowed';
+                book.dueDate = entry.dueDate || book.dueDate || null;
+                book.borrower = entry.borrower || 'قسم التقنية';
+            });
+            if (!Array.isArray(loanHistory)) loanHistory = [];
+            loanHistory = loanHistory.filter(item => item && item.id);
+            saveBooks();
+            saveBorrowed();
+            saveHistory();
+        }
+
+        function showToast(message) {
+            if (!toast) return;
+            toast.textContent = message;
+            toast.classList.add('visible');
+            clearTimeout(state.toastTimeout);
+            state.toastTimeout = setTimeout(() => toast.classList.remove('visible'), 3400);
+        }
+
+        function setActiveButton(section) {
+            navButtons.forEach(btn => btn.classList.toggle('active', btn.dataset.section === section));
+        }
+
+        function showSection(evt, section) {
+            Object.values(sections).forEach(el => el.classList.remove('active'));
+            const targetSection = sections[section] || sections.browse;
+            targetSection.classList.add('active');
+
+            if (evt && evt.currentTarget) {
+                navButtons.forEach(btn => btn.classList.remove('active'));
+                evt.currentTarget.classList.add('active');
+            } else {
+                setActiveButton(section);
+            }
+
+            if (section === 'borrowed') {
                 displayBorrowedBooks();
-            } else if(section === 'notifications') {
-                document.getElementById('notificationsSection').classList.add('active');
-                event.target.closest('.nav-btn').classList.add('active');
+            } else if (section === 'notifications') {
                 displayNotifications();
+            } else if (section === 'history') {
+                displayHistory();
             }
         }
 
         function displayBooks() {
-            const grid = document.getElementById('booksGrid');
-            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
-            const categoryFilter = document.getElementById('categoryFilter').value;
-            const statusFilter = document.getElementById('statusFilter').value;
+            const searchValue = (searchInput.value || '').toLowerCase();
+            const categoryValue = categoryFilter.value;
+            const statusValue = statusFilter.value;
 
-            let filteredBooks = books.filter(book => {
-                const matchesSearch = book.title.toLowerCase().includes(searchTerm) || 
-                                     book.author.toLowerCase().includes(searchTerm) ||
-                                     book.isbn.includes(searchTerm);
-                const matchesCategory = categoryFilter === 'all' || book.category === categoryFilter;
-                const matchesStatus = statusFilter === 'all' || book.status === statusFilter;
+            const filtered = books.filter(book => {
+                const matchesSearch = book.title.toLowerCase().includes(searchValue) ||
+                    book.author.toLowerCase().includes(searchValue) ||
+                    book.isbn.toLowerCase().includes(searchValue);
+                const matchesCategory = categoryValue === 'all' || book.category === categoryValue;
+                const matchesStatus = statusValue === 'all' || book.status === statusValue;
                 return matchesSearch && matchesCategory && matchesStatus;
             });
 
-            grid.innerHTML = filteredBooks.map(book => `
-                <div class="book-card">
-                    <div class="book-cover">${book.icon}</div>
-                    <div class="book-title">${book.title}</div>
-                    <div class="book-info">📝 المؤلف: ${book.author}</div>
-                    <div class="book-info">🔢 ISBN: ${book.isbn}</div>
-                    <span class="book-status ${book.status}">${book.status === 'available' ? 'متاح' : 'مستعار'}</span>
-                    <div class="book-actions">
-                        ${book.status === 'available' ? 
-                            `<button class="btn-small btn-borrow" onclick="borrowBook(${book.id})">استعارة</button>` :
-                            `<button class="btn-small btn-return" onclick="returnBook(${book.id})">إرجاع</button>`
-                        }
-                    </div>
-                </div>
-            `).join('');
+            if (!filtered.length) {
+                booksGrid.innerHTML = '<div class="empty-state">لا توجد نتائج مطابقة لخيارات البحث الحالية.</div>';
+            } else {
+                booksGrid.innerHTML = filtered.map(book => {
+                    const borrowedRecord = myBorrowedBooks.find(entry => entry.id === book.id);
+                    const dueDate = borrowedRecord?.dueDate || book.dueDate;
+                    const dueInfo = dueDate ? `<div class="book-info">⏰ موعد الإرجاع: ${formatDate(dueDate)}</div>` : '';
+                    const borrowerInfo = book.status === 'borrowed' && !borrowedRecord
+                        ? '<div class="book-info">👤 مستعار حالياً من زميل آخر</div>'
+                        : '';
+                    const statusLabel = book.status === 'available' ? 'متاح' : 'مستعار';
+                    const actionButton = book.status === 'available'
+                        ? `<button class="btn-small btn-borrow" onclick="borrowBook(${book.id})">استعارة</button>`
+                        : borrowedRecord
+                            ? `<button class="btn-small btn-return" onclick="returnBook(${book.id})">إرجاع</button>`
+                            : `<button class="btn-small btn-return" disabled>قيد الإعارة</button>`;
+                    return `
+                        <div class="book-card">
+                            <div class="book-cover">${book.icon || CATEGORY_ICONS[book.category] || '📗'}</div>
+                            <div class="book-title">${book.title}</div>
+                            <div class="book-info">📝 المؤلف: ${book.author}</div>
+                            <div class="book-info">🔢 ISBN: ${book.isbn}</div>
+                            <span class="book-status ${book.status}">${statusLabel}</span>
+                            ${dueInfo}
+                            ${borrowerInfo}
+                            <div class="book-actions">
+                                ${actionButton}
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            }
 
             updateStats();
         }
 
         function borrowBook(id) {
             const book = books.find(b => b.id === id);
-            if(book && book.status === 'available') {
-                book.status = 'borrowed';
-                const dueDate = new Date();
-                dueDate.setDate(dueDate.getDate() + 14);
-                book.dueDate = dueDate.toISOString().split('T')[0];
-                myBorrowedBooks.push(book);
-                displayBooks();
-                alert(`تم استعارة كتاب "${book.title}" بنجاح! موعد الإرجاع: ${book.dueDate}`);
+            if (!book || book.status === 'borrowed') {
+                showToast('الكتاب غير متاح حالياً.');
+                return;
             }
+            const existing = myBorrowedBooks.find(entry => entry.id === id);
+            if (existing) {
+                showToast('لديك بالفعل هذا الكتاب في قائمة استعاراتك.');
+                return;
+            }
+            const due = new Date();
+            due.setDate(due.getDate() + 14);
+            const dueDate = due.toISOString().split('T')[0];
+            const record = {
+                id: book.id,
+                borrowedAt: new Date().toISOString(),
+                dueDate,
+                borrower: 'قسم التقنية'
+            };
+            book.status = 'borrowed';
+            book.dueDate = dueDate;
+            book.borrower = 'قسم التقنية';
+            myBorrowedBooks.push(record);
+            addHistory('borrow', book, { dueDate, category: book.category });
+            saveBooks();
+            saveBorrowed();
+            displayBooks();
+            displayBorrowedBooks();
+            renderHistorySummary();
+            showToast(`تم استعارة "${book.title}" بنجاح. موعد الإرجاع: ${formatDate(dueDate)}`);
         }
 
         function returnBook(id) {
             const book = books.find(b => b.id === id);
-            if(book && book.status === 'borrowed') {
-                book.status = 'available';
-                book.dueDate = null;
-                myBorrowedBooks = myBorrowedBooks.filter(b => b.id !== id);
-                displayBooks();
-                alert(`تم إرجاع كتاب "${book.title}" بنجاح!`);
+            if (!book || book.status !== 'borrowed') {
+                showToast('لا يمكن إرجاع هذا الكتاب الآن.');
+                return;
             }
+            book.status = 'available';
+            book.dueDate = null;
+            book.borrower = null;
+            myBorrowedBooks = myBorrowedBooks.filter(entry => entry.id !== id);
+            addHistory('return', book, { category: book.category });
+            saveBooks();
+            saveBorrowed();
+            displayBooks();
+            displayBorrowedBooks();
+            renderHistorySummary();
+            showToast(`تم إرجاع "${book.title}" بنجاح.`);
         }
 
         function displayBorrowedBooks() {
-            const list = document.getElementById('borrowedList');
-            if(myBorrowedBooks.length === 0) {
-                list.innerHTML = '<p style="text-align: center; color: #666; padding: 40px;">لا توجد كتب مستعارة حالياً</p>';
+            if (!borrowedList) return;
+            if (!myBorrowedBooks.length) {
+                borrowedList.innerHTML = '<div class="empty-state">لا توجد كتب مستعارة حالياً.</div>';
                 return;
             }
-
-            list.innerHTML = myBorrowedBooks.map(book => {
-                const today = new Date();
-                const due = new Date(book.dueDate);
-                const isOverdue = due < today;
-                
+            const sorted = [...myBorrowedBooks].sort((a, b) => {
+                if (!a.dueDate) return 1;
+                if (!b.dueDate) return -1;
+                return new Date(a.dueDate) - new Date(b.dueDate);
+            });
+            borrowedList.innerHTML = sorted.map(entry => {
+                const book = books.find(b => b.id === entry.id);
+                if (!book) return '';
+                const dueDate = entry.dueDate ? formatDate(entry.dueDate) : 'غير محدد';
+                const isOverdue = entry.dueDate && new Date(entry.dueDate) < new Date();
                 return `
                     <div class="borrowed-item">
                         <div class="borrowed-info">
-                            <h3>${book.icon} ${book.title}</h3>
+                            <h3>${book.icon || '📘'} ${book.title}</h3>
                             <p>المؤلف: ${book.author}</p>
                             <p>ISBN: ${book.isbn}</p>
                         </div>
                         <div>
                             <div class="due-date ${isOverdue ? 'overdue' : ''}">
-                                ${isOverdue ? '⚠️ متأخر' : '📅'} موعد الإرجاع: ${book.dueDate}
+                                ${isOverdue ? '⚠️ متأخر' : '📅'} موعد الإرجاع: ${dueDate}
                             </div>
                             <button class="btn-small btn-return" style="margin-top: 10px; width: 100%;" onclick="returnBook(${book.id})">إرجاع الآن</button>
                         </div>
@@ -681,14 +1161,146 @@
             }).join('');
         }
 
+        function generateDynamicNotifications() {
+            const now = new Date();
+            const notifications = [];
+            myBorrowedBooks.forEach(entry => {
+                if (!entry.dueDate) return;
+                const due = new Date(entry.dueDate);
+                const book = books.find(b => b.id === entry.id);
+                if (!book) return;
+                const diffDays = Math.ceil((due - now) / (1000 * 60 * 60 * 24));
+                if (diffDays < 0) {
+                    notifications.push({
+                        id: `overdue-${entry.id}`,
+                        message: `تأخر إرجاع كتاب "${book.title}" لمدة ${Math.abs(diffDays)} يوم`,
+                        type: 'urgent',
+                        date: formatDate(now)
+                    });
+                } else if (diffDays <= 3) {
+                    notifications.push({
+                        id: `due-${entry.id}`,
+                        message: `اقترب موعد إرجاع كتاب "${book.title}" خلال ${diffDays} يوم`,
+                        type: 'warning',
+                        date: formatDate(now)
+                    });
+                }
+            });
+            if (loanHistory.length) {
+                const latest = loanHistory[loanHistory.length - 1];
+                const meta = HISTORY_META[latest.action] || { text: 'حركة', icon: '📘' };
+                notifications.unshift({
+                    id: `latest-${latest.id}`,
+                    message: `${meta.text} "${latest.title}"`,
+                    type: 'info',
+                    date: formatDateTime(latest.timestamp)
+                });
+            }
+            return notifications;
+        }
+
         function displayNotifications() {
-            const list = document.getElementById('notificationsList');
-            list.innerHTML = notifications.map(notif => `
-                <div class="notification-item ${notif.type}">
-                    <strong>${notif.type === 'urgent' ? '🚨' : notif.type === 'warning' ? '⚠️' : 'ℹ️'} ${notif.message}</strong>
-                    <p style="color: #999; margin-top: 5px; font-size: 0.9em;">${notif.date}</p>
-                </div>
-            `).join('');
+            if (!notificationsList) return;
+            const dynamic = generateDynamicNotifications();
+            const combined = [...dynamic, ...baseNotifications];
+            if (!combined.length) {
+                notificationsList.innerHTML = '<div class="empty-state">لا توجد إشعارات في الوقت الحالي.</div>';
+            } else {
+                notificationsList.innerHTML = combined.map(notif => `
+                    <div class="notification-item ${notif.type}">
+                        <strong>${notif.message}</strong>
+                        <p style="color: #999; margin-top: 5px; font-size: 0.9em;">${notif.date}</p>
+                    </div>
+                `).join('');
+            }
+            if (notifCountEl) {
+                notifCountEl.textContent = combined.length;
+            }
+        }
+
+        function addHistory(action, book, details = {}) {
+            const entry = {
+                id: `${Date.now()}-${Math.random().toString(16).slice(2, 8)}`,
+                action,
+                bookId: book.id,
+                title: book.title,
+                timestamp: new Date().toISOString(),
+                details
+            };
+            loanHistory.push(entry);
+            loanHistory = loanHistory.slice(-50);
+            saveHistory();
+        }
+
+        function displayHistory() {
+            renderHistorySummary();
+            if (!historyTimeline) return;
+            if (!loanHistory.length) {
+                historyTimeline.innerHTML = '<div class="empty-state">لا توجد حركات مسجلة بعد.</div>';
+                return;
+            }
+            historyTimeline.innerHTML = loanHistory.slice().reverse().map(entry => {
+                const meta = HISTORY_META[entry.action] || { icon: '📘', text: 'حركة' };
+                const book = books.find(b => b.id === entry.bookId) || { title: entry.title };
+                const dueInfo = entry.details && entry.details.dueDate
+                    ? `<span>⏰ مستحق: ${formatDate(entry.details.dueDate)}</span>`
+                    : '';
+                const categoryName = entry.details && entry.details.category
+                    ? CATEGORY_LABELS[entry.details.category] || entry.details.category
+                    : '';
+                const categoryInfo = categoryName ? `<span>🏷️ ${categoryName}</span>` : '';
+                return `
+                    <div class="history-item ${entry.action}">
+                        <div class="history-icon">${meta.icon}</div>
+                        <div>
+                            <div class="history-title">${meta.text} <strong>${book.title}</strong></div>
+                            <div class="history-meta">
+                                <span>🕒 ${formatDateTime(entry.timestamp)}</span>
+                                ${dueInfo}
+                                ${categoryInfo}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function getAnalyticsSnapshot() {
+            const totalBooks = books.length;
+            const borrowedNow = books.filter(book => book.status === 'borrowed').length;
+            const availableNow = totalBooks - borrowedNow;
+            const now = new Date();
+            const sevenDaysAgo = new Date(now);
+            sevenDaysAgo.setDate(now.getDate() - 7);
+            const recentMovements = loanHistory.filter(entry => new Date(entry.timestamp) >= sevenDaysAgo).length;
+            const borrowActions = loanHistory.filter(entry => entry.action === 'borrow');
+            const categoryCounts = borrowActions.reduce((acc, entry) => {
+                const category = entry.details?.category || books.find(book => book.id === entry.bookId)?.category;
+                if (!category) return acc;
+                acc[category] = (acc[category] || 0) + 1;
+                return acc;
+            }, {});
+            const topCategoryEntry = Object.entries(categoryCounts).sort((a, b) => b[1] - a[1])[0];
+            return {
+                totalBooks,
+                borrowedNow,
+                availableNow,
+                recentMovements,
+                topCategory: topCategoryEntry ? CATEGORY_LABELS[topCategoryEntry[0]] || topCategoryEntry[0] : '—',
+                topCategoryCount: topCategoryEntry ? topCategoryEntry[1] : 0
+            };
+        }
+
+        function renderHistorySummary() {
+            if (!summaryRefs.total) return;
+            const snapshot = getAnalyticsSnapshot();
+            summaryRefs.total.textContent = snapshot.totalBooks;
+            summaryRefs.borrowed.textContent = snapshot.borrowedNow;
+            summaryRefs.available.textContent = snapshot.availableNow;
+            summaryRefs.recent.textContent = snapshot.recentMovements;
+            summaryRefs.topCategory.textContent = snapshot.topCategory === '—'
+                ? '—'
+                : `${snapshot.topCategory} (${snapshot.topCategoryCount})`;
         }
 
         function updateStats() {
@@ -697,7 +1309,22 @@
             document.getElementById('totalBooks').textContent = books.length;
             document.getElementById('availableBooks').textContent = available;
             document.getElementById('borrowedBooks').textContent = borrowed;
-            document.getElementById('borrowedCount').textContent = myBorrowedBooks.length;
+            if (borrowedBadge) borrowedBadge.textContent = myBorrowedBooks.length;
+            renderHistorySummary();
+        }
+
+        function formatDate(value) {
+            if (!value) return '';
+            const date = new Date(value);
+            if (Number.isNaN(date.valueOf())) return value;
+            return date.toLocaleDateString('ar-SA', { year: 'numeric', month: 'short', day: 'numeric' });
+        }
+
+        function formatDateTime(value) {
+            if (!value) return '';
+            const date = new Date(value);
+            if (Number.isNaN(date.valueOf())) return value;
+            return date.toLocaleString('ar-SA', { dateStyle: 'medium', timeStyle: 'short' });
         }
 
         function openAddBookModal() {
@@ -708,39 +1335,52 @@
             document.getElementById('addBookModal').classList.remove('active');
         }
 
-        function addNewBook() {
-            const title = document.getElementById('bookTitle').value;
-            const author = document.getElementById('bookAuthor').value;
-            const category = document.getElementById('bookCategory').value;
-            const isbn = document.getElementById('bookISBN').value;
-
-            if(title && author && isbn) {
-                const icons = {'science': '🔬', 'literature': '📚', 'history': '📜', 'tech': '💻', 'religion': '📿'};
-                books.push({
-                    id: books.length + 1,
-                    title,
-                    author,
-                    category,
-                    isbn,
-                    icon: icons[category] || '📖',
-                    status: 'available'
-                });
-                displayBooks();
-                closeAddBookModal();
-                document.getElementById('bookTitle').value = '';
-                document.getElementById('bookAuthor').value = '';
-                document.getElementById('bookISBN').value = '';
-                alert('تمت إضافة الكتاب بنجاح!');
-            } else {
-                alert('يرجى ملء جميع الحقول');
-            }
+        function getNextId() {
+            return books.reduce((max, book) => Math.max(max, book.id || 0), 0) + 1;
         }
 
-        document.getElementById('searchInput').addEventListener('input', displayBooks);
-        document.getElementById('categoryFilter').addEventListener('change', displayBooks);
-        document.getElementById('statusFilter').addEventListener('change', displayBooks);
+        function addNewBook() {
+            const title = document.getElementById('bookTitle').value.trim();
+            const author = document.getElementById('bookAuthor').value.trim();
+            const category = document.getElementById('bookCategory').value;
+            const isbn = document.getElementById('bookISBN').value.trim();
+
+            if (!title || !author || !isbn) {
+                showToast('يرجى إدخال عنوان الكتاب واسم المؤلف ورقم ISBN.');
+                return;
+            }
+
+            const newBook = {
+                id: getNextId(),
+                title,
+                author,
+                category: CATEGORY_LABELS[category] ? category : 'literature',
+                isbn,
+                icon: CATEGORY_ICONS[category] || '📖',
+                status: 'available',
+                dueDate: null,
+                borrower: null
+            };
+
+            books.push(newBook);
+            saveBooks();
+            addHistory('add', newBook, { category: newBook.category });
+            displayBooks();
+            showToast(`تمت إضافة "${newBook.title}" إلى المكتبة.`);
+            closeAddBookModal();
+            document.getElementById('bookTitle').value = '';
+            document.getElementById('bookAuthor').value = '';
+            document.getElementById('bookISBN').value = '';
+        }
+
+        searchInput.addEventListener('input', displayBooks);
+        categoryFilter.addEventListener('change', displayBooks);
+        statusFilter.addEventListener('change', displayBooks);
 
         displayBooks();
+        displayBorrowedBooks();
+        displayNotifications();
+        displayHistory();
     </script>
     <script>
         (function(){

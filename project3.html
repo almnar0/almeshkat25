@@ -33,6 +33,201 @@
             overflow: hidden;
         }
 
+        .project-brief {
+            background: white;
+            border-radius: 28px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 18px 48px rgba(102, 126, 234, 0.22);
+            display: grid;
+            gap: 24px;
+        }
+
+        .brief-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 6px 16px;
+            border-radius: 999px;
+            font-weight: 700;
+            font-size: 0.85em;
+            box-shadow: 0 12px 30px rgba(118, 75, 162, 0.35);
+        }
+
+        .project-brief h1 {
+            font-size: 2.2em;
+            color: #272863;
+        }
+
+        .project-brief p {
+            color: #4a4f7a;
+            line-height: 1.8;
+            font-size: 1.05em;
+        }
+
+        .brief-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 20px;
+        }
+
+        .brief-meta {
+            display: grid;
+            gap: 16px;
+        }
+
+        .meta-card {
+            background: linear-gradient(135deg, #eef2ff 0%, #e0e7ff 100%);
+            border-radius: 18px;
+            padding: 20px;
+            box-shadow: 0 12px 32px rgba(102, 126, 234, 0.18);
+            display: grid;
+            gap: 8px;
+        }
+
+        .meta-label {
+            color: #61638a;
+            font-size: 0.85em;
+            font-weight: 700;
+            letter-spacing: 0.03em;
+        }
+
+        .meta-value {
+            color: #272863;
+            font-size: 1.15em;
+            font-weight: 800;
+        }
+
+        .brief-list {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            display: grid;
+            gap: 10px;
+        }
+
+        .brief-list li {
+            position: relative;
+            padding-inline-start: 26px;
+            color: #4a4f7a;
+            font-weight: 600;
+        }
+
+        .brief-list li::before {
+            content: '▹';
+            position: absolute;
+            inset-inline-start: 0;
+            color: #667eea;
+        }
+
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 16px;
+        }
+
+        .summary-card {
+            background: white;
+            border-radius: 16px;
+            padding: 18px;
+            border: 1px solid rgba(102, 126, 234, 0.12);
+            box-shadow: 0 12px 40px rgba(102, 126, 234, 0.15);
+        }
+
+        .summary-card .summary-label {
+            color: #63658e;
+            font-size: 0.85em;
+        }
+
+        .summary-card .summary-value {
+            display: block;
+            margin-top: 6px;
+            font-size: 1.5em;
+            font-weight: 800;
+            color: #272863;
+        }
+
+        .analytics-section {
+            margin-top: 40px;
+            background: white;
+            border-radius: 24px;
+            padding: 28px;
+            box-shadow: 0 18px 48px rgba(102, 126, 234, 0.18);
+        }
+
+        .analytics-section h2 {
+            color: #272863;
+            margin-bottom: 18px;
+            font-size: 1.6em;
+        }
+
+        .analytics-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+
+        .analytics-card {
+            background: linear-gradient(135deg, #f5f7ff 0%, #dde7ff 100%);
+            border-radius: 16px;
+            padding: 18px;
+            box-shadow: 0 12px 30px rgba(102, 126, 234, 0.15);
+        }
+
+        .analytics-card .label {
+            color: #5f6391;
+            font-size: 0.85em;
+            font-weight: 700;
+        }
+
+        .analytics-card .value {
+            display: block;
+            margin-top: 6px;
+            font-size: 1.45em;
+            font-weight: 800;
+            color: #272863;
+        }
+
+        .analytics-table-wrapper {
+            overflow-x: auto;
+        }
+
+        .analytics-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 12px;
+        }
+
+        .analytics-table th,
+        .analytics-table td {
+            text-align: center;
+            padding: 12px;
+            border-bottom: 1px solid rgba(102, 126, 234, 0.18);
+            font-size: 0.95em;
+        }
+
+        .analytics-table th {
+            color: #5f6391;
+            font-weight: 700;
+            background: #eef2ff;
+        }
+
+        .analytics-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 24px;
+            border: 2px dashed rgba(102, 126, 234, 0.35);
+            border-radius: 16px;
+            color: #5f6391;
+            font-weight: 600;
+        }
+
         .game-header {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             padding: 30px;
@@ -291,6 +486,53 @@
     </style>
 </head>
 <body>
+    <section class="project-brief">
+        <span class="brief-pill">منتج تعليمي تكيفي</span>
+        <h1>منصة ماث تشالنج التكيفية - مدارس المشكاة</h1>
+        <p>منصة ألعاب تعليمية تراقب أداء الطلاب في الوقت الفعلي، وتولد مسارات تحدي مخصصة بناءً على تحليلات دقيقة لمستوى الإتقان والزمن المستغرق في الإجابة.</p>
+        <div class="brief-grid">
+            <div class="brief-meta">
+                <div class="meta-card">
+                    <span class="meta-label">المرحلة المستهدفة</span>
+                    <span class="meta-value">الصفوف المتوسطة (12 شعبة)</span>
+                </div>
+                <div class="meta-card">
+                    <span class="meta-label">حالة التطبيق</span>
+                    <span class="meta-value">تشغيل كامل مع تقييم أسبوعي للمعلمين</span>
+                </div>
+                <div class="meta-card">
+                    <span class="meta-label">واجهات التكامل</span>
+                    <span class="meta-value">نظام النقاط المدرسية • SSO • Power BI</span>
+                </div>
+                <ul class="brief-list">
+                    <li>تعلم تكيفي يضبط مستوى الصعوبة بعد سؤالين فقط.</li>
+                    <li>تقارير مسار لكل طالب مع تحليل لنقاط القوة والفجوات.</li>
+                    <li>لوحة قيادة تعرض نتائج الشعب لحظياً مع تنبيهات للطلاب المتعثرين.</li>
+                </ul>
+            </div>
+            <div class="brief-summary">
+                <div class="summary-grid">
+                    <div class="summary-card">
+                        <span class="summary-label">متوسط نسبة الإتقان</span>
+                        <span class="summary-value" id="summaryMastery">82٪</span>
+                    </div>
+                    <div class="summary-card">
+                        <span class="summary-label">أفضل سلسلة إجابات</span>
+                        <span class="summary-value" id="summaryStreak">18</span>
+                    </div>
+                    <div class="summary-card">
+                        <span class="summary-label">الشعب النشطة هذا الأسبوع</span>
+                        <span class="summary-value" id="summaryActiveClasses">12</span>
+                    </div>
+                    <div class="summary-card">
+                        <span class="summary-label">متوسط زمن الإجابة</span>
+                        <span class="summary-value" id="summaryAvgTime">8.4 ثانية</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
     <div class="game-container">
         <div class="game-header">
             <h1 class="game-title">🎮 ماث تشالنج</h1>
@@ -371,6 +613,10 @@
                         <span class="result-value" id="finalStreak">0</span>
                     </div>
                     <div class="result-stat">
+                        <span class="result-label">متوسط زمن الإجابة:</span>
+                        <span class="result-value" id="finalAvgTime">0 ثانية</span>
+                    </div>
+                    <div class="result-stat">
                         <span class="result-label">نسبة النجاح:</span>
                         <span class="result-value" id="finalPercentage">0%</span>
                     </div>
@@ -380,7 +626,49 @@
         </div>
     </div>
 
+    <section class="analytics-section">
+        <h2>📊 لوحة التحليلات الصفية</h2>
+        <div class="analytics-cards">
+            <div class="analytics-card">
+                <span class="label">أفضل نتيجة مسجلة</span>
+                <span class="value" id="analyticsBestScore">0</span>
+            </div>
+            <div class="analytics-card">
+                <span class="label">متوسط نسبة الدقة</span>
+                <span class="value" id="analyticsAvgAccuracy">0٪</span>
+            </div>
+            <div class="analytics-card">
+                <span class="label">متوسط زمن الإجابة</span>
+                <span class="value" id="analyticsAvgTime">0 ثانية</span>
+            </div>
+            <div class="analytics-card">
+                <span class="label">إجمالي الجلسات</span>
+                <span class="value" id="analyticsSessions">0</span>
+            </div>
+        </div>
+        <div class="analytics-table-wrapper">
+            <table class="analytics-table">
+                <thead>
+                    <tr>
+                        <th>التاريخ</th>
+                        <th>المستوى</th>
+                        <th>النقاط</th>
+                        <th>الدقة</th>
+                        <th>متوسط الزمن</th>
+                    </tr>
+                </thead>
+                <tbody id="analyticsTableBody">
+                    <tr>
+                        <td colspan="5" class="empty-state">لم يتم تسجيل جلسات بعد.</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+
     <script>
+        const SCOREBOARD_KEY = 'math-challenge-history';
+
         let currentLevel = 'easy';
         let currentQuestion = 0;
         let score = 0;
@@ -391,8 +679,28 @@
         let timeLeft = 10;
         let timerInterval;
         let correctAnswer;
+        let sessionStartTime = null;
+        let questionStartTime = null;
+        let totalTimeElapsed = 0;
+        let elapsedTimes = [];
+        let sessionHistory = loadHistory();
 
         const operations = ['+', '-', '×', '÷'];
+
+        function loadHistory() {
+            try {
+                const raw = localStorage.getItem(SCOREBOARD_KEY);
+                if (!raw) return [];
+                const parsed = JSON.parse(raw);
+                return Array.isArray(parsed) ? parsed : [];
+            } catch {
+                return [];
+            }
+        }
+
+        function saveHistory() {
+            localStorage.setItem(SCOREBOARD_KEY, JSON.stringify(sessionHistory.slice(-12)));
+        }
 
         function startGame(level) {
             currentLevel = level;
@@ -401,6 +709,9 @@
             correctAnswers = 0;
             streak = 0;
             maxStreak = 0;
+            totalTimeElapsed = 0;
+            elapsedTimes = [];
+            sessionStartTime = Date.now();
 
             document.getElementById('startScreen').style.display = 'none';
             document.getElementById('questionScreen').style.display = 'block';
@@ -420,23 +731,23 @@
             }
 
             let num1, num2, operation;
-            const maxNum = currentLevel === 'easy' ? 10 : currentLevel === 'medium' ? 50 : 100;
+            const maxNum = currentLevel === 'easy' ? 10 : currentLevel === 'medium' ? 50 : 120;
 
             operation = operations[Math.floor(Math.random() * operations.length)];
             num1 = Math.floor(Math.random() * maxNum) + 1;
             num2 = Math.floor(Math.random() * maxNum) + 1;
 
-            // التأكد من أن الناتج موجب
             if (operation === '-' && num2 > num1) {
                 [num1, num2] = [num2, num1];
             }
 
-            // للقسمة، نتأكد من أن الناتج صحيح
             if (operation === '÷') {
-                num1 = num2 * (Math.floor(Math.random() * 10) + 1);
+                const divisor = Math.floor(Math.random() * 9) + 1;
+                num2 = divisor;
+                num1 = num2 * (Math.floor(Math.random() * Math.max(3, Math.floor(maxNum / num2))) + 1);
             }
 
-            switch(operation) {
+            switch (operation) {
                 case '+':
                     correctAnswer = num1 + num2;
                     break;
@@ -459,27 +770,38 @@
 
         function generateAnswers() {
             const answers = [correctAnswer];
-            
+
             while (answers.length < 4) {
-                const wrongAnswer = correctAnswer + Math.floor(Math.random() * 20) - 10;
-                if (wrongAnswer > 0 && !answers.includes(wrongAnswer)) {
+                const variance = currentLevel === 'hard' ? 25 : 12;
+                const wrongAnswer = correctAnswer + Math.floor(Math.random() * variance * 2) - variance;
+                if (wrongAnswer >= 0 && !answers.includes(wrongAnswer)) {
                     answers.push(wrongAnswer);
                 }
             }
 
-            // خلط الإجابات
             answers.sort(() => Math.random() - 0.5);
 
             const grid = document.getElementById('answersGrid');
-            grid.innerHTML = answers.map(answer => 
+            grid.innerHTML = answers.map(answer =>
                 `<button class="answer-btn" onclick="checkAnswer(${answer})">${answer}</button>`
             ).join('');
+
+            questionStartTime = Date.now();
+        }
+
+        function recordQuestionTiming() {
+            if (!questionStartTime) return 0;
+            const elapsed = (Date.now() - questionStartTime) / 1000;
+            elapsedTimes.push(elapsed);
+            totalTimeElapsed += elapsed;
+            questionStartTime = null;
+            return elapsed;
         }
 
         function checkAnswer(answer) {
             clearInterval(timerInterval);
             const buttons = document.querySelectorAll('.answer-btn');
-            
+
             buttons.forEach(btn => {
                 btn.disabled = true;
                 if (parseInt(btn.textContent) === correctAnswer) {
@@ -489,14 +811,14 @@
                 }
             });
 
+            recordQuestionTiming();
+
             if (answer === correctAnswer) {
                 correctAnswers++;
                 streak++;
                 maxStreak = Math.max(maxStreak, streak);
                 const points = 10 + (streak * 5) + timeLeft;
                 score += points;
-                
-                // تأثيرات الاحتفال
                 showCelebration('✅ صحيح!');
             } else {
                 streak = 0;
@@ -504,22 +826,23 @@
             }
 
             updateStats();
-            setTimeout(() => generateQuestion(), 2000);
+            setTimeout(() => generateQuestion(), 1800);
         }
 
         function startTimer() {
             clearInterval(timerInterval);
             document.getElementById('timer').textContent = timeLeft;
-            
+
             timerInterval = setInterval(() => {
                 timeLeft--;
                 document.getElementById('timer').textContent = timeLeft;
-                
+
                 if (timeLeft <= 0) {
                     clearInterval(timerInterval);
+                    recordQuestionTiming();
                     streak = 0;
                     showCelebration('⏰ انتهى الوقت!');
-                    setTimeout(() => generateQuestion(), 2000);
+                    setTimeout(() => generateQuestion(), 1800);
                 }
             }, 1000);
         }
@@ -544,19 +867,24 @@
             celebration.style.animation = 'celebrate 0.5s';
             celebration.textContent = message;
             document.body.appendChild(celebration);
-            setTimeout(() => celebration.remove(), 1500);
+            setTimeout(() => celebration.remove(), 1400);
         }
 
         function endGame() {
             clearInterval(timerInterval);
+            recordQuestionTiming();
+
             document.getElementById('questionScreen').style.display = 'none';
             document.getElementById('resultScreen').style.display = 'block';
 
             const percentage = Math.round((correctAnswers / totalQuestions) * 100);
-            
+            const averageTime = elapsedTimes.length ? totalTimeElapsed / elapsedTimes.length : 0;
+            const sessionDuration = sessionStartTime ? (Date.now() - sessionStartTime) / 1000 : totalTimeElapsed;
+
             document.getElementById('finalScore').textContent = score;
             document.getElementById('finalCorrect').textContent = `${correctAnswers}/${totalQuestions}`;
             document.getElementById('finalStreak').textContent = maxStreak;
+            document.getElementById('finalAvgTime').textContent = `${averageTime.toFixed(1)} ثانية`;
             document.getElementById('finalPercentage').textContent = percentage + '%';
 
             if (percentage >= 90) {
@@ -572,12 +900,110 @@
                 document.getElementById('resultCharacter').textContent = '💪';
                 document.getElementById('resultMessage').textContent = 'لا تستسلم! حاول مرة أخرى!';
             }
+
+            sessionHistory.push({
+                timestamp: new Date().toISOString(),
+                level: currentLevel,
+                score,
+                correctAnswers,
+                totalQuestions,
+                streak: maxStreak,
+                percentage,
+                averageTime: averageTime,
+                totalTime: sessionDuration
+            });
+            sessionHistory = sessionHistory.slice(-12);
+            saveHistory();
+            renderAnalyticsPanel();
+            updateBriefSummary();
         }
 
         function restartGame() {
             document.getElementById('resultScreen').style.display = 'none';
             document.getElementById('startScreen').style.display = 'block';
         }
+
+        function renderAnalyticsPanel() {
+            const bestScore = sessionHistory.reduce((max, session) => Math.max(max, session.score || 0), 0);
+            const averageAccuracy = sessionHistory.length
+                ? sessionHistory.reduce((sum, session) => sum + (session.percentage || 0), 0) / sessionHistory.length
+                : 0;
+            const averageTime = sessionHistory.length
+                ? sessionHistory.reduce((sum, session) => sum + (session.averageTime || 0), 0) / sessionHistory.length
+                : 0;
+
+            document.getElementById('analyticsBestScore').textContent = bestScore;
+            document.getElementById('analyticsAvgAccuracy').textContent = `${averageAccuracy.toFixed(1)}٪`;
+            document.getElementById('analyticsAvgTime').textContent = `${averageTime.toFixed(1)} ثانية`;
+            document.getElementById('analyticsSessions').textContent = sessionHistory.length;
+
+            const tbody = document.getElementById('analyticsTableBody');
+            if (!sessionHistory.length) {
+                tbody.innerHTML = '<tr><td colspan="5" class="empty-state">لم يتم تسجيل جلسات بعد.</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = sessionHistory.slice().reverse().map(session => {
+                const accuracy = `${(session.percentage || 0).toFixed(0)}٪`;
+                const avgTime = `${(session.averageTime || 0).toFixed(1)} ثانية`;
+                return `
+                    <tr>
+                        <td>${formatDateTime(session.timestamp)}</td>
+                        <td>${session.level === 'easy' ? 'سهل' : session.level === 'medium' ? 'متوسط' : 'صعب'}</td>
+                        <td>${session.score}</td>
+                        <td>${accuracy}</td>
+                        <td>${avgTime}</td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        function updateBriefSummary() {
+            const mastery = sessionHistory.length
+                ? sessionHistory.reduce((sum, session) => sum + (session.percentage || 0), 0) / sessionHistory.length
+                : 0;
+            const bestStreak = sessionHistory.reduce((max, session) => Math.max(max, session.streak || 0), 0);
+            const averageTime = sessionHistory.length
+                ? sessionHistory.reduce((sum, session) => sum + (session.averageTime || 0), 0) / sessionHistory.length
+                : 0;
+            const fastestAverage = sessionHistory.length
+                ? Math.min(...sessionHistory.map(session => session.averageTime || Infinity))
+                : 12;
+
+            const masteryEl = document.getElementById('summaryMastery');
+            const streakEl = document.getElementById('summaryStreak');
+            const avgTimeEl = document.getElementById('summaryAvgTime');
+            const speedEl = document.getElementById('summaryKpiSpeed');
+            if (masteryEl) masteryEl.textContent = `${mastery.toFixed(1)}٪`;
+            if (streakEl) streakEl.textContent = sessionHistory.length ? bestStreak : 0;
+            if (avgTimeEl) avgTimeEl.textContent = `${averageTime.toFixed(1)} ثانية`;
+            if (speedEl) speedEl.textContent = `${(isFinite(fastestAverage) ? fastestAverage : 12).toFixed(1)} ثانية`;
+        }
+
+        function formatDate(value) {
+            if (!value) return '';
+            const date = new Date(value);
+            if (Number.isNaN(date.valueOf())) return value;
+            return date.toLocaleDateString('ar-SA', { year: 'numeric', month: 'short', day: 'numeric' });
+        }
+
+        function formatDateTime(value) {
+            if (!value) return '';
+            const date = new Date(value);
+            if (Number.isNaN(date.valueOf())) return value;
+            return date.toLocaleString('ar-SA', { dateStyle: 'medium', timeStyle: 'short' });
+        }
+
+        renderAnalyticsPanel();
+        updateBriefSummary();
+
+        // expose to global
+        window.startGame = startGame;
+        window.checkAnswer = checkAnswer;
+        window.restartGame = restartGame;
+
+        renderAnalyticsPanel();
+        updateBriefSummary();
     </script>
     <script>
         (function(){
