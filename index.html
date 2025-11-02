@@ -499,6 +499,37 @@
             gap: clamp(22px, 3vw, 28px);
         }
 
+        .projects-filters {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .filter-button {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.14);
+            border-radius: 999px;
+            padding: 10px 18px;
+            font-weight: 700;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: transform 0.3s ease, background 0.3s ease, color 0.3s ease;
+        }
+
+        .filter-button:hover {
+            transform: translateY(-2px);
+            color: var(--text);
+        }
+
+        .filter-button.active {
+            background: linear-gradient(135deg, var(--primary), var(--primary-2));
+            border-color: transparent;
+            color: #ffffff;
+            box-shadow: 0 14px 32px rgba(99, 102, 241, 0.35);
+        }
+
         .project-card {
             position: relative;
             padding: 28px;
@@ -512,6 +543,38 @@
             gap: 18px;
             transition: transform 0.35s ease, box-shadow 0.35s ease;
             overflow: hidden;
+        }
+
+        .project-card .project-status {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 14px;
+            border-radius: 999px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            background: rgba(255, 255, 255, 0.08);
+            color: var(--text);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            width: fit-content;
+        }
+
+        .project-status.status-live {
+            background: rgba(34, 197, 94, 0.18);
+            color: #bbf7d0;
+            border-color: rgba(34, 197, 94, 0.35);
+        }
+
+        .project-status.status-pilot {
+            background: rgba(250, 204, 21, 0.2);
+            color: #fef9c3;
+            border-color: rgba(250, 204, 21, 0.35);
+        }
+
+        .project-status.status-scale {
+            background: rgba(59, 130, 246, 0.22);
+            color: #bfdbfe;
+            border-color: rgba(59, 130, 246, 0.35);
         }
 
         .project-card::after {
@@ -565,6 +628,77 @@
             line-height: 1.8;
         }
 
+        .project-achievements {
+            list-style: none;
+            display: grid;
+            gap: 10px;
+            margin: 0;
+            padding: 0;
+        }
+
+        .project-achievements li {
+            position: relative;
+            padding-inline-start: 26px;
+            color: var(--text);
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+
+        .project-achievements li::before {
+            content: '✔';
+            position: absolute;
+            inset-inline-start: 0;
+            color: #22c55e;
+            font-size: 1rem;
+        }
+
+        .project-metrics {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .metric-chip {
+            min-width: 140px;
+            padding: 12px 16px;
+            border-radius: 16px;
+            background: rgba(99, 102, 241, 0.12);
+            border: 1px solid rgba(99, 102, 241, 0.18);
+            box-shadow: 0 18px 36px rgba(12, 18, 38, 0.28);
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .metric-value {
+            font-size: 1.4rem;
+            font-weight: 800;
+            color: var(--text);
+        }
+
+        .metric-label {
+            font-size: 0.88rem;
+            color: var(--text-muted);
+        }
+
+        .metric-note {
+            font-size: 0.75rem;
+            color: rgba(226, 232, 240, 0.68);
+        }
+
+        .metric-trend {
+            font-size: 0.85rem;
+            font-weight: 700;
+        }
+
+        .metric-trend.positive {
+            color: #22c55e;
+        }
+
+        .metric-trend.negative {
+            color: #f97316;
+        }
+
         .project-insight {
             color: var(--text);
             font-weight: 600;
@@ -603,6 +737,55 @@
             flex-wrap: wrap;
             gap: 12px;
             justify-content: space-between;
+            color: var(--text-muted);
+            font-weight: 600;
+        }
+
+        .project-meta.secondary {
+            border-top: 1px solid rgba(255, 255, 255, 0.06);
+            margin-top: 10px;
+            padding-top: 10px;
+            color: rgba(226, 232, 240, 0.72);
+            font-weight: 600;
+        }
+
+        .project-lead,
+        .project-duration {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .project-partners {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 12px;
+            color: rgba(226, 232, 240, 0.78);
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        .project-partners span {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .project-partners .partner {
+            background: rgba(255, 255, 255, 0.06);
+            border-radius: 999px;
+            padding: 6px 12px;
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            color: var(--text);
+        }
+
+        .projects-empty {
+            padding: 48px;
+            border-radius: 24px;
+            border: 1px dashed rgba(255, 255, 255, 0.18);
+            background: rgba(15, 23, 42, 0.45);
+            text-align: center;
             color: var(--text-muted);
             font-weight: 600;
         }
@@ -965,6 +1148,7 @@
                 <h2>مكتبة أعمال تبرز تميّز طلابنا</h2>
                 <p>استكشف مشاريع مترابطة تعكس مهارات التصميم، البرمجة، تحليل البيانات، وتجربة المستخدم؛ كلها نُفِّذت بإشراف نخبة من المعلمين وبشغف طلاب مدارس المشكاة.</p>
             </div>
+            <div class="projects-filters" id="projectsFilters" aria-label="تصفية المشاريع"></div>
             <div class="projects-grid" id="projectsGrid"></div>
         </section>
 
@@ -1021,76 +1205,176 @@
             {
                 id: 1,
                 icon: '💻',
-                title: 'تطبيق إدارة المكتبة الذكية',
-                shortDesc: 'منصة رقمية تنظّم استعارة الكتب، وتولّد تقارير فورية لإدارة المدرسة بتكامل مع بيانات الطلبة.',
-                category: 'التحول الرقمي للتعليم',
-                impact: 'يؤتمت أكثر من 500 عملية استعارة سنوياً ويقترح كتباً بناءً على اهتمام كل طالب.',
-                highlight: '97٪ دقة في التوصية بالكتب',
-                teamSize: 1,
+                title: 'منصة إدارة المعرفة للمكتبة',
+                shortDesc: 'منصة سحابية تنظّم الجرد والإعارة وتبني ملفات معرفية لكل طالب مع محرك توصية يعتمد على سلوك القراءة.',
+                category: 'منصات رقمية',
+                status: 'مطروحة للتوسع على مستوى الفروع',
+                statusVariant: 'status-live',
+                impact: 'رفعت المنصة دقة الجرد بنسبة 32٪ وخفّضت تداخل الإعارات اليدوية إلى أقل من 3 حالات شهرياً.',
+                highlight: '99.2٪ موثوقية في معالجة عمليات الإعارة',
+                teamSize: 5,
                 date: 'أكتوبر 2025',
-                tags: ['واجهة ويب متقدمة', 'ذكاء اصطناعي تطبيقي', 'تحليل بيانات'],
+                duration: '6 أشهر تطوير + 2 شهر تشغيل تجريبي',
+                lead: 'أ. هدى المطيري',
+                achievements: [
+                    'تكامل آلي مع نظام نور لتحديث بيانات الطلاب كل ساعتين',
+                    'مؤشرات أداء فورية توضح معدل قراءة كل مستوى تعليمي'
+                ],
+                metrics: [
+                    { label: 'المستخدمون النشطون شهرياً', value: '420', trend: '+18%', note: 'خلال الربع الأول 2025' },
+                    { label: 'متوسط زمن تسجيل الإعارة', value: '12 ثانية', trend: '-32%', note: 'بعد أتمتة المهام' },
+                    { label: 'معدل رضا المعلمين', value: '4.7/5' }
+                ],
+                partners: ['مكتبة الملك سلمان المركزية', 'برنامج موهبة'],
+                tags: ['منصة سحابية', 'نماذج توصية', 'تكامل نظام نور'],
                 file: 'project1.html'
             },
             {
                 id: 3,
                 icon: '🎮',
-                title: 'لعبة ماث تشالنج التعليمية',
-                shortDesc: 'لعبة تفاعلية تعزز مهارات الرياضيات عبر تحديات يومية مدعومة بتقارير تقدم موجهة للمعلمين.',
+                title: 'منصة ماث تشالنج التكيفية',
+                shortDesc: 'لعبة تعليمية تعتمد على صعوبة متدرجة وتحليلات لحظية لمهارات الطلاب في الرياضيات عبر مسارات مخصصة.',
                 category: 'التعليم التفاعلي',
-                impact: 'ترفع معدل مشاركة الطلاب في حصص الرياضيات بنسبة 45% مع تحفيز تنافسي صحي.',
-                highlight: '120+ تحدي رياضي تفاعلي',
-                teamSize: 2,
+                status: 'مطبق على 12 شعبة دراسية',
+                statusVariant: 'status-scale',
+                impact: 'زاد متوسط إتقان مهارة الكسور بنسبة 21 نقطة خلال ثمانية أسابيع من الاستخدام الفعلي.',
+                highlight: 'لوحة متابعة للمعلمين بتحديث لحظي',
+                teamSize: 4,
                 date: 'أغسطس 2025',
-                tags: ['ألعاب تعليمية', 'تجربة مستخدم', 'إحصائيات تعلم'],
+                duration: '4 أشهر تطوير + دعم مستمر',
+                lead: 'أ. راشد الغامدي',
+                achievements: [
+                    'خوارزمية تحدد المستوى الأنسب لكل طالب بعد سؤالين فقط',
+                    'تكامل مع منصة النقاط المدرسية لتحفيز التحديات الصفية'
+                ],
+                metrics: [
+                    { label: 'نسبة إتقان المفاهيم', value: '82%', trend: '+14 نقطة', note: 'مقارنة ببداية الفصل' },
+                    { label: 'متوسط جلسات الطالب أسبوعياً', value: '3.6', trend: '+28%', note: 'بعد تعميم التحديات المنزلية' },
+                    { label: 'مستوى الرضا الطلابي', value: '4.5/5' }
+                ],
+                partners: ['شركة نون أكاديمي', 'جامعة الملك سعود - كرسي التعليم الرقمي'],
+                tags: ['تعلم تكيفي', 'تحليلات أداء', 'تحفيز تعليمي'],
                 file: 'project3.html'
             },
             {
                 id: 5,
                 icon: '🌱',
-                title: 'نظام الزراعة الذكية المدرسي',
-                shortDesc: 'حل IoT لمراقبة ورَي النباتات في حديقة المدرسة مع لوحات بيانات لحظية ورسائل تنبيه.',
-                category: 'المدارس الذكية',
-                impact: 'يقلل استهلاك المياه بنسبة 35% ويضمن نمو النباتات وفق أفضل المعايير.',
-                highlight: '15 حساس بيئي متصل بالزمن الحقيقي',
-                teamSize: 3,
+                title: 'نظام الزراعة الذكية للحرم المدرسي',
+                shortDesc: 'حل إنترنت أشياء يدير البيوت الزراعية التعليمية عبر حساسات متصلة وتحليلات تنبؤية لاستهلاك المياه.',
+                category: 'الحلول البيئية الذكية',
+                status: 'تشغيل تجريبي مع المجتمع التعليمي',
+                statusVariant: 'status-pilot',
+                impact: 'حقق وفراً قدره 37٪ في استهلاك المياه مع الحفاظ على نمو النباتات فوق 92٪ طوال الموسم.',
+                highlight: '15 حساس نشط مع تنبيه آلي للحالات الحرجة',
+                teamSize: 6,
                 date: 'يونيو 2025',
-                tags: ['إنترنت الأشياء', 'استدامة', 'أتمتة'],
+                duration: '7 أشهر من التصميم إلى الإطلاق',
+                lead: 'أ. مريم السبيعي',
+                achievements: [
+                    'تحليل تنبؤي يحدد مواعيد الري المثلى بناءً على بيانات طقس حقيقية',
+                    'واجهة تحكم مشتركة بين الطلاب وفريق الصيانة مع صلاحيات مختلفة'
+                ],
+                metrics: [
+                    { label: 'خفض استهلاك المياه', value: '37%', trend: '-12%', note: 'مقارنة بالفصل السابق' },
+                    { label: 'متوسط زمن الاستجابة للتنبيه', value: '4 دقائق', trend: '-41%', note: 'بعد أتمتة البلاغات' },
+                    { label: 'النباتات تحت المراقبة', value: '28 نوع' }
+                ],
+                partners: ['وزارة البيئة والمياه والزراعة', 'شركة حلول إنترنت الأشياء السعودية'],
+                tags: ['تحليلات زمن حقيقي', 'أمن إنترنت الأشياء', 'استدامة'],
                 file: 'project5.html'
             },
             {
                 id: 7,
                 icon: '🔐',
-                title: 'نظام الحضور الذكي بالتعرف على الوجه',
-                shortDesc: 'نظام حضور مدعّم بالذكاء الاصطناعي يسجل وصول الطلاب خلال ثوانٍ مع تقارير محدثة للمرشدين.',
-                category: 'حلول الذكاء الاصطناعي',
-                impact: 'يُسجل حضور 400 طالب في أقل من 3 دقائق مع دقة تتجاوز 95٪.',
-                highlight: 'تكامل مباشر مع نظام نور المدرسي',
+                title: 'نظام حضور ذكي بالتعرف على الوجه',
+                shortDesc: 'منصة تعتمد على رؤية حاسوبية لتحويل حضور الطلاب إلى عملية مؤتمتة بدقة عالية وتكامل إداري.',
+                category: 'الذكاء الاصطناعي وإدارة المدارس',
+                status: 'قيد التوسع على مستوى المجمع التعليمي',
+                statusVariant: 'status-scale',
+                impact: 'قلّص النظام وقت إدخال الحضور الصباحي من 18 دقيقة إلى أقل من 3 دقائق مع تنبيهات فورية للمرشدين.',
+                highlight: 'تكامل مباشر مع نظام نور عبر واجهات API آمنة',
                 teamSize: 4,
                 date: 'أبريل 2025',
-                tags: ['رؤية حاسوبية', 'أمن معلومات', 'تحليلات لحظية'],
+                duration: '5 أشهر بناء + برامج تدريب للطاقم',
+                lead: 'أ. محمد الشهري',
+                achievements: [
+                    'نموذج تعرّف يتعامل مع الظروف الضوئية المختلفة عبر تدريب داخلي لبيانات المدرسة',
+                    'لوحة تحكم تعرض تنبيهات لحظية عند التأخر المتكرر أو غياب الحافلات'
+                ],
+                metrics: [
+                    { label: 'دقة التعرّف', value: '96.3%', trend: '+4%', note: 'بعد الجولة الأخيرة من التدريب' },
+                    { label: 'متوسط وقت التحقق', value: '2.8 ثانية', trend: '-45%' },
+                    { label: 'تنبيهات تمت معالجتها آلياً', value: '187', trend: '+29%' }
+                ],
+                partners: ['شركة بيان للأنظمة', 'جامعة الملك سعود - مختبر الرؤية الحاسوبية'],
+                tags: ['رؤية حاسوبية', 'أمن بيانات', 'واجهات برمجية'],
                 file: 'project7.html'
             }
         ];
 
         const grid = document.getElementById('projectsGrid');
+        const filtersContainer = document.getElementById('projectsFilters');
         const projectViewer = document.getElementById('projectViewer');
         const projectFrame = document.getElementById('projectFrame');
         const mainContent = document.getElementById('mainContent');
         const backButton = document.querySelector('.back-button');
+        let activeCategory = 'الكل';
 
-        function displayProjects() {
-            grid.innerHTML = projects.map(project => {
-                const teamLabel = project.teamSize === 1 ? 'طالب واحد' : project.teamSize === 2 ? 'طالبان' : `${project.teamSize} طلاب`;
+        function formatTeamLabel(size) {
+            if (size === 1) return 'طالب واحد';
+            if (size === 2) return 'طالبان';
+            if (size >= 3 && size <= 10) return `${size} طلاب`;
+            return `${size} أعضاء`;
+        }
+
+        function renderProjects() {
+            const visibleProjects = activeCategory === 'الكل'
+                ? projects
+                : projects.filter(project => project.category === activeCategory);
+
+            if (!visibleProjects.length) {
+                grid.innerHTML = '<div class="projects-empty">لا توجد مشاريع ضمن هذا التصنيف حالياً.</div>';
+                return;
+            }
+
+            grid.innerHTML = visibleProjects.map(project => {
+                const teamLabel = formatTeamLabel(project.teamSize);
                 const insight = project.impact ? `<p class="project-insight">${project.impact}</p>` : '';
-                const highlight = project.highlight ? `<div class="project-highlight">📊 ${project.highlight}</div>` : '';
+                const highlight = project.highlight ? `<div class="project-highlight">⭐ ${project.highlight}</div>` : '';
+                const status = project.status ? `<span class="project-status ${project.statusVariant || ''}">${project.status}</span>` : '';
+                const achievements = project.achievements && project.achievements.length
+                    ? `<ul class="project-achievements">${project.achievements.map(item => `<li>${item}</li>`).join('')}</ul>`
+                    : '';
+                const metrics = project.metrics && project.metrics.length
+                    ? `<div class="project-metrics">${project.metrics.map(metric => {
+                        const trendClass = metric.trend && metric.trend.trim().startsWith('-') ? 'negative' : 'positive';
+                        const trend = metric.trend ? `<span class="metric-trend ${trendClass}">${metric.trend}</span>` : '';
+                        const note = metric.note ? `<span class="metric-note">${metric.note}</span>` : '';
+                        return `
+                            <div class="metric-chip">
+                                <span class="metric-value">${metric.value}</span>
+                                <span class="metric-label">${metric.label}</span>
+                                ${trend}
+                                ${note}
+                            </div>
+                        `;
+                    }).join('')}</div>`
+                    : '';
+                const partners = project.partners && project.partners.length
+                    ? `<div class="project-partners"><span>🤝 شركاء:</span>${project.partners.map(partner => `<span class="partner">${partner}</span>`).join('')}</div>`
+                    : '';
+
                 return `
-                    <article class="project-card" onclick="openProject('${project.file}')">
+                    <article class="project-card" onclick="openProject('${project.file}')" data-category="${project.category}">
                         <div class="project-header">
                             <span class="project-category">${project.category}</span>
                             <span class="project-icon">${project.icon}</span>
                         </div>
+                        ${status}
                         <h3 class="project-title">${project.title}</h3>
                         <p class="project-description">${project.shortDesc}</p>
+                        ${achievements}
+                        ${metrics}
                         ${insight}
                         ${highlight}
                         <div class="tags">
@@ -1100,10 +1384,37 @@
                             <span class="project-team">👥 فريق من ${teamLabel}</span>
                             <span class="project-date">📅 ${project.date}</span>
                         </div>
+                        <div class="project-meta secondary">
+                            ${project.lead ? `<span class="project-lead">🧭 قائد المشروع: ${project.lead}</span>` : ''}
+                            ${project.duration ? `<span class="project-duration">⏱ مدة التنفيذ: ${project.duration}</span>` : ''}
+                        </div>
+                        ${partners}
                         <button class="view-button" type="button" onclick="event.stopPropagation(); openProject('${project.file}')">تشغيل المشروع 🚀</button>
                     </article>
                 `;
             }).join('');
+        }
+
+        function renderFilters() {
+            if (!filtersContainer) return;
+            const categories = ['الكل', ...new Set(projects.map(project => project.category))];
+            filtersContainer.innerHTML = categories.map(category => `
+                <button type="button" class="filter-button ${category === activeCategory ? 'active' : ''}" data-category="${category}">
+                    ${category}
+                </button>
+            `).join('');
+        }
+
+        if (filtersContainer) {
+            filtersContainer.addEventListener('click', (event) => {
+                const button = event.target.closest('.filter-button');
+                if (!button) return;
+                const newCategory = button.dataset.category;
+                if (!newCategory || newCategory === activeCategory) return;
+                activeCategory = newCategory;
+                renderFilters();
+                renderProjects();
+            });
         }
 
         function openProject(filename) {
@@ -1122,7 +1433,8 @@
             projectFrame.src = '';
         }
 
-        displayProjects();
+        renderFilters();
+        renderProjects();
     </script>
     <script src="assets/app.js" defer></script>
     <script src="assets/ai-assistant.js" defer></script>
