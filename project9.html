@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#667eea">
+    <meta name="description" content="نموذج فارغ لتوثيق مشروع جديد لقسم التقنية - مدارس المشكاة.">
+    <link rel="manifest" href="manifest.webmanifest">
+    <title>مشروع جديد - عدل العنوان</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #312e81 40%, #6366f1 100%);
+            min-height: 100vh;
+            color: #e2e8f0;
+            padding: clamp(16px, 4vw, 36px);
+        }
+
+        .page {
+            max-width: 1100px;
+            margin: 0 auto;
+            display: grid;
+            gap: clamp(24px, 4vw, 36px);
+        }
+
+        .hero {
+            background: rgba(15, 23, 42, 0.82);
+            border-radius: 32px;
+            padding: clamp(28px, 6vw, 56px);
+            border: 1px solid rgba(99, 102, 241, 0.25);
+            box-shadow: 0 24px 60px rgba(15, 23, 42, 0.55);
+            display: grid;
+            gap: 22px;
+        }
+
+        .hero-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 18px;
+            border-radius: 999px;
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.3), rgba(129, 140, 248, 0.18));
+            color: #c7d2fe;
+            font-weight: 700;
+            letter-spacing: 0.06em;
+        }
+
+        .hero h1 {
+            font-size: clamp(2.2rem, 4vw, 3rem);
+            font-weight: 800;
+            color: #f8fafc;
+        }
+
+        .hero p {
+            line-height: 1.9;
+            font-size: 1.05rem;
+            color: rgba(226, 232, 240, 0.9);
+        }
+
+        .hero-meta {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 16px;
+        }
+
+        .meta-item {
+            padding: 16px 18px;
+            border-radius: 18px;
+            background: rgba(99, 102, 241, 0.12);
+            border: 1px solid rgba(99, 102, 241, 0.2);
+            display: grid;
+            gap: 6px;
+        }
+
+        .meta-label {
+            font-size: 0.85rem;
+            color: rgba(196, 210, 254, 0.78);
+            font-weight: 700;
+            letter-spacing: 0.03em;
+        }
+
+        .meta-value {
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: #f8fafc;
+        }
+
+        .grid {
+            display: grid;
+            gap: clamp(18px, 3vw, 26px);
+        }
+
+        .card {
+            background: rgba(15, 23, 42, 0.78);
+            border-radius: 26px;
+            padding: clamp(24px, 4vw, 36px);
+            border: 1px solid rgba(148, 163, 253, 0.18);
+            box-shadow: 0 20px 48px rgba(15, 23, 42, 0.45);
+            display: grid;
+            gap: 16px;
+        }
+
+        .card h2 {
+            font-size: 1.6rem;
+            font-weight: 800;
+            color: #f1f5f9;
+        }
+
+        .card p,
+        .card li {
+            color: rgba(226, 232, 240, 0.88);
+            line-height: 1.8;
+            font-size: 1rem;
+        }
+
+        .card ul {
+            list-style: none;
+            display: grid;
+            gap: 10px;
+            margin-inline-start: 0;
+            padding-inline-start: 0;
+        }
+
+        .card li {
+            position: relative;
+            padding-inline-start: 26px;
+            font-weight: 600;
+        }
+
+        .card li::before {
+            content: '▹';
+            position: absolute;
+            inset-inline-start: 0;
+            color: #a5b4fc;
+            font-size: 1.1rem;
+        }
+
+        .steps {
+            display: grid;
+            gap: 16px;
+        }
+
+        .step {
+            padding: 18px 20px;
+            border-radius: 18px;
+            background: rgba(30, 41, 83, 0.7);
+            border: 1px solid rgba(99, 102, 241, 0.16);
+        }
+
+        .step strong {
+            display: inline-block;
+            margin-bottom: 6px;
+            color: #c7d2fe;
+        }
+
+        .tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .tag {
+            padding: 8px 16px;
+            border-radius: 16px;
+            background: rgba(129, 140, 248, 0.18);
+            color: #e0e7ff;
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+
+        .note {
+            margin-top: 8px;
+            font-size: 0.92rem;
+            color: rgba(148, 163, 184, 0.85);
+        }
+
+        .info-box {
+            border-radius: 18px;
+            padding: 18px;
+            background: rgba(94, 234, 212, 0.08);
+            border: 1px solid rgba(94, 234, 212, 0.25);
+            color: #5eead4;
+            font-weight: 600;
+        }
+
+        @media (max-width: 680px) {
+            body {
+                padding: 16px;
+            }
+
+            .hero,
+            .card {
+                padding: 22px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="page">
+        <!-- عدّل النصوص التالية لتوثيق مشروعك الجديد -->
+        <header class="hero">
+            <span class="hero-pill">مشروع جديد</span>
+            <h1>اكتب العنوان الرئيسي للمشروع هنا</h1>
+            <p>قدّم فقرة افتتاحية موجزة تشرح فكرة المشروع، المشكلة التي يحلّها، والفئة المستهدفة داخل مدارس المشكاة.</p>
+            <div class="hero-meta">
+                <div class="meta-item">
+                    <span class="meta-label">قائد المشروع</span>
+                    <span class="meta-value">أدخل اسم القائد أو المشرف</span>
+                </div>
+                <div class="meta-item">
+                    <span class="meta-label">الفريق</span>
+                    <span class="meta-value">اذكر عدد الطلاب المشاركين أو أسمائهم</span>
+                </div>
+                <div class="meta-item">
+                    <span class="meta-label">فترة التنفيذ</span>
+                    <span class="meta-value">حدد التاريخ أو الفصل الدراسي</span>
+                </div>
+                <div class="meta-item">
+                    <span class="meta-label">جهة الاستفادة</span>
+                    <span class="meta-value">اكتب الإدارة أو القسم المستفيد</span>
+                </div>
+            </div>
+        </header>
+
+        <main class="grid" aria-labelledby="projectSections">
+            <section class="card" id="projectSections">
+                <h2>١. نظرة عامة</h2>
+                <p>اكتب وصفاً شاملاً للمشروع، دوافعه، وكيف يساهم في تحقيق رؤية قسم التقنية.</p>
+                <ul>
+                    <li>فكرة المشروع: وضّح المشكلة أو التحدي.</li>
+                    <li>المستخدمون الرئيسيون: الطلاب، المعلمون، أو جهات أخرى.</li>
+                    <li>المنصات أو التقنيات المستخدمة.</li>
+                </ul>
+            </section>
+
+            <section class="card">
+                <h2>٢. الأهداف الرئيسية</h2>
+                <p>عدّل البنود التالية لتوثيق النتائج التي تستهدفها:</p>
+                <ul>
+                    <li>هدف ١: مثال - رفع كفاءة المتابعة الأكاديمية بنسبة ٢٠٪.</li>
+                    <li>هدف ٢: مثال - تمكين الطلاب من استخدام أدوات ذكاء اصطناعي باللغة العربية.</li>
+                    <li>هدف ٣: مثال - توفير لوحة تحكم تفاعلية للمعلمين.</li>
+                </ul>
+            </section>
+
+            <section class="card">
+                <h2>٣. مراحل التنفيذ</h2>
+                <div class="steps">
+                    <div class="step">
+                        <strong>المرحلة الأولى: التحضير</strong>
+                        <p>اشرح الأنشطة التي تمت خلال مرحلة التحليل وجمع المتطلبات.</p>
+                    </div>
+                    <div class="step">
+                        <strong>المرحلة الثانية: البناء والتجريب</strong>
+                        <p>تفاصيل التطوير، النماذج الأولية، والاختبارات الأولية.</p>
+                    </div>
+                    <div class="step">
+                        <strong>المرحلة الثالثة: الإطلاق والتقييم</strong>
+                        <p>كيفية الإطلاق، قياس الأثر، والتحسينات المخطط لها.</p>
+                    </div>
+                </div>
+            </section>
+
+            <section class="card">
+                <h2>٤. الأثر والمؤشرات</h2>
+                <p>حدّث المؤشرات بأرقام حقيقية متى ما توفرت.</p>
+                <div class="tags">
+                    <span class="tag">مؤشر ١: مثال - عدد المستخدمين الفعّالين</span>
+                    <span class="tag">مؤشر ٢: مثال - نسبة الرضا أو دقة النظام</span>
+                    <span class="tag">مؤشر ٣: مثال - زمن الاستجابة</span>
+                </div>
+                <p class="note">يمكنك استبدال الوسوم بنصوص رقمية أو جمل قصيرة توضّح النجاح المتحقق.</p>
+            </section>
+
+            <section class="card">
+                <h2>٥. متطلبات واستدامة</h2>
+                <ul>
+                    <li>البنية التحتية المطلوبة للصيانة والتشغيل.</li>
+                    <li>الشراكات أو الجهات الداعمة للمشروع.</li>
+                    <li>خطوات التطوير المستقبلية أو فرص التوسع.</li>
+                </ul>
+                <div class="info-box">نصيحة: يمكنك إضافة روابط أو مستندات مساندة داخل هذه الفقرة.</div>
+            </section>
+        </main>
+    </div>
+
+    <script>
+        (function(){
+            function post(type, e){
+                try {
+                    if (window.parent) {
+                        window.parent.postMessage({ __fromProjectFrame: true, type, x: e && e.clientX, y: e && e.clientY }, '*');
+                    }
+                } catch {}
+            }
+            window.addEventListener('mousemove', function(e){ post('cursor-move', e); }, { passive: true });
+            window.addEventListener('mouseenter', function(e){ post('cursor-enter', e); }, { passive: true });
+            window.addEventListener('mouseleave', function(){ post('cursor-leave'); }, { passive: true });
+            window.addEventListener('mousedown', function(e){ post('cursor-down', e); }, { passive: true });
+            window.addEventListener('mouseup', function(e){ post('cursor-up', e); }, { passive: true });
+        })();
+    </script>
+    <script src="assets/app.js" defer></script>
+    <script src="assets/ai-assistant.js" defer></script>
+</body>
+</html>
