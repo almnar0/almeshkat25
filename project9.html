@@ -1,717 +1,514 @@
-
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="theme-color" content="#0ea5e9">
-  <meta name="description" content="???? ??????? ?????? ??????? ???? ?????? ?????? ????? ??????? ?? ?????? ??????? ????????.">
-  <link rel="manifest" href="manifest.webmanifest">
-  <title>???? ????????? ???????? ??????</title>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&family=Cairo:wght@400;600;700;800&display=swap">
-  <script>
-    window.tailwind = window.tailwind || {};
-    window.tailwind.config = {
-      darkMode: 'class',
-      theme: {
-        extend: {
-          fontFamily: {
-            tajawal: ['\u062a\u062c\u0648\u0627\u0644', 'Tajawal', 'Cairo', 'sans-serif'],
-          }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>نظام اقتراحات الطلاب</title>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
-      }
-    };
-  </script>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <style>
-    body {
-      min-height: 100vh;
-      background: linear-gradient(135deg, #bfdbfe 0%, #a7f3d0 55%, #fde68a 100%);
-    }
-  </style>
-</head>
-<body class="font-tajawal bg-transparent">
-  <div id="root"></div>
 
-  <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
-  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
-  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-
-  <script type="text/babel" data-presets="react">
-    const { useState, useEffect } = React;
-
-    if (!document.querySelector('link[data-font="tajawal-cairo"]')) {
-      const fontLink = document.createElement('link');
-      fontLink.rel = 'stylesheet';
-      fontLink.href = 'https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&family=Cairo:wght@400;600;700;800&display=swap';
-      fontLink.setAttribute('data-font', 'tajawal-cairo');
-      document.head.appendChild(fontLink);
-    }
-
-    const createEmojiIcon = (symbol) => ({ className = '', style = {}, ...rest }) => (
-      <span
-        aria-hidden="true"
-        {...rest}
-        className={`inline-flex items-center justify-center ${className}`.trim()}
-        style={{ fontSize: '1em', lineHeight: 1, ...style }}
-      >
-        {symbol}
-      </span>
-    );
-
-    const Send = createEmojiIcon('??');
-    const CheckCircle = createEmojiIcon('?');
-    const Clock = createEmojiIcon('?');
-    const AlertCircle = createEmojiIcon('??');
-    const LogOut = createEmojiIcon('??');
-    const Users = createEmojiIcon('??');
-    const MessageSquare = createEmojiIcon('??');
-    const Trash2 = createEmojiIcon('???');
-    const CheckSquare = createEmojiIcon('??');
-    const Lock = createEmojiIcon('??');
-    const UserPlus = createEmojiIcon('?');
-    const ThumbsUp = createEmojiIcon('??');
-
-    function SuggestionsSystem() {
-      const [userType, setUserType] = useState(null);
-      const [activeView, setActiveView] = useState('submit');
-      const [showAdminLogin, setShowAdminLogin] = useState(false);
-      const [showRegister, setShowRegister] = useState(false);
-      const [showStudentRegister, setShowStudentRegister] = useState(false);
-      const [loginData, setLoginData] = useState({ username: '', password: '' });
-      const [registerData, setRegisterData] = useState({ username: '', password: '', confirmPassword: '', fullName: '' });
-      const [studentRegisterData, setStudentRegisterData] = useState({ username: '', password: '', confirmPassword: '', fullName: '', nationalId: '' });
-      const [adminUsers, setAdminUsers] = useState([]);
-      const [studentUsers, setStudentUsers] = useState([]);
-      const [currentUser, setCurrentUser] = useState(null);
-      const [formData, setFormData] = useState({ studentName: '', nationalId: '', email: '', category: '', title: '', description: '' });
-      const [suggestions, setSuggestions] = useState([
-        {
-          id: 1,
-          studentName: '???? ???????',
-          studentId: '1234567890',
-          title: '????? ????? ?????? ??????',
-          category: '????? ???????',
-          status: '??? ????????',
-          date: '2025-10-25',
-          description: '?????? ?????? ????? ????? ????? ????? ???? ?????? ????????.',
-          votes: 45,
-          voters: []
-        },
-        {
-          id: 2,
-          studentName: '????? ????????',
-          studentId: '0987654321',
-          title: '????? ???? ?????? ???????',
-          category: '??????? ????????',
-          status: '????',
-          date: '2025-10-20',
-          description: '???? ????? ????? ????????? ???????? ?????? ???????? ??????????.',
-          votes: 78,
-          voters: []
+        body {
+            font-family: 'Tajawal', sans-serif;
+            background: linear-gradient(135deg, #1a0b2e 0%, #2d1b4e 50%, #4a1f6f 100%);
+            min-height: 100vh;
+            padding: 20px;
         }
-      ]);
-      const [submitted, setSubmitted] = useState(false);
-      const [selectedSuggestion, setSelectedSuggestion] = useState(null);
 
-      const categories = [
-        '????? ???????',
-        '??????? ????????',
-        '?????? ????????',
-        '???????? ?????????',
-        '??????? ???????'
-      ];
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
 
-      useEffect(() => {
-        const savedAdmins = JSON.parse(localStorage.getItem('adminUsers') || '[]');
-        const savedStudents = JSON.parse(localStorage.getItem('studentUsers') || '[]');
-        if (savedAdmins.length === 0) {
-          const def = { username: 'admin', password: 'admin123', fullName: '???? ?????? ?????????' };
-          setAdminUsers([def]);
-          localStorage.setItem('adminUsers', JSON.stringify([def]));
-        } else {
-          setAdminUsers(savedAdmins);
+        header {
+            background: rgba(255, 255, 255, 0.12);
+            backdrop-filter: blur(20px);
+            padding: 30px;
+            border-radius: 30px;
+            margin-bottom: 30px;
+            border: 3px solid rgba(236, 72, 153, 0.4);
+            text-align: center;
         }
-        setStudentUsers(savedStudents);
-      }, []);
 
-      const handleLogin = (type) => {
-        if (type === 'admin') {
-          setShowAdminLogin(true);
-        } else {
-          setShowStudentRegister(true);
-          setActiveView('login');
+        h1 {
+            color: #fbbf24;
+            font-size: 2.5em;
+            text-shadow: 0 0 35px rgba(251, 191, 36, 0.9);
+            margin-bottom: 20px;
+            font-weight: 900;
         }
-      };
 
-      const handleAdminLogin = () => {
-        const admin = adminUsers.find((u) => u.username === loginData.username && u.password === loginData.password);
-        if (admin) {
-          setUserType('admin');
-          setCurrentUser(admin);
-          setActiveView('manage');
-          setShowAdminLogin(false);
-          setLoginData({ username: '', password: '' });
-        } else {
-          alert('?? ???? ??? ???? ???? ????? ???????? ???????.');
+        .stats {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
         }
-      };
 
-      const handleStudentLogin = () => {
-        const student = studentUsers.find((u) => u.username === studentRegisterData.username && u.password === studentRegisterData.password);
-        if (student) {
-          setUserType('student');
-          setCurrentUser(student);
-          setActiveView('submit');
-          setShowStudentRegister(false);
-          setStudentRegisterData({ username: '', password: '', confirmPassword: '', fullName: '', nationalId: '' });
-        } else {
-          alert('?? ???? ??? ???? ???? ????? ???????? ???????.');
+        .stat-box {
+            background: rgba(168, 85, 247, 0.25);
+            padding: 15px 25px;
+            border-radius: 20px;
+            border: 3px solid rgba(168, 85, 247, 0.6);
         }
-      };
 
-      const handleAdminRegister = () => {
-        if (!registerData.username || !registerData.password || !registerData.fullName || registerData.password !== registerData.confirmPassword) {
-          alert('???? ????? ???? ?????? ?????? ????? ?????? ?????????.');
-          return;
+        .stat-box span {
+            color: #fbbf24;
+            font-size: 1.8em;
+            font-weight: 900;
+            display: block;
         }
-        if (adminUsers.find((u) => u.username === registerData.username)) {
-          alert('??? ???????? ???? ??????. ???? ?????? ??? ?????.');
-          return;
-        }
-        const updated = [...adminUsers, { username: registerData.username, password: registerData.password, fullName: registerData.fullName }];
-        setAdminUsers(updated);
-        localStorage.setItem('adminUsers', JSON.stringify(updated));
-        alert('?? ????? ???? ?????? ?????!');
-        setShowRegister(false);
-        setRegisterData({ username: '', password: '', confirmPassword: '', fullName: '' });
-      };
 
-      const handleStudentRegister = () => {
-        if (!studentRegisterData.username || !studentRegisterData.password || !studentRegisterData.fullName || !studentRegisterData.nationalId) {
-          alert('???? ????? ???? ?????? ????????.');
-          return;
+        .stat-box label {
+            color: #f3e8ff;
+            font-size: 0.9em;
+            font-weight: 600;
         }
-        if (studentRegisterData.password !== studentRegisterData.confirmPassword) {
-          alert('????? ?????? ??? ?????????.');
-          return;
-        }
-        if (studentUsers.find((u) => u.username === studentRegisterData.username)) {
-          alert('??? ???????? ???? ??????. ???? ?????? ??? ?????.');
-          return;
-        }
-        const newStudent = {
-          username: studentRegisterData.username,
-          password: studentRegisterData.password,
-          fullName: studentRegisterData.fullName,
-          nationalId: studentRegisterData.nationalId
-        };
-        const updated = [...studentUsers, newStudent];
-        setStudentUsers(updated);
-        localStorage.setItem('studentUsers', JSON.stringify(updated));
-        setUserType('student');
-        setCurrentUser(newStudent);
-        setActiveView('submit');
-        setShowStudentRegister(false);
-        setStudentRegisterData({ username: '', password: '', confirmPassword: '', fullName: '', nationalId: '' });
-      };
 
-      const handleVote = (suggestionId) => {
-        if (!currentUser) return;
-        setSuggestions((prev) =>
-          prev.map((s) => {
-            if (s.id === suggestionId) {
-              const hasVoted = s.voters?.includes(currentUser.username);
-              if (hasVoted) {
-                return { ...s, votes: s.votes - 1, voters: s.voters.filter((v) => v !== currentUser.username) };
-              }
-              return { ...s, votes: s.votes + 1, voters: [...(s.voters || []), currentUser.username] };
+        .card {
+            background: rgba(255, 255, 255, 0.12);
+            backdrop-filter: blur(20px);
+            padding: 40px;
+            border-radius: 30px;
+            border: 3px solid rgba(236, 72, 153, 0.4);
+            margin-bottom: 25px;
+        }
+
+        h2 {
+            color: #fbbf24;
+            margin-bottom: 25px;
+            font-size: 1.8em;
+            text-align: center;
+            font-weight: 900;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        input, textarea, select {
+            width: 100%;
+            padding: 15px;
+            border: 3px solid rgba(236, 72, 153, 0.4);
+            border-radius: 15px;
+            background: rgba(255, 255, 255, 0.08);
+            color: white;
+            font-family: 'Tajawal', sans-serif;
+            font-size: 1.1em;
+            font-weight: 600;
+        }
+
+        input::placeholder, textarea::placeholder {
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        select {
+            color: white;
+        }
+
+        select option {
+            background: #2d1b4e;
+            color: white;
+        }
+
+        textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        button {
+            width: 100%;
+            padding: 15px;
+            border: none;
+            border-radius: 15px;
+            background: linear-gradient(135deg, #a855f7 0%, #ec4899 100%);
+            color: white;
+            font-size: 1.2em;
+            font-weight: 900;
+            cursor: pointer;
+            font-family: 'Tajawal', sans-serif;
+            margin-top: 10px;
+        }
+
+        button:hover {
+            transform: scale(1.05);
+        }
+
+        .btn-logout {
+            background: linear-gradient(135deg, #f87171 0%, #ef4444 100%);
+        }
+
+        .btn-approve {
+            background: linear-gradient(135deg, #4ade80 0%, #22c55e 100%);
+            width: 48%;
+            display: inline-block;
+            margin-right: 2%;
+        }
+
+        .btn-reject {
+            background: linear-gradient(135deg, #f87171 0%, #ef4444 100%);
+            width: 48%;
+            display: inline-block;
+        }
+
+        .link {
+            text-align: center;
+            margin-top: 15px;
+            color: #e9d5ff;
+        }
+
+        .link a {
+            color: #fbbf24;
+            text-decoration: none;
+            font-weight: 900;
+            cursor: pointer;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+        }
+
+        .suggestion-item {
+            background: rgba(255, 255, 255, 0.08);
+            padding: 20px;
+            border-radius: 20px;
+            border: 3px solid rgba(168, 85, 247, 0.4);
+            margin-bottom: 15px;
+        }
+
+        .suggestion-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            flex-wrap: wrap;
+        }
+
+        .student-name {
+            color: #fbbf24;
+            font-weight: 900;
+            font-size: 1.2em;
+        }
+
+        .status {
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            font-weight: 900;
+        }
+
+        .status.pending {
+            background: rgba(251, 191, 36, 0.3);
+            color: #fbbf24;
+            border: 2px solid #fbbf24;
+        }
+
+        .status.approved {
+            background: rgba(74, 222, 128, 0.3);
+            color: #4ade80;
+            border: 2px solid #4ade80;
+        }
+
+        .status.rejected {
+            background: rgba(248, 113, 113, 0.3);
+            color: #f87171;
+            border: 2px solid #f87171;
+        }
+
+        .suggestion-text {
+            color: #f3e8ff;
+            margin: 10px 0;
+            line-height: 1.6;
+        }
+
+        .demo-box {
+            background: rgba(251, 191, 36, 0.2);
+            border: 3px solid #fbbf24;
+            border-radius: 15px;
+            padding: 15px;
+            margin-bottom: 20px;
+            color: #fbbf24;
+            text-align: center;
+            font-weight: 700;
+        }
+
+        @media (max-width: 768px) {
+            .grid {
+                grid-template-columns: 1fr;
             }
-            return s;
-          })
-        );
-      };
-
-      const handleSubmit = () => {
-        if (!currentUser) {
-          alert('???? ????? ?????? ????? ???? ?????? ?????????.');
-          return;
         }
-        if (!formData.title || !formData.category || !formData.description) {
-          alert('???? ????? ??????? ?????? ???? ??????? ??? ???????.');
-          return;
-        }
-        setSubmitted(true);
-        setSuggestions((prev) => [
-          {
-            id: prev.length + 1,
-            studentName: currentUser.fullName,
-            studentId: currentUser.nationalId,
-            title: formData.title,
-            category: formData.category,
-            status: '????',
-            date: new Date().toISOString().split('T')[0],
-            description: formData.description,
-            votes: 0,
-            voters: []
-          },
-          ...prev
-        ]);
-        setTimeout(() => {
-          setSubmitted(false);
-          setFormData({ studentName: '', nationalId: '', email: '', category: '', title: '', description: '' });
-        }, 3000);
-      };
-
-      const stats = {
-        total: suggestions.length,
-        new: suggestions.filter((s) => s.status === '????').length,
-        inProgress: suggestions.filter((s) => s.status === '??? ????????').length,
-        completed: suggestions.filter((s) => s.status === '?????').length
-      };
-
-      if (showAdminLogin) {
-        return (
-          <div className="min-h-screen bg-gradient-to-br from-blue-50 via-cyan-50 to-green-50 flex items-center justify-center p-4" dir="rtl" style={{ fontFamily: "'Tajawal', 'Cairo', sans-serif" }}>
-            <div className="max-w-md w-full bg-white rounded-3xl shadow-2xl p-6 sm:p-8 border-4 border-blue-300 relative overflow-hidden">
-              <div className="absolute top-0 left-0 w-40 h-40 bg-blue-200 rounded-full -translate-x-20 -translate-y-20 opacity-50" />
-              <div className="absolute bottom-0 right-0 w-40 h-40 bg-green-200 rounded-full translate-x-20 translate-y-20 opacity-50" />
-              <div className="relative z-10">
-                <div className="text-center mb-6 sm:mb-8">
-                  <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-blue-600 to-green-600 rounded-full mb-4 shadow-xl">
-                    <Lock className="w-10 h-10 text-white text-3xl" />
-                  </div>
-                  <h2 className="text-3xl font-bold text-blue-800 mb-2">????? ???? ????????</h2>
-                  <p className="text-blue-700">??? ???? ????????? ???????? ????? ??????.</p>
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>✨ نظام اقتراحات الطلاب ✨</h1>
+            <div class="stats">
+                <div class="stat-box">
+                    <span id="totalSuggestions">0</span>
+                    <label>📊 إجمالي الاقتراحات</label>
                 </div>
-                <div className="space-y-4 mb-6">
-                  <input type="text" value={loginData.username} onChange={(e) => setLoginData({ ...loginData, username: e.target.value })} className="w-full px-4 py-3 bg-blue-50 border-2 border-blue-300 rounded-xl focus:outline-none focus:border-blue-600 text-blue-900" placeholder="??? ????????" />
-                  <input type="password" value={loginData.password} onChange={(e) => setLoginData({ ...loginData, password: e.target.value })} className="w-full px-4 py-3 bg-blue-50 border-2 border-blue-300 rounded-xl focus:outline-none focus:border-blue-600 text-blue-900" placeholder="???? ??????" />
+                <div class="stat-box">
+                    <span id="pendingCount">0</span>
+                    <label>⏳ قيد المراجعة</label>
                 </div>
-                <div className="bg-gradient-to-r from-cyan-50 to-blue-50 border-2 border-cyan-300 rounded-xl p-4 mb-6">
-                  <p className="text-sm text-cyan-800 font-semibold">?????? ?????? ??????????: admin / admin123</p>
-                </div>
-                <div className="space-y-3">
-                  <button onClick={handleAdminLogin} className="w-full bg-gradient-to-r from-blue-600 to-green-600 hover:from-blue-700 hover:to-green-700 text-white font-bold py-3 rounded-xl shadow-lg flex items-center justify-center gap-2 transform hover:scale-105 transition-all">
-                    <Lock className="w-5 h-5" />
-                    <span>????? ??????</span>
-                  </button>
-                  <button onClick={() => setShowRegister(true)} className="w-full bg-gradient-to-r from-green-100 to-blue-100 hover:from-green-200 hover:to-blue-200 text-green-800 font-bold py-3 rounded-xl flex items-center justify-center gap-2 transform hover:scale-105 transition-all">
-                    <UserPlus className="w-5 h-5" />
-                    <span>????? ???? ???? ????</span>
-                  </button>
-                  <button onClick={() => setShowAdminLogin(false)} className="w-full bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold py-3 rounded-xl transition-all">????</button>
-                </div>
-              </div>
             </div>
-          </div>
-        );
-      }
+        </header>
 
-      if (showRegister) {
-        return (
-          <div className="min-h-screen bg-gradient-to-br from-blue-50 via-cyan-50 to-green-50 flex items-center justify-center p-4" dir="rtl" style={{ fontFamily: "'Tajawal', 'Cairo', sans-serif" }}>
-            <div className="max-w-md w-full bg-white rounded-3xl shadow-2xl p-6 sm:p-8 border-4 border-green-300">
-              <div className="text-center mb-8">
-                <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-green-600 to-blue-600 rounded-full mb-4 shadow-xl">
-                  <UserPlus className="w-10 h-10 text-white" />
+        <!-- تسجيل دخول الطالب -->
+        <div id="loginPage">
+            <div class="card">
+                <div class="demo-box">
+                    🎯 أدخل أي رقم هوية وأي كلمة مرور للدخول
                 </div>
-                <h2 className="text-3xl font-bold text-green-800 mb-2">????? ????? ???? ?????</h2>
-                <p className="text-green-700">?? ????? ?????? ???????</p>
-              </div>
-              <div className="space-y-4 mb-6">
-                <input type="text" value={registerData.fullName} onChange={(e) => setRegisterData({ ...registerData, fullName: e.target.value })} className="w-full px-4 py-3 bg-green-50 border-2 border-green-300 rounded-xl focus:outline-none focus:border-green-600 text-green-900" placeholder="?? ????? ??????" />
-                <input type="text" value={registerData.username} onChange={(e) => setRegisterData({ ...registerData, username: e.target.value })} className="w-full px-4 py-3 bg-green-50 border-2 border-green-300 rounded-xl focus:outline-none focus:border-green-600 text-green-900" placeholder="?? ??? ????????" />
-                <input type="password" value={registerData.password} onChange={(e) => setRegisterData({ ...registerData, password: e.target.value })} className="w-full px-4 py-3 bg-green-50 border-2 border-green-300 rounded-xl focus:outline-none focus:border-green-600 text-green-900" placeholder="?? ???? ??????" />
-                <input type="password" value={registerData.confirmPassword} onChange={(e) => setRegisterData({ ...registerData, confirmPassword: e.target.value })} className="w-full px-4 py-3 bg-green-50 border-2 border-green-300 rounded-xl focus:outline-none focus:border-green-600 text-green-900" placeholder="? ????? ???? ??????" />
-              </div>
-              <div className="space-y-3">
-                <button onClick={handleAdminRegister} className="w-full bg-gradient-to-r from-green-600 to-blue-600 text-white font-bold py-3 rounded-xl shadow-lg flex items-center justify-center gap-2 transform hover:scale-105 transition-all">
-                  <UserPlus className="w-5 h-5" />
-                  <span>?? ????? ??????</span>
-                </button>
-                <button onClick={() => setShowRegister(false)} className="w-full bg-gray-100 text-gray-700 font-bold py-3 rounded-xl">?? ????</button>
-              </div>
+                <h2>🎓 دخول الطالب</h2>
+                <div class="form-group">
+                    <input type="text" id="studentId" placeholder="رقم الهوية">
+                </div>
+                <div class="form-group">
+                    <input type="password" id="studentPass" placeholder="كلمة المرور">
+                </div>
+                <button onclick="studentLogin()">دخول 🚀</button>
+                <div class="link">
+                    <a onclick="showAdminLogin()">🔐 دخول الإدارة</a>
+                </div>
             </div>
-          </div>
-        );
-      }
-
-      if (showStudentRegister) {
-        return (
-          <div className="min-h-screen bg-gradient-to-br from-blue-50 via-cyan-50 to-green-50 flex items-center justify-center p-4" dir="rtl" style={{ fontFamily: "'Tajawal', 'Cairo', sans-serif" }}>
-            <div className="max-w-md w-full bg-white rounded-3xl shadow-2xl p-6 sm:p-8 border-4 border-cyan-300">
-              <div className="text-center mb-8">
-                <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-cyan-500 to-blue-600 rounded-full mb-4 shadow-xl animate-pulse">
-                  <Users className="w-10 h-10 text-white" />
-                </div>
-                <h2 className="text-3xl font-bold text-cyan-800 mb-2">?? ???? ??????</h2>
-                <p className="text-cyan-700">?? ????? ?????? ???????</p>
-              </div>
-
-              <div className="flex gap-3 mb-6">
-                <button onClick={() => setActiveView('login')} className={`flex-1 py-2 rounded-xl font-bold transition-all ${activeView === 'login' ? 'bg-gradient-to-r from-cyan-600 to-blue-600 text-white' : 'bg-cyan-100 text-cyan-700'}`}>
-                  ?? ????? ????
-                </button>
-                <button onClick={() => setActiveView('register')} className={`flex-1 py-2 rounded-xl font-bold transition-all ${activeView === 'register' ? 'bg-gradient-to-r from-cyan-600 to-blue-600 text-white' : 'bg-cyan-100 text-cyan-700'}`}>
-                  ? ???? ????
-                </button>
-              </div>
-
-              {activeView === 'login' ? (
-                <div className="space-y-4 mb-6">
-                  <input type="text" value={studentRegisterData.username} onChange={(e) => setStudentRegisterData({ ...studentRegisterData, username: e.target.value })} className="w-full px-4 py-3 bg-cyan-50 border-2 border-cyan-300 rounded-xl focus:outline-none focus:border-cyan-600 text-cyan-900" placeholder="?? ??? ????????" />
-                  <input type="password" value={studentRegisterData.password} onChange={(e) => setStudentRegisterData({ ...studentRegisterData, password: e.target.value })} className="w-full px-4 py-3 bg-cyan-50 border-2 border-cyan-300 rounded-xl focus:outline-none focus:border-cyan-600 text-cyan-900" placeholder="?? ???? ??????" />
-                  <button onClick={handleStudentLogin} className="w-full bg-gradient-to-r from-cyan-600 to-blue-600 text-white font-bold py-3 rounded-xl shadow-lg flex items-center justify-center gap-2 transform hover:scale-105 transition-all">
-                    <Lock className="w-5 h-5" />
-                    <span>? ????</span>
-                  </button>
-                </div>
-              ) : (
-                <div className="space-y-4 mb-6">
-                  <input type="text" value={studentRegisterData.fullName} onChange={(e) => setStudentRegisterData({ ...studentRegisterData, fullName: e.target.value })} className="w-full px-4 py-3 bg-cyan-50 border-2 border-cyan-300 rounded-xl focus:outline-none focus:border-cyan-600 text-cyan-900" placeholder="?? ????? ??????" />
-                  <input type="text" value={studentRegisterData.nationalId} onChange={(e) => setStudentRegisterData({ ...studentRegisterData, nationalId: e.target.value })} className="w-full px-4 py-3 bg-cyan-50 border-2 border-cyan-300 rounded-xl focus:outline-none focus:border-cyan-600 text-cyan-900" placeholder="?? ??? ??????" />
-                  <input type="text" value={studentRegisterData.username} onChange={(e) => setStudentRegisterData({ ...studentRegisterData, username: e.target.value })} className="w-full px-4 py-3 bg-cyan-50 border-2 border-cyan-300 rounded-xl focus:outline-none focus:border-cyan-600 text-cyan-900" placeholder="?? ??? ????????" />
-                  <input type="password" value={studentRegisterData.password} onChange={(e) => setStudentRegisterData({ ...studentRegisterData, password: e.target.value })} className="w-full px-4 py-3 bg-cyan-50 border-2 border-cyan-300 rounded-xl focus:outline-none focus:border-cyan-600 text-cyan-900" placeholder="?? ???? ??????" />
-                  <input type="password" value={studentRegisterData.confirmPassword} onChange={(e) => setStudentRegisterData({ ...studentRegisterData, confirmPassword: e.target.value })} className="w-full px-4 py-3 bg-cyan-50 border-2 border-cyan-300 rounded-xl focus:outline-none focus:border-cyan-600 text-cyan-900" placeholder="? ????? ???? ??????" />
-                  <button onClick={handleStudentRegister} className="w-full bg-gradient-to-r from-cyan-600 to-blue-600 text-white font-bold py-3 rounded-xl shadow-lg flex items-center justify-center gap-2 transform hover:scale-105 transition-all">
-                    <UserPlus className="w-5 h-5" />
-                    <span>?? ????? ??????</span>
-                  </button>
-                </div>
-              )}
-
-              <button onClick={() => setShowStudentRegister(false)} className="w-full bg-gray-100 text-gray-700 font-bold py-3 rounded-xl">?? ????</button>
-            </div>
-          </div>
-        );
-      }
-
-      if (!userType) {
-        return (
-          <div className="min-h-screen bg-gradient-to-br from-blue-50 via-cyan-50 to-green-50 flex items-center justify-center p-4 relative overflow-hidden" dir="rtl" style={{ fontFamily: "'Tajawal', 'Cairo', sans-serif" }}>
-            <div className="absolute top-10 left-10 text-6xl animate-bounce">?</div>
-            <div className="absolute top-20 right-20 text-4xl animate-pulse">?</div>
-            <div className="absolute bottom-20 left-20 text-5xl animate-spin" style={{ animationDuration: '10s' }}>??</div>
-            <div className="absolute bottom-10 right-10 text-4xl animate-bounce" style={{ animationDelay: '0.5s' }}>??</div>
-
-            <div className="max-w-6xl w-full relative z-10">
-              <div className="text-center mb-12">
-                <div className="inline-block mb-6 animate-bounce">
-                  <div className="text-8xl">??</div>
-                </div>
-                <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-cyan-600 to-green-600 mb-4 animate-pulse">
-                  ???? ?????????? ????????
-                </h1>
-                <p className="text-xl sm:text-2xl text-blue-700 font-semibold">?? ????? ?????? ???????</p>
-                <p className="text-lg text-green-600 mt-2">? ???? ??? ?????? ???????</p>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                <div onClick={() => handleLogin('student')} className="group bg-white rounded-3xl shadow-2xl p-10 border-4 border-cyan-300 hover:border-cyan-500 cursor-pointer transform hover:scale-105 transition-all duration-300 hover:shadow-cyan-300">
-                  <div className="text-center">
-                    <div className="inline-flex items-center justify-center w-28 h-28 bg-gradient-to-br from-cyan-500 to-blue-600 rounded-full mb-6 group-hover:scale-110 transition-transform shadow-xl">
-                      <Users className="w-14 h-14 text-white" />
-                    </div>
-                    <h2 className="text-4xl font-bold text-cyan-800 mb-4">?? ???? ??????</h2>
-                    <p className="text-blue-700 text-lg mb-6">???? ?????? ????????? ?????????? ?????? ??????? ??</p>
-                    <div className="bg-gradient-to-r from-cyan-100 to-blue-100 rounded-xl p-4 text-cyan-800 group-hover:from-cyan-200 group-hover:to-blue-200 transition-all">
-                      <p className="font-bold text-lg">?? ???? ??????</p>
-                    </div>
-                  </div>
-                </div>
-
-                <div onClick={() => handleLogin('admin')} className="group bg-white rounded-3xl shadow-2xl p-10 border-4 border-green-300 hover:border-green-500 cursor-pointer transform hover:scale-105 transition-all duration-300 hover:shadow-green-300">
-                  <div className="text-center">
-                    <div className="inline-flex items-center justify-center w-28 h-28 bg-gradient-to-br from-green-600 to-blue-700 rounded-full mb-6 group-hover:scale-110 transition-transform shadow-xl">
-                      <CheckSquare className="w-14 h-14 text-white" />
-                    </div>
-                    <h2 className="text-4xl font-bold text-green-800 mb-4">????? ???? ???????</h2>
-                    <p className="text-blue-700 text-lg mb-6">????? ??????? ???????? ?????? ?????? ????? ??</p>
-                    <div className="bg-gradient-to-r from-green-100 to-blue-100 rounded-xl p-4 text-green-800 group-hover:from-green-200 group-hover:to-blue-200 transition-all">
-                      <p className="font-bold text-lg">?? ???? ??????</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        );
-      }
-
-      return (
-        <div className="min-h-screen bg-gradient-to-br from-blue-50 via-cyan-50 to-green-50" dir="rtl" style={{ fontFamily: "'Tajawal', 'Cairo', sans-serif" }}>
-          <header className="bg-white border-b-4 border-cyan-200 shadow-xl sticky top-0 z-50">
-            <div className="container mx-auto px-4 py-4 flex flex-col sm:flex-row items-center justify-between gap-3">
-              <div className="text-center sm:text-right">
-                <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-green-600 bg-clip-text text-transparent">
-                  ? ???? ??????????
-                </h1>
-                <p className="text-sm text-cyan-600 font-semibold">
-                  {userType === 'admin' ? `????? ${currentUser?.fullName || ''}` : `?? ${currentUser?.fullName || ''}`}
-                </p>
-              </div>
-
-              <div className="flex items-center gap-2 sm:gap-4 w-full sm:w-auto">
-                {userType === 'student' && (
-                  <div className="flex gap-2 flex-1 sm:flex-initial">
-                    <button onClick={() => setActiveView('submit')} className={`flex-1 px-4 py-2.5 rounded-xl font-bold text-sm transition-all ${activeView === 'submit' ? 'bg-gradient-to-r from-blue-600 to-cyan-600 text-white shadow-lg' : 'bg-blue-100 text-blue-800'}`}>
-                      ?? ????? ??????
-                    </button>
-                    <button onClick={() => setActiveView('track')} className={`flex-1 px-4 py-2.5 rounded-xl font-bold text-sm transition-all ${activeView === 'track' ? 'bg-gradient-to-r from-green-600 to-cyan-600 text-white shadow-lg' : 'bg-green-100 text-green-800'}`}>
-                      ?? ???? ??????????
-                    </button>
-                  </div>
-                )}
-                <button
-                  onClick={() => {
-                    setUserType(null);
-                    setCurrentUser(null);
-                  }}
-                  className="flex items-center gap-2 px-4 py-2.5 bg-red-100 text-red-700 rounded-xl font-bold hover:bg-red-200 transition-all"
-                >
-                  <LogOut className="w-4 h-4" />
-                  <span>?? ????</span>
-                </button>
-              </div>
-            </div>
-          </header>
-
-          <main className="container mx-auto px-4 py-8">
-            {userType === 'admin' && (
-              <div>
-                <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-                  <div className="bg-white rounded-2xl shadow-xl p-6 border-l-4 border-blue-600 hover:scale-105 transition-all">
-                    <div className="flex items-center justify-between mb-2">
-                      <p className="text-blue-700 text-sm font-bold">?? ??????</p>
-                      <MessageSquare className="w-8 h-8 text-blue-600" />
-                    </div>
-                    <p className="text-4xl font-bold text-blue-800">{stats.total}</p>
-                    <p className="text-xs text-blue-600 mt-1">??????</p>
-                  </div>
-                  <div className="bg-white rounded-2xl shadow-xl p-6 border-l-4 border-cyan-600 hover:scale-105 transition-all">
-                    <div className="flex items-center justify-between mb-2">
-                      <p className="text-cyan-700 text-sm font-bold">?? ?????</p>
-                      <AlertCircle className="w-8 h-8 text-cyan-600" />
-                    </div>
-                    <p className="text-4xl font-bold text-cyan-800">{stats.new}</p>
-                    <p className="text-xs text-cyan-600 mt-1">??????</p>
-                  </div>
-                  <div className="bg-white rounded-2xl shadow-xl p-6 border-l-4 border-yellow-600 hover:scale-105 transition-all">
-                    <div className="flex items-center justify-between mb-2">
-                      <p className="text-yellow-700 text-sm font-bold">? ????</p>
-                      <Clock className="w-8 h-8 text-yellow-600" />
-                    </div>
-                    <p className="text-4xl font-bold text-yellow-800">{stats.inProgress}</p>
-                    <p className="text-xs text-yellow-600 mt-1">??????</p>
-                  </div>
-                  <div className="bg-white rounded-2xl shadow-xl p-6 border-l-4 border-green-600 hover:scale-105 transition-all">
-                    <div className="flex items-center justify-between mb-2">
-                      <p className="text-green-700 text-sm font-bold">? ??????</p>
-                      <CheckCircle className="w-8 h-8 text-green-600" />
-                    </div>
-                    <p className="text-4xl font-bold text-green-800">{stats.completed}</p>
-                    <p className="text-xs text-green-600 mt-1">??????</p>
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                  <div className="lg:col-span-2 bg-white rounded-3xl shadow-2xl p-8 border-4 border-blue-200">
-                    <h2 className="text-3xl font-bold text-blue-800 mb-6">?? ????? ??????????</h2>
-                    <div className="space-y-4">
-                      {suggestions.map((s) => (
-                        <div
-                          key={s.id}
-                          onClick={() => setSelectedSuggestion(s)}
-                          className={`bg-gradient-to-r from-blue-50 to-cyan-50 border-2 rounded-2xl p-6 cursor-pointer transition-all hover:shadow-lg ${selectedSuggestion?.id === s.id ? 'border-blue-600 shadow-xl scale-105' : 'border-blue-200'}`}
-                        >
-                          <div className="flex items-start justify-between mb-3">
-                            <h3 className="text-xl font-bold text-blue-800 flex-1">{s.title}</h3>
-                            <div className="flex items-center gap-2 bg-white px-3 py-1 rounded-full">
-                              <ThumbsUp className="w-4 h-4 text-green-600" />
-                              <span className="font-bold text-green-600">{s.votes}</span>
-                            </div>
-                          </div>
-                          <p className="text-green-700 mb-3">{s.description}</p>
-                          <div className="flex flex-wrap gap-2 text-sm">
-                            <span className="bg-white px-3 py-1 rounded-lg border-2 border-blue-300 font-semibold text-blue-800">{s.category}</span>
-                            <span className="bg-white px-3 py-1 rounded-lg text-green-700">?? {s.studentName}</span>
-                            <span className="bg-white px-3 py-1 rounded-lg text-cyan-700">?? {s.date}</span>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-
-                  <div className="lg:col-span-1">
-                    {selectedSuggestion ? (
-                      <div className="bg-white rounded-3xl shadow-2xl p-8 border-4 border-green-200 sticky top-24">
-                        <h3 className="text-2xl font-bold text-green-800 mb-6">?? ?????? ????????</h3>
-                        <div className="space-y-4 mb-6">
-                          <div className="bg-gradient-to-r from-blue-50 to-cyan-50 p-4 rounded-xl">
-                            <p className="text-sm font-bold text-blue-700 mb-1">?? ???????</p>
-                            <p className="text-blue-900 font-semibold">{selectedSuggestion.title}</p>
-                          </div>
-                          <div className="bg-gradient-to-r from-green-50 to-cyan-50 p-4 rounded-xl">
-                            <p className="text-sm font-bold text-green-700 mb-1">?? ??????</p>
-                            <p className="text-green-900">{selectedSuggestion.studentName}</p>
-                          </div>
-                          <div className="bg-gradient-to-r from-cyan-50 to-blue-50 p-4 rounded-xl">
-                            <p className="text-sm font-bold text-cyan-700 mb-1">?? ???????</p>
-                            <p className="text-cyan-900 text-2xl font-bold">{selectedSuggestion.votes} ???</p>
-                          </div>
-                        </div>
-                        <div className="space-y-2 mb-6">
-                          <p className="text-sm font-bold text-gray-700 mb-2">?? ????? ??????</p>
-                          <button onClick={() => setSuggestions((prev) => prev.map((s) => (s.id === selectedSuggestion.id ? { ...s, status: '????' } : s)))} className="w-full px-4 py-3 rounded-xl font-bold bg-gradient-to-r from-cyan-100 to-blue-100 text-cyan-700 hover:from-cyan-200 hover:to-blue-200 transition-all">
-                            ?? ????
-                          </button>
-                          <button onClick={() => setSuggestions((prev) => prev.map((s) => (s.id === selectedSuggestion.id ? { ...s, status: '??? ????????' } : s)))} className="w-full px-4 py-3 rounded-xl font-bold bg-gradient-to-r from-yellow-100 to-orange-100 text-yellow-700 hover:from-yellow-200 hover:to-orange-200 transition-all">
-                            ? ??? ????????
-                          </button>
-                          <button onClick={() => setSuggestions((prev) => prev.map((s) => (s.id === selectedSuggestion.id ? { ...s, status: '?????' } : s)))} className="w-full px-4 py-3 rounded-xl font-bold bg-gradient-to-r from-green-100 to-emerald-100 text-green-700 hover:from-green-200 hover:to-emerald-200 transition-all">
-                            ? ?????
-                          </button>
-                        </div>
-                        <button
-                          onClick={() => {
-                            setSuggestions((prev) => prev.filter((s) => s.id !== selectedSuggestion.id));
-                            setSelectedSuggestion(null);
-                          }}
-                          className="w-full bg-gradient-to-r from-red-100 to-pink-100 text-red-700 font-bold py-3 rounded-xl flex items-center justify-center gap-2 hover:from-red-200 hover:to-pink-200 transition-all"
-                        >
-                          <Trash2 className="w-5 h-5" />
-                          <span>??? ??? ????????</span>
-                        </button>
-                      </div>
-                    ) : (
-                      <div className="bg-white rounded-3xl shadow-2xl p-8 border-4 border-blue-200 text-center sticky top-24">
-                        <div className="text-6xl mb-4">??</div>
-                        <p className="text-blue-700 text-lg font-semibold">???? ???????? ???? ????????</p>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {userType === 'student' && activeView === 'submit' && (
-              <div className="max-w-4xl mx-auto bg-white rounded-3xl shadow-2xl p-8 border-4 border-blue-200">
-                <div className="text-center mb-8">
-                  <div className="text-6xl mb-4">??</div>
-                  <h2 className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-green-600 bg-clip-text text-transparent mb-2">???? ??????? ????????</h2>
-                  <p className="text-blue-700">? ??? ????? ??????? ????? ??? ????? ?????? ????????</p>
-                </div>
-
-                {submitted ? (
-                  <div className="text-center py-12">
-                    <div className="inline-flex items-center justify-center w-24 h-24 bg-gradient-to-r from-green-500 to-emerald-500 rounded-full mb-6 animate-bounce">
-                      <CheckCircle className="w-12 h-12 text-white" />
-                    </div>
-                    <div className="text-6xl mb-4">??</div>
-                    <h3 className="text-3xl font-bold text-green-800 mb-4">?? ????? ??????? ?????!</h3>
-                    <p className="text-blue-700 text-lg">? ???? ??????? ?? ??? ??????? ??????</p>
-                  </div>
-                ) : (
-                  <div className="space-y-6">
-                    <div>
-                      <label className="block text-lg font-bold text-blue-800 mb-2">?? ????? ????????</label>
-                      <select name="category" value={formData.category} onChange={(e) => setFormData({ ...formData, [e.target.name]: e.target.value })} className="w-full px-4 py-3 bg-blue-50 border-2 border-blue-300 rounded-xl focus:outline-none focus:border-blue-600 text-blue-900 text-lg">
-                        <option value="">???? ???????</option>
-                        {categories.map((c, i) => (
-                          <option key={i} value={c}>
-                            {c}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
-                    <div>
-                      <label className="block text-lg font-bold text-blue-800 mb-2">?? ????? ????????</label>
-                      <input type="text" name="title" value={formData.title} onChange={(e) => setFormData({ ...formData, [e.target.name]: e.target.value })} className="w-full px-4 py-3 bg-blue-50 border-2 border-blue-300 rounded-xl focus:outline-none focus:border-blue-600 text-blue-900 text-lg" placeholder="????? ???? ??????" />
-                    </div>
-                    <div>
-                      <label className="block text-lg font-bold text-blue-800 mb-2">?? ?????? ????????</label>
-                      <textarea name="description" value={formData.description} onChange={(e) => setFormData({ ...formData, [e.target.name]: e.target.value })} rows="6" className="w-full px-4 py-3 bg-blue-50 border-2 border-blue-300 rounded-xl focus:outline-none focus:border-blue-600 text-blue-900 resize-none text-lg" placeholder="???? ??????? ????????..."></textarea>
-                    </div>
-                    <button onClick={handleSubmit} className="w-full bg-gradient-to-r from-blue-600 to-green-600 hover:from-blue-700 hover:to-green-700 text-white font-bold py-4 rounded-xl shadow-lg flex items-center justify-center gap-3 text-xl transform hover:scale-105 transition-all">
-                      <Send className="w-6 h-6" />
-                      <span>?? ????? ????????</span>
-                    </button>
-                  </div>
-                )}
-              </div>
-            )}
-
-            {userType === 'student' && activeView === 'track' && (
-              <div className="max-w-6xl mx-auto bg-white rounded-3xl shadow-2xl p-8 border-4 border-green-200">
-                <div className="text-center mb-8">
-                  <div className="text-6xl mb-4">??</div>
-                  <h2 className="text-4xl font-bold bg-gradient-to-r from-green-600 to-blue-600 bg-clip-text text-transparent mb-2">?????????? ???????</h2>
-                  <p className="text-green-700">?? ???? ???? ???? ??????????</p>
-                </div>
-                <div className="space-y-4">
-                  {suggestions.map((s) => (
-                    <div key={s.id} className="bg-gradient-to-r from-green-50 to-blue-50 border-2 border-green-200 rounded-2xl p-6 hover:border-green-400 hover:shadow-xl transition-all">
-                      <div className="flex items-start justify-between mb-3">
-                        <h3 className="text-xl font-bold text-green-800 flex-1">{s.title}</h3>
-                        <button
-                          onClick={() => handleVote(s.id)}
-                          className={`flex items-center gap-2 px-4 py-2 rounded-full font-bold transition-all ${s.voters?.includes(currentUser?.username) ? 'bg-gradient-to-r from-green-500 to-emerald-500 text-white' : 'bg-white text-green-700 border-2 border-green-300'}`}
-                        >
-                          <ThumbsUp className="w-4 h-4" />
-                          <span>{s.votes}</span>
-                        </button>
-                      </div>
-                      <p className="text-blue-700 mb-3">{s.description}</p>
-                      <div className="flex flex-wrap gap-2 text-sm">
-                        <span className="bg-white px-3 py-1 rounded-lg border-2 border-green-300 font-semibold text-green-800">{s.category}</span>
-                        <span className={`px-3 py-1 rounded-lg text-white font-semibold ${s.status === '????' ? 'bg-gradient-to-r from-cyan-500 to-blue-500' : s.status === '??? ????????' ? 'bg-gradient-to-r from-yellow-500 to-orange-500' : 'bg-gradient-to-r from-green-500 to-emerald-500'}`}>
-                          {s.status === '????' ? '??' : s.status === '??? ????????' ? '?' : '?'} {s.status}
-                        </span>
-                        <span className="bg-white px-3 py-1 rounded-lg text-blue-700">?? {s.date}</span>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-          </main>
-
-          <footer className="mt-20 border-t-4 border-cyan-200 bg-white py-8">
-            <div className="container mx-auto px-4 text-center">
-              <p className="text-xl font-bold bg-gradient-to-r from-blue-600 to-green-600 bg-clip-text text-transparent mb-2">?? ????? ?????? ???????</p>
-              <p className="text-blue-700">? 2025 ???? ?????? ?????? ?</p>
-            </div>
-          </footer>
         </div>
-      );
-    }
 
-    const container = document.getElementById('root');
-    if (container) {
-      const root = ReactDOM.createRoot(container);
-      root.render(<SuggestionsSystem />);
-    }
-  </script>
+        <!-- تسجيل دخول الإدارة -->
+        <div id="adminLoginPage" class="hidden">
+            <div class="card">
+                <div class="demo-box">
+                    👨‍💼 admin / admin123
+                </div>
+                <h2>👨‍💼 دخول الإدارة</h2>
+                <div class="form-group">
+                    <input type="text" id="adminUser" placeholder="اسم المستخدم" value="admin">
+                </div>
+                <div class="form-group">
+                    <input type="password" id="adminPass" placeholder="كلمة المرور" value="admin123">
+                </div>
+                <button onclick="adminLogin()">دخول الإدارة 🔐</button>
+                <div class="link">
+                    <a onclick="showStudentLogin()">← العودة لدخول الطلاب</a>
+                </div>
+            </div>
+        </div>
 
-  <script>
-    (function(){
-      function post(type, e){
-        try {
-          if (window.parent) {
-            window.parent.postMessage({ __fromProjectFrame: true, type, x: e && e.clientX, y: e && e.clientY }, '*');
-          }
-        } catch {}
-      }
-      window.addEventListener('mousemove', (e) => post('cursor-move', e), { passive: true });
-      window.addEventListener('mouseenter', (e) => post('cursor-enter', e), { passive: true });
-      window.addEventListener('mouseleave', () => post('cursor-leave'), { passive: true });
-      window.addEventListener('mousedown', (e) => post('cursor-down', e), { passive: true });
-      window.addEventListener('mouseup', (e) => post('cursor-up', e), { passive: true });
-    })();
-  </script>
+        <!-- لوحة الطالب -->
+        <div id="studentPage" class="hidden">
+            <div class="grid">
+                <div class="card">
+                    <h2>📝 إرسال اقتراح جديد</h2>
+                    <div class="form-group">
+                        <input type="text" id="title" placeholder="عنوان الاقتراح ✍️">
+                    </div>
+                    <div class="form-group">
+                        <textarea id="text" placeholder="اكتب اقتراحك هنا... 💭"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <select id="category">
+                            <option value="">📂 اختر الفئة</option>
+                            <option value="تعليمي">📚 تعليمي</option>
+                            <option value="رياضي">⚽ رياضي</option>
+                            <option value="ثقافي">🎨 ثقافي</option>
+                            <option value="خدمات">🛠️ خدمات</option>
+                            <option value="أخرى">📌 أخرى</option>
+                        </select>
+                    </div>
+                    <button onclick="addSuggestion()">إرسال الاقتراح 🚀</button>
+                    <button class="btn-logout" onclick="logout()">تسجيل الخروج 👋</button>
+                </div>
 
-  <script src="assets/app.js" defer></script>
-  <script src="assets/ai-assistant.js" defer></script>
+                <div class="card">
+                    <h2>📋 اقتراحاتي</h2>
+                    <div id="mySuggestions"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- لوحة الإدارة -->
+        <div id="adminPage" class="hidden">
+            <div class="card">
+                <h2>🎯 إدارة جميع الاقتراحات</h2>
+                <button class="btn-logout" onclick="logout()">تسجيل الخروج 👋</button>
+                <div id="allSuggestions"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let suggestions = [];
+        let currentUser = null;
+
+        function studentLogin() {
+            const id = document.getElementById('studentId').value.trim();
+            const pass = document.getElementById('studentPass').value.trim();
+            
+            if (!id || !pass) {
+                alert('❌ أدخل رقم الهوية وكلمة المرور');
+                return;
+            }
+
+            currentUser = {
+                type: 'student',
+                id: id,
+                name: 'طالب ' + id.substring(0, 4)
+            };
+
+            document.getElementById('loginPage').classList.add('hidden');
+            document.getElementById('studentPage').classList.remove('hidden');
+            showMySuggestions();
+        }
+
+        function adminLogin() {
+            const user = document.getElementById('adminUser').value.trim();
+            const pass = document.getElementById('adminPass').value.trim();
+            
+            if (user !== 'admin' || pass !== 'admin123') {
+                alert('❌ خطأ في اسم المستخدم أو كلمة المرور');
+                return;
+            }
+
+            currentUser = { type: 'admin', name: 'الإدارة' };
+
+            document.getElementById('adminLoginPage').classList.add('hidden');
+            document.getElementById('adminPage').classList.remove('hidden');
+            showAllSuggestions();
+        }
+
+        function showAdminLogin() {
+            document.getElementById('loginPage').classList.add('hidden');
+            document.getElementById('adminLoginPage').classList.remove('hidden');
+        }
+
+        function showStudentLogin() {
+            document.getElementById('adminLoginPage').classList.add('hidden');
+            document.getElementById('loginPage').classList.remove('hidden');
+        }
+
+        function addSuggestion() {
+            const title = document.getElementById('title').value.trim();
+            const text = document.getElementById('text').value.trim();
+            const category = document.getElementById('category').value;
+
+            if (!title || !text || !category) {
+                alert('❌ يرجى ملء جميع الحقول');
+                return;
+            }
+
+            suggestions.push({
+                id: Date.now(),
+                studentId: currentUser.id,
+                studentName: currentUser.name,
+                title: title,
+                text: text,
+                category: category,
+                status: 'pending',
+                date: new Date().toLocaleDateString('ar-SA')
+            });
+
+            document.getElementById('title').value = '';
+            document.getElementById('text').value = '';
+            document.getElementById('category').value = '';
+
+            updateStats();
+            showMySuggestions();
+            alert('✅ تم إرسال الاقتراح بنجاح!');
+        }
+
+        function showMySuggestions() {
+            const container = document.getElementById('mySuggestions');
+            const my = suggestions.filter(s => s.studentId === currentUser.id);
+
+            if (my.length === 0) {
+                container.innerHTML = '<p style="color: #f3e8ff; text-align: center; padding: 30px;">📭 لا توجد اقتراحات<br>ابدأ بإرسال اقتراحك الأول! 🚀</p>';
+                return;
+            }
+
+            container.innerHTML = my.map(s => `
+                <div class="suggestion-item">
+                    <div class="suggestion-header">
+                        <span class="student-name">📌 ${s.title}</span>
+                        <span class="status ${s.status}">
+                            ${s.status === 'pending' ? '⏳ قيد المراجعة' : 
+                              s.status === 'approved' ? '✅ مقبول' : '❌ مرفوض'}
+                        </span>
+                    </div>
+                    <div class="suggestion-text"><strong>الفئة:</strong> ${s.category}</div>
+                    <div class="suggestion-text">${s.text}</div>
+                    <small style="color: #e9d5ff;">📅 ${s.date}</small>
+                </div>
+            `).join('');
+        }
+
+        function showAllSuggestions() {
+            const container = document.getElementById('allSuggestions');
+
+            if (suggestions.length === 0) {
+                container.innerHTML = '<p style="color: #f3e8ff; text-align: center; padding: 30px;">📭 لا توجد اقتراحات حتى الآن</p>';
+                return;
+            }
+
+            container.innerHTML = suggestions.map(s => `
+                <div class="suggestion-item">
+                    <div class="suggestion-header">
+                        <span class="student-name">👤 ${s.studentName} - ${s.title}</span>
+                        <span class="status ${s.status}">
+                            ${s.status === 'pending' ? '⏳ قيد المراجعة' : 
+                              s.status === 'approved' ? '✅ مقبول' : '❌ مرفوض'}
+                        </span>
+                    </div>
+                    <div class="suggestion-text"><strong>📂 الفئة:</strong> ${s.category}</div>
+                    <div class="suggestion-text">${s.text}</div>
+                    <small style="color: #e9d5ff;">📅 ${s.date} | 🆔 ${s.studentId}</small>
+                    ${s.status === 'pending' ? `
+                        <div style="margin-top: 15px;">
+                            <button class="btn-approve" onclick="changeStatus(${s.id}, 'approved')">✅ قبول</button>
+                            <button class="btn-reject" onclick="changeStatus(${s.id}, 'rejected')">❌ رفض</button>
+                        </div>
+                    ` : ''}
+                </div>
+            `).join('');
+        }
+
+        function changeStatus(id, status) {
+            const s = suggestions.find(item => item.id === id);
+            if (s) {
+                s.status = status;
+                updateStats();
+                showAllSuggestions();
+                alert(status === 'approved' ? '✅ تم قبول الاقتراح!' : '❌ تم رفض الاقتراح!');
+            }
+        }
+
+        function updateStats() {
+            document.getElementById('totalSuggestions').textContent = suggestions.length;
+            document.getElementById('pendingCount').textContent = suggestions.filter(s => s.status === 'pending').length;
+        }
+
+        function logout() {
+            currentUser = null;
+            
+            document.getElementById('loginPage').classList.remove('hidden');
+            document.getElementById('adminLoginPage').classList.add('hidden');
+            document.getElementById('studentPage').classList.add('hidden');
+            document.getElementById('adminPage').classList.add('hidden');
+            
+            document.getElementById('studentId').value = '';
+            document.getElementById('studentPass').value = '';
+        }
+
+        updateStats();
+    </script>
 </body>
 </html>
