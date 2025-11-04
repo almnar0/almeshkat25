@@ -39,7 +39,7 @@
   // Minor prefetch for project pages when on index
   function prefetchProjects() {
     if (!location.pathname.endsWith('index.html') && location.pathname !== '/') return;
-    const links = ['project1.html', 'project3.html', 'project5.html', 'project7.html'];
+    const links = ['project1.html', 'project3.html', 'project5.html', 'project9.html'];
     links.forEach(href => {
       const link = document.createElement('link');
       link.rel = 'prefetch';
