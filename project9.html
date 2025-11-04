@@ -347,7 +347,48 @@
     </div>
 
     <script>
-        let suggestions = [];
+        const STORAGE_KEY = 'project9-suggestions';
+
+        function loadSuggestions() {
+            try {
+                const raw = localStorage.getItem(STORAGE_KEY);
+                if (!raw) return [];
+                const parsed = JSON.parse(raw);
+                if (!Array.isArray(parsed)) return [];
+
+                return parsed
+                    .map(item => {
+                        if (!item || (typeof item !== 'object')) return null;
+                        const id = Number(item.id);
+                        if (!Number.isFinite(id)) return null;
+                        const status = ['approved', 'rejected', 'pending'].includes(item.status) ? item.status : 'pending';
+                        return {
+                            id,
+                            studentId: String(item.studentId || ''),
+                            studentName: String(item.studentName || ''),
+                            title: String(item.title || ''),
+                            text: String(item.text || ''),
+                            category: String(item.category || ''),
+                            status,
+                            date: item.date || new Date().toLocaleDateString('ar-SA')
+                        };
+                    })
+                    .filter(Boolean);
+            } catch (error) {
+                console.warn('⚠️ تعذر قراءة البيانات المحفوظة، سيتم البدء بسجل جديد.', error);
+                return [];
+            }
+        }
+
+        function saveSuggestions() {
+            try {
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(suggestions));
+            } catch (error) {
+                console.warn('⚠️ تعذر حفظ الاقتراحات محلياً.', error);
+            }
+        }
+
+        let suggestions = loadSuggestions();
         let currentUser = null;
 
         function studentLogin() {
@@ -417,6 +458,7 @@
                 date: new Date().toLocaleDateString('ar-SA')
             });
 
+            saveSuggestions();
             document.getElementById('title').value = '';
             document.getElementById('text').value = '';
             document.getElementById('category').value = '';
@@ -485,6 +527,7 @@
             const s = suggestions.find(item => item.id === id);
             if (s) {
                 s.status = status;
+                saveSuggestions();
                 updateStats();
                 showAllSuggestions();
                 alert(status === 'approved' ? '✅ تم قبول الاقتراح!' : '❌ تم رفض الاقتراح!');
