@@ -60,62 +60,62 @@
     const style = document.createElement('style');
     style.id = 'theme-styles';
     style.textContent = `
-      :root[data-theme="light"] {
-        --bg: #f7f8fb;
-        --bg-secondary: #ffffff;
-        --text: #0f172a;
-        --text-muted: #475569;
-        --primary: #6366f1; /* indigo-500 */
-        --primary-2: #8b5cf6; /* violet-500 */
-        --card-bg: #ffffff;
-        --card-border: #e5e7eb;
-        --surface: #f1f5f9;
-        --tag-bg: #eef2ff;
-        --tag-text: #4f46e5;
-        --shadow-1: rgba(15, 23, 42, 0.08);
-        --shadow-2: rgba(15, 23, 42, 0.15);
-        --theme-color: #6366f1;
-        --state-success-bg: #dcfce7;
-        --state-success-text: #166534;
-        --state-success-border: rgba(34, 197, 94, 0.35);
-        --state-warning-bg: #fef3c7;
-        --state-warning-text: #92400e;
-        --state-warning-border: rgba(234, 179, 8, 0.35);
-        --state-danger-bg: #fee2e2;
-        --state-danger-text: #b91c1c;
-        --state-danger-border: rgba(220, 38, 38, 0.35);
-        --state-info-bg: #e0f2fe;
-        --state-info-text: #0c4a6e;
-        --state-info-border: rgba(14, 116, 144, 0.25);
+        :root[data-theme="light"] {
+          --bg: #f8fafc;
+          --bg-secondary: #ffffff;
+          --text: #0f172a;
+          --text-muted: #334155;
+          --primary: #5b61f6;
+          --primary-2: #7c66f8;
+          --card-bg: #ffffff;
+          --card-border: #dbe3f2;
+          --surface: #eef2fb;
+          --tag-bg: #e2e7ff;
+          --tag-text: #4338ca;
+          --shadow-1: rgba(15, 23, 42, 0.1);
+          --shadow-2: rgba(15, 23, 42, 0.18);
+          --theme-color: #5b61f6;
+          --state-success-bg: #dcfce7;
+          --state-success-text: #166534;
+          --state-success-border: rgba(34, 197, 94, 0.35);
+          --state-warning-bg: #fef3c7;
+          --state-warning-text: #92400e;
+          --state-warning-border: rgba(234, 179, 8, 0.35);
+          --state-danger-bg: #fee2e2;
+          --state-danger-text: #b91c1c;
+          --state-danger-border: rgba(220, 38, 38, 0.35);
+          --state-info-bg: #e0f2fe;
+          --state-info-text: #0c4a6e;
+          --state-info-border: rgba(14, 116, 144, 0.25);
       }
 
-      :root[data-theme="dark"] {
-        --bg: #0b1021;
-        --bg-secondary: #0f172a;
-        --text: #e5e7eb;
-        --text-muted: #94a3b8;
-        --primary: #8b9dfc;
-        --primary-2: #b28dfc;
-        --card-bg: #111827;
-        --card-border: #1f2937;
-        --surface: #0b1324;
-        --tag-bg: #1f2937;
-        --tag-text: #c7d2fe;
-        --shadow-1: rgba(0, 0, 0, 0.45);
-        --shadow-2: rgba(0, 0, 0, 0.6);
-        --theme-color: #0b1324;
-        --state-success-bg: rgba(34, 197, 94, 0.22);
-        --state-success-text: #bbf7d0;
-        --state-success-border: rgba(34, 197, 94, 0.55);
-        --state-warning-bg: rgba(251, 191, 36, 0.2);
-        --state-warning-text: #fde68a;
-        --state-warning-border: rgba(251, 191, 36, 0.45);
-        --state-danger-bg: rgba(248, 113, 113, 0.22);
-        --state-danger-text: #fecaca;
-        --state-danger-border: rgba(248, 113, 113, 0.55);
-        --state-info-bg: rgba(59, 130, 246, 0.18);
-        --state-info-text: #bfdbfe;
-        --state-info-border: rgba(59, 130, 246, 0.45);
+        :root[data-theme="dark"] {
+          --bg: #0b1021;
+          --bg-secondary: #0f172a;
+          --text: #f8fbff;
+          --text-muted: #d6e4ff;
+          --primary: #8b9dfc;
+          --primary-2: #b28dfc;
+          --card-bg: #111a33;
+          --card-border: #1f2d4c;
+          --surface: #0c162c;
+          --tag-bg: #1d2742;
+          --tag-text: #e4ecff;
+          --shadow-1: rgba(0, 0, 0, 0.5);
+          --shadow-2: rgba(0, 0, 0, 0.68);
+          --theme-color: #0c162c;
+          --state-success-bg: rgba(34, 197, 94, 0.26);
+          --state-success-text: #d1fadf;
+          --state-success-border: rgba(34, 197, 94, 0.6);
+          --state-warning-bg: rgba(251, 191, 36, 0.24);
+          --state-warning-text: #fdf4c6;
+          --state-warning-border: rgba(251, 191, 36, 0.5);
+          --state-danger-bg: rgba(248, 113, 113, 0.26);
+          --state-danger-text: #ffe2e2;
+          --state-danger-border: rgba(248, 113, 113, 0.6);
+          --state-info-bg: rgba(59, 130, 246, 0.22);
+          --state-info-text: #d4e7ff;
+          --state-info-border: rgba(59, 130, 246, 0.5);
       }
 
       /* Map AI assistant palette to site theme */
