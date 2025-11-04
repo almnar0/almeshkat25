@@ -6,6 +6,7 @@ const PRECACHE_URLS = [
   '/project3.html',
   '/project5.html',
   '/project7.html',
+  '/project9.html',
   '/assets/app.js',
   '/assets/ai-assistant.js',
   '/assets/logo.svg',
