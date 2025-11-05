@@ -13,6 +13,52 @@
     <title>قسم التقنية - مدارس المشكاة</title>
 </head>
 <body>
+    <div class="auth-screen" id="authScreen" aria-hidden="true">
+        <div class="auth-card" role="dialog" aria-labelledby="authTitle" aria-describedby="authSubtitle">
+            <div class="auth-card__logo">
+                <img src="assets/logo.svg" alt="شعار مدارس المشكاة">
+            </div>
+            <h2 class="auth-card__title" id="authTitle">أهلاً بك في قسم التقنية</h2>
+            <p class="auth-card__subtitle" id="authSubtitle">يرجى إنشاء حساب أو تسجيل الدخول للمتابعة واستكشاف رحلات الإنجاز.</p>
+            <div class="auth-tabs" role="tablist">
+                <button type="button" class="auth-tab active" data-auth-mode="login" role="tab" aria-selected="true">تسجيل الدخول</button>
+                <button type="button" class="auth-tab" data-auth-mode="signup" role="tab" aria-selected="false">إنشاء حساب</button>
+            </div>
+            <div class="auth-message" id="authMessage" role="status" aria-live="polite"></div>
+            <form class="auth-form" id="authLoginForm" data-auth-form="login" novalidate>
+                <div class="auth-field">
+                    <label for="loginEmail">البريد الإلكتروني</label>
+                    <input type="email" id="loginEmail" name="email" autocomplete="username" required>
+                </div>
+                <div class="auth-field">
+                    <label for="loginPassword">كلمة المرور</label>
+                    <input type="password" id="loginPassword" name="password" autocomplete="current-password" required minlength="6">
+                </div>
+                <button type="submit" class="auth-submit">تسجيل الدخول</button>
+            </form>
+            <form class="auth-form" id="authSignupForm" data-auth-form="signup" novalidate hidden>
+                <div class="auth-field">
+                    <label for="signupName">الاسم الكامل</label>
+                    <input type="text" id="signupName" name="name" autocomplete="name" required>
+                </div>
+                <div class="auth-field">
+                    <label for="signupEmail">البريد الإلكتروني</label>
+                    <input type="email" id="signupEmail" name="email" autocomplete="email" required>
+                </div>
+                <div class="auth-field">
+                    <label for="signupPassword">كلمة المرور</label>
+                    <input type="password" id="signupPassword" name="password" autocomplete="new-password" required minlength="6">
+                    <small class="auth-hint">يجب أن تتكون كلمة المرور من 6 أحرف على الأقل.</small>
+                </div>
+                <div class="auth-field">
+                    <label for="signupPasswordConfirm">تأكيد كلمة المرور</label>
+                    <input type="password" id="signupPasswordConfirm" name="passwordConfirm" autocomplete="new-password" required minlength="6">
+                </div>
+                <button type="submit" class="auth-submit">إنشاء حساب</button>
+            </form>
+        </div>
+    </div>
+
     <button class="back-button" aria-hidden="true" onclick="goBack()">← العودة للمشاريع</button>
 
     <div class="page-wrapper">
@@ -26,11 +72,32 @@
                     <a class="nav-link" href="#projects">المشاريع</a>
                     <a class="nav-link" href="#vision">رؤيتنا</a>
                     <a class="nav-link" href="#impact">أثرنا</a>
-                    <a class="nav-link" href="#timeline">رحلة الإنجاز</a>
+                    <a class="nav-link" href="#timeline" data-gallery-trigger="journey">رحلة الإنجاز</a>
                     <a class="nav-link" href="#spotlight">أبرز الأعمال</a>
                     <button class="nav-cta" type="button" onclick="document.getElementById('reviewsAnchor').scrollIntoView({ behavior: 'smooth' });">أصوات الزوار</button>
+                      <div class="nav-account" id="navAccount" hidden>
+                          <div class="nav-account__pill">
+                              <span class="nav-account__icon" aria-hidden="true">👤</span>
+                              <div class="nav-account__info">
+                                  <span class="nav-account__label">مرحباً</span>
+                                  <strong class="nav-account__name" id="navAccountName"></strong>
+                              </div>
+                          </div>
+                          <button class="nav-account__logout" type="button" id="logoutButton">تسجيل الخروج</button>
+                      </div>
                 </div>
             </nav>
+
+              <aside class="approved-suggestions" id="approvedSuggestions" aria-labelledby="approvedSuggestionsTitle">
+                  <div class="approved-suggestions__header">
+                      <span class="approved-suggestions__icon" aria-hidden="true">💡</span>
+                      <div>
+                          <h3 id="approvedSuggestionsTitle">اقتراحات معتمدة</h3>
+                          <p>إضاءات مختارة من أفكار مجتمعنا.</p>
+                      </div>
+                  </div>
+                  <ul class="approved-suggestions__list" id="approvedSuggestionsList"></ul>
+              </aside>
 
             <header class="hero container" id="home">
                 <div class="hero-body">
@@ -201,6 +268,15 @@
                         <p>إطلاق معرض رقمي موحد يوثق المشاريع، ويتيح للزوار تجربة النماذج الفعلية وتقديم تقييماتهم مباشرة.</p>
                     </li>
                 </ol>
+                  <div class="timeline-gallery">
+                      <button type="button" class="timeline-gallery__trigger" onclick="openJourneyGallery()">
+                          <span class="timeline-gallery__icon" aria-hidden="true">📸</span>
+                          <span class="timeline-gallery__content">
+                              <strong>ألبوم رحلة الإنجاز</strong>
+                              <span>استعرض محطاتنا بالصور التي تفضّل بإضافتها</span>
+                          </span>
+                      </button>
+                  </div>
             </section>
 
             <section class="cta-section container">
@@ -245,6 +321,32 @@
             </div>
         </div>
     </div>
+
+      <div class="journey-modal" id="journeyGalleryModal" aria-hidden="true">
+          <div class="journey-modal__backdrop" tabindex="-1" onclick="closeJourneyGallery()"></div>
+          <div class="journey-modal__dialog" role="dialog" aria-modal="true" aria-labelledby="journeyGalleryTitle">
+              <button class="journey-modal__close" type="button" onclick="closeJourneyGallery()" aria-label="إغلاق">✕</button>
+              <div class="journey-modal__header">
+                  <h3 id="journeyGalleryTitle">ألبوم صور رحلة الإنجاز</h3>
+                  <p id="journeyGallerySubtitle">حدّث قائمة الصور لتعرض إنجازاتك في هذا الألبوم التفاعلي.</p>
+              </div>
+              <div class="journey-modal__body">
+                  <div class="journey-gallery__stage" id="journeyGalleryStage">
+                      <img id="journeyGalleryMain" alt="صورة من ألبوم رحلة الإنجاز">
+                      <div class="journey-gallery__caption" id="journeyGalleryCaption"></div>
+                  </div>
+                  <div class="journey-gallery__empty" id="journeyGalleryEmpty">
+                      <p>لم يتم تعريف صور الألبوم بعد. يمكنك إعداد المصفوفة <code>window.JOURNEY_GALLERY_IMAGES</code> بمسارات الصور والتسميات المناسبة.</p>
+                  </div>
+                  <div class="journey-gallery__thumbs" id="journeyGalleryThumbs" role="listbox" aria-label="صور مصغرة"></div>
+              </div>
+              <div class="journey-modal__controls">
+                  <button type="button" class="journey-modal__nav" id="journeyGalleryPrev">السابق</button>
+                  <span class="journey-modal__counter" id="journeyGalleryCounter"></span>
+                  <button type="button" class="journey-modal__nav" id="journeyGalleryNext">التالي</button>
+              </div>
+          </div>
+      </div>
 
     <div class="project-viewer" id="projectViewer">
         <iframe id="projectFrame" title="معاينة المشاريع"></iframe>
@@ -362,6 +464,21 @@
             }
         ];
 
+      const approvedSuggestionsData = [
+          {
+              title: 'تحدي الابتكار الأسبوعي',
+              summary: 'تخصيص 20 دقيقة في الحصة الأخيرة كل أربعاء لعرض ابتكارات طلابية سريعة مع تصويت رقمي.'
+          },
+          {
+              title: 'زاوية قراءة واقع معزز',
+              summary: 'تهيئة ركن صغير يدعم الواقع المعزز للموسوعة الرقمية لتشجيع القراءة التفاعلية.'
+          },
+          {
+              title: 'مسار سفراء التقنية',
+              summary: 'توزيع مهام إشراف تقنية على طلاب مختارين وتوثيق إنجازاتهم في لوحة شرف رقمية.'
+          }
+      ];
+
         const grid = document.getElementById('projectsGrid');
         const filtersContainer = document.getElementById('projectsFilters');
         const viewToggle = document.getElementById('projectsViewToggle');
@@ -379,9 +496,90 @@
         const modalTags = document.getElementById('projectModalTags');
         const modalMeta = document.getElementById('projectModalMeta');
         const modalLaunch = document.getElementById('projectModalLaunch');
+        const approvedSuggestionsContainer = document.getElementById('approvedSuggestions');
+        const approvedSuggestionsList = document.getElementById('approvedSuggestionsList');
+        const authScreen = document.getElementById('authScreen');
+        const authTabs = authScreen ? authScreen.querySelectorAll('.auth-tab') : [];
+        const authMessage = document.getElementById('authMessage');
+        const authLoginForm = document.getElementById('authLoginForm');
+        const authSignupForm = document.getElementById('authSignupForm');
+        const navAccount = document.getElementById('navAccount');
+        const navAccountName = document.getElementById('navAccountName');
+        const logoutButton = document.getElementById('logoutButton');
         let activeCategory = 'الكل';
         let activeView = 'grid';
         let currentProjectId = null;
+          const journeyGalleryModal = document.getElementById('journeyGalleryModal');
+          const journeyGalleryStage = document.getElementById('journeyGalleryStage');
+          const journeyGalleryImage = document.getElementById('journeyGalleryMain');
+          const journeyGalleryCaption = document.getElementById('journeyGalleryCaption');
+          const journeyGalleryThumbs = document.getElementById('journeyGalleryThumbs');
+          const journeyGalleryEmpty = document.getElementById('journeyGalleryEmpty');
+          const journeyGalleryCounter = document.getElementById('journeyGalleryCounter');
+          const journeyPrevBtn = document.getElementById('journeyGalleryPrev');
+          const journeyNextBtn = document.getElementById('journeyGalleryNext');
+          const journeyControls = journeyGalleryModal ? journeyGalleryModal.querySelector('.journey-modal__controls') : null;
+          const journeyCloseBtn = journeyGalleryModal ? journeyGalleryModal.querySelector('.journey-modal__close') : null;
+
+          function normalizeJourneyGalleryItems(source) {
+              if (!Array.isArray(source)) return [];
+              return source
+                  .map(item => {
+                      if (typeof item === 'string') {
+                          const src = item.trim();
+                          if (!src) return null;
+                          return { src, caption: '', alt: '', thumb: '' };
+                      }
+                      if (item && typeof item === 'object') {
+                          const src = typeof item.src === 'string' ? item.src.trim() : '';
+                          if (!src) return null;
+                          return {
+                              src,
+                              caption: typeof item.caption === 'string' ? item.caption : '',
+                              alt: typeof item.alt === 'string' ? item.alt : '',
+                              thumb: typeof item.thumb === 'string' ? item.thumb : ''
+                          };
+                      }
+                      return null;
+                  })
+                  .filter(Boolean);
+          }
+
+          let journeyGalleryImages = normalizeJourneyGalleryItems(window.JOURNEY_GALLERY_IMAGES);
+          let journeyGalleryIndex = 0;
+        const AUTH_USERS_KEY = 'mishkat-auth-users';
+        const AUTH_SESSION_KEY = 'mishkat-auth-session';
+        let currentUser = null;
+        let authMode = 'login';
+
+          function updateBodyModalState() {
+              const isProjectOpen = projectModal && projectModal.classList.contains('active');
+              const isJourneyOpen = journeyGalleryModal && journeyGalleryModal.classList.contains('active');
+              if (isProjectOpen || isJourneyOpen) {
+                  document.body.classList.add('modal-open');
+              } else {
+                  document.body.classList.remove('modal-open');
+              }
+          }
+
+        function renderApprovedSuggestions() {
+            if (!approvedSuggestionsContainer || !approvedSuggestionsList) return;
+            if (!approvedSuggestionsData.length) {
+                approvedSuggestionsContainer.style.display = 'none';
+                return;
+            }
+
+            approvedSuggestionsList.innerHTML = approvedSuggestionsData.map((item, idx) => {
+                const title = typeof item.title === 'string' ? item.title : `اقتراح ${idx + 1}`;
+                const summary = typeof item.summary === 'string' ? item.summary : '';
+                return `
+                    <li class="approved-suggestions__item">
+                        <h4>${title}</h4>
+                        ${summary ? `<p>${summary}</p>` : ''}
+                    </li>
+                `;
+            }).join('');
+        }
 
         function formatTeamLabel(size) {
             if (size === 1) return 'طالب واحد';
@@ -572,27 +770,29 @@
             }
         }
 
-        function showProjectModal(id) {
-            const project = projects.find(item => item.id === Number(id));
-            if (!project || !projectModal) return;
-            currentProjectId = project.id;
-            populateProjectModal(project);
-            projectModal.classList.add('active');
-            projectModal.setAttribute('aria-hidden', 'false');
-            document.body.classList.add('modal-open');
-            const closeButton = projectModal.querySelector('.project-modal__close');
-            if (closeButton) closeButton.focus({ preventScroll: true });
-        }
+          function showProjectModal(id) {
+              if (!ensureAuthenticated()) return;
+              const project = projects.find(item => item.id === Number(id));
+              if (!project || !projectModal) return;
+              currentProjectId = project.id;
+              populateProjectModal(project);
+              projectModal.classList.add('active');
+              projectModal.setAttribute('aria-hidden', 'false');
+              updateBodyModalState();
+              const closeButton = projectModal.querySelector('.project-modal__close');
+              if (closeButton) closeButton.focus({ preventScroll: true });
+          }
 
-        function closeProjectModal() {
-            if (!projectModal) return;
-            projectModal.classList.remove('active');
-            projectModal.setAttribute('aria-hidden', 'true');
-            document.body.classList.remove('modal-open');
-            currentProjectId = null;
-        }
+          function closeProjectModal() {
+              if (!projectModal) return;
+              projectModal.classList.remove('active');
+              projectModal.setAttribute('aria-hidden', 'true');
+              updateBodyModalState();
+              currentProjectId = null;
+          }
 
         function openProject(filename) {
+              if (!ensureAuthenticated()) return;
             mainContent.style.display = 'none';
             projectViewer.classList.add('active');
             backButton.style.display = 'block';
@@ -612,6 +812,406 @@
         window.goBack = goBack;
         window.showProjectModal = showProjectModal;
         window.closeProjectModal = closeProjectModal;
+
+          function syncJourneyGallery() {
+              if (!journeyGalleryModal) return;
+              const hasImages = journeyGalleryImages.length > 0;
+              const multiple = journeyGalleryImages.length > 1;
+
+              if (journeyGalleryStage) {
+                  journeyGalleryStage.style.display = hasImages ? '' : 'none';
+              }
+              if (journeyGalleryEmpty) {
+                  journeyGalleryEmpty.style.display = hasImages ? 'none' : 'block';
+              }
+              if (journeyPrevBtn) {
+                  journeyPrevBtn.disabled = !multiple;
+              }
+              if (journeyNextBtn) {
+                  journeyNextBtn.disabled = !multiple;
+              }
+              if (journeyControls) {
+                  journeyControls.style.display = hasImages ? '' : 'none';
+              }
+
+              if (!hasImages) {
+                  if (journeyGalleryCounter) {
+                      journeyGalleryCounter.textContent = '';
+                  }
+                  if (journeyGalleryThumbs) {
+                      journeyGalleryThumbs.innerHTML = '';
+                  }
+                  if (journeyGalleryImage) {
+                      journeyGalleryImage.removeAttribute('src');
+                  }
+                  if (journeyGalleryCaption) {
+                      journeyGalleryCaption.textContent = '';
+                  }
+                  return;
+              }
+
+              if (journeyGalleryIndex < 0 || journeyGalleryIndex >= journeyGalleryImages.length) {
+                  journeyGalleryIndex = 0;
+              }
+
+              const current = journeyGalleryImages[journeyGalleryIndex];
+              if (journeyGalleryImage) {
+                  journeyGalleryImage.src = current.src;
+                  journeyGalleryImage.alt = current.alt || 'صورة من ألبوم رحلة الإنجاز';
+              }
+              if (journeyGalleryCaption) {
+                  journeyGalleryCaption.textContent = current.caption || '';
+                  journeyGalleryCaption.style.display = current.caption ? '' : 'none';
+              }
+              if (journeyGalleryCounter) {
+                  journeyGalleryCounter.textContent = `${journeyGalleryIndex + 1} / ${journeyGalleryImages.length}`;
+              }
+              if (journeyGalleryThumbs) {
+                  journeyGalleryThumbs.innerHTML = journeyGalleryImages.map((item, idx) => {
+                      const thumbSrc = item.thumb && item.thumb.trim() ? item.thumb : item.src;
+                      const isActive = idx === journeyGalleryIndex;
+                      const safeAlt = item.alt ? `مصغّر لـ ${item.alt}` : `صورة رقم ${idx + 1}`;
+                      return `
+                          <button type="button" class="journey-gallery__thumb ${isActive ? 'active' : ''}" data-journey-index="${idx}" aria-label="${safeAlt}" ${isActive ? 'aria-current="true"' : ''}>
+                              <img src="${thumbSrc}" alt="${safeAlt}">
+                          </button>
+                      `;
+                  }).join('');
+              }
+          }
+
+          function setJourneyGalleryImages(source) {
+              journeyGalleryImages = normalizeJourneyGalleryItems(source);
+              if (journeyGalleryIndex >= journeyGalleryImages.length) {
+                  journeyGalleryIndex = journeyGalleryImages.length ? journeyGalleryImages.length - 1 : 0;
+              }
+              syncJourneyGallery();
+          }
+
+          function openJourneyGallery(startIndex = 0) {
+              if (!journeyGalleryModal) return;
+              if (typeof startIndex === 'number' && !Number.isNaN(startIndex)) {
+                  journeyGalleryIndex = Math.min(Math.max(0, Math.floor(startIndex)), Math.max(0, journeyGalleryImages.length - 1));
+              }
+              syncJourneyGallery();
+              journeyGalleryModal.classList.add('active');
+              journeyGalleryModal.setAttribute('aria-hidden', 'false');
+              updateBodyModalState();
+              if (journeyCloseBtn) {
+                  journeyCloseBtn.focus({ preventScroll: true });
+              }
+          }
+
+          function closeJourneyGallery() {
+              if (!journeyGalleryModal) return;
+              journeyGalleryModal.classList.remove('active');
+              journeyGalleryModal.setAttribute('aria-hidden', 'true');
+              updateBodyModalState();
+          }
+
+          function showNextJourneyImage() {
+              if (journeyGalleryImages.length <= 1) return;
+              journeyGalleryIndex = (journeyGalleryIndex + 1) % journeyGalleryImages.length;
+              syncJourneyGallery();
+          }
+
+          function showPrevJourneyImage() {
+              if (journeyGalleryImages.length <= 1) return;
+              journeyGalleryIndex = (journeyGalleryIndex - 1 + journeyGalleryImages.length) % journeyGalleryImages.length;
+              syncJourneyGallery();
+          }
+
+          function initJourneyGallery() {
+              const navTrigger = document.querySelector('[data-gallery-trigger="journey"]');
+              if (navTrigger) {
+                  navTrigger.addEventListener('click', (event) => {
+                      event.preventDefault();
+                      openJourneyGallery(0);
+                  });
+              }
+
+              if (journeyGalleryModal) {
+                  const dialog = journeyGalleryModal.querySelector('.journey-modal__dialog');
+                  if (dialog) {
+                      dialog.addEventListener('click', (event) => event.stopPropagation());
+                  }
+                  journeyGalleryModal.addEventListener('click', (event) => {
+                      if (event.target === journeyGalleryModal) {
+                          closeJourneyGallery();
+                      }
+                  });
+              }
+
+              if (journeyPrevBtn) {
+                  journeyPrevBtn.addEventListener('click', () => showPrevJourneyImage());
+              }
+              if (journeyNextBtn) {
+                  journeyNextBtn.addEventListener('click', () => showNextJourneyImage());
+              }
+              if (journeyGalleryThumbs) {
+                  journeyGalleryThumbs.addEventListener('click', (event) => {
+                      const target = event.target;
+                      if (!(target instanceof Element)) return;
+                      const button = target.closest('[data-journey-index]');
+                      if (!button) return;
+                      const idx = Number(button.getAttribute('data-journey-index'));
+                      if (Number.isNaN(idx)) return;
+                      journeyGalleryIndex = idx;
+                      syncJourneyGallery();
+                  });
+              }
+
+              syncJourneyGallery();
+          }
+
+          window.openJourneyGallery = openJourneyGallery;
+          window.closeJourneyGallery = closeJourneyGallery;
+          window.setJourneyGalleryImages = setJourneyGalleryImages;
+
+          function setAuthMessage(type = '', text = '') {
+              if (!authMessage) return;
+              authMessage.textContent = text || '';
+              authMessage.className = 'auth-message';
+              if (type) {
+                  authMessage.classList.add(`auth-message--${type}`);
+              }
+          }
+
+          function switchAuthMode(mode) {
+              if (!authScreen) return;
+              authMode = mode === 'signup' ? 'signup' : 'login';
+              authTabs.forEach((tab) => {
+                  const tabMode = tab.dataset.authMode;
+                  const isActive = tabMode === authMode;
+                  tab.classList.toggle('active', isActive);
+                  tab.setAttribute('aria-selected', isActive ? 'true' : 'false');
+              });
+              if (authLoginForm) authLoginForm.hidden = authMode !== 'login';
+              if (authSignupForm) authSignupForm.hidden = authMode !== 'signup';
+              setAuthMessage('', '');
+              const targetForm = authMode === 'login' ? authLoginForm : authSignupForm;
+              if (targetForm) {
+                  const focusable = targetForm.querySelector('input');
+                  if (focusable) {
+                      requestAnimationFrame(() => focusable.focus({ preventScroll: true }));
+                  }
+              }
+          }
+
+          function showAuthScreen(mode = authMode) {
+              if (!authScreen) return;
+              switchAuthMode(mode);
+              authScreen.classList.add('is-visible');
+              authScreen.setAttribute('aria-hidden', 'false');
+              document.body.classList.add('auth-locked');
+          }
+
+          function hideAuthScreen() {
+              if (!authScreen) return;
+              authScreen.classList.remove('is-visible');
+              authScreen.setAttribute('aria-hidden', 'true');
+              document.body.classList.remove('auth-locked');
+              setAuthMessage('', '');
+          }
+
+          function applyAuthState() {
+              if (!navAccount) return;
+              if (currentUser) {
+                  navAccount.hidden = false;
+                  if (navAccountName) {
+                      const displayName = currentUser.name ? currentUser.name.trim() : currentUser.email;
+                      navAccountName.textContent = displayName.split(' ')[0] || displayName;
+                  }
+              } else {
+                  navAccount.hidden = true;
+                  if (navAccountName) navAccountName.textContent = '';
+              }
+          }
+
+          function getStoredUsers() {
+              try {
+                  const raw = localStorage.getItem(AUTH_USERS_KEY);
+                  if (!raw) return [];
+                  const parsed = JSON.parse(raw);
+                  return Array.isArray(parsed) ? parsed : [];
+              } catch (error) {
+                  return [];
+              }
+          }
+
+          function setStoredUsers(users) {
+              try {
+                  localStorage.setItem(AUTH_USERS_KEY, JSON.stringify(users));
+              } catch {}
+          }
+
+          function getActiveSession() {
+              try {
+                  const raw = sessionStorage.getItem(AUTH_SESSION_KEY);
+                  if (!raw) return null;
+                  const data = JSON.parse(raw);
+                  if (!data || typeof data !== 'object') return null;
+                  return data;
+              } catch (error) {
+                  return null;
+              }
+          }
+
+          function setActiveSession(user) {
+              if (!user) {
+                  sessionStorage.removeItem(AUTH_SESSION_KEY);
+                  currentUser = null;
+                  return;
+              }
+              const sessionData = {
+                  id: user.id,
+                  name: user.name,
+                  email: user.email,
+              };
+              sessionStorage.setItem(AUTH_SESSION_KEY, JSON.stringify(sessionData));
+              currentUser = sessionData;
+          }
+
+          function clearAuthForms() {
+              if (authLoginForm) authLoginForm.reset();
+              if (authSignupForm) authSignupForm.reset();
+          }
+
+          function bytesToHex(buffer) {
+              return Array.from(new Uint8Array(buffer))
+                  .map((b) => b.toString(16).padStart(2, '0'))
+                  .join('');
+          }
+
+          async function hashPassword(password) {
+              if (window.crypto && window.crypto.subtle) {
+                  const encoder = new TextEncoder();
+                  const data = encoder.encode(password);
+                  const digest = await window.crypto.subtle.digest('SHA-256', data);
+                  return bytesToHex(digest);
+              }
+              return password;
+          }
+
+          function ensureAuthenticated() {
+              if (currentUser) return true;
+              showAuthScreen('login');
+              setAuthMessage('error', 'يلزم تسجيل الدخول لمتابعة هذه الخطوة.');
+              return false;
+          }
+
+          function initAuthSystem() {
+              if (!authScreen) return;
+
+              if (authTabs.length) {
+                  authTabs.forEach((tab) => {
+                      tab.addEventListener('click', () => {
+                          const mode = tab.dataset.authMode;
+                          switchAuthMode(mode);
+                      });
+                  });
+              }
+
+              if (authLoginForm) {
+                  authLoginForm.addEventListener('submit', async (event) => {
+                      event.preventDefault();
+                      if (!authLoginForm.reportValidity()) return;
+                      const emailInput = authLoginForm.querySelector('#loginEmail');
+                      const passwordInput = authLoginForm.querySelector('#loginPassword');
+                      const email = emailInput && emailInput.value ? emailInput.value.trim().toLowerCase() : '';
+                      const password = passwordInput && passwordInput.value ? passwordInput.value : '';
+                      if (!email || !password) {
+                          setAuthMessage('error', 'يرجى إدخال البريد الإلكتروني وكلمة المرور.');
+                          return;
+                      }
+                      const users = getStoredUsers();
+                      const user = users.find((item) => item.email === email);
+                      if (!user) {
+                          setAuthMessage('error', 'الحساب غير موجود. يرجى إنشاء حساب أولاً.');
+                          return;
+                      }
+                      const hash = await hashPassword(password);
+                      if (hash !== user.passwordHash) {
+                          setAuthMessage('error', 'بيانات الدخول غير صحيحة. حاول مرة أخرى.');
+                          return;
+                      }
+                      setActiveSession(user);
+                      applyAuthState();
+                      hideAuthScreen();
+                      clearAuthForms();
+                  });
+              }
+
+              if (authSignupForm) {
+                  authSignupForm.addEventListener('submit', async (event) => {
+                      event.preventDefault();
+                      if (!authSignupForm.reportValidity()) return;
+                      const nameInput = authSignupForm.querySelector('#signupName');
+                      const emailInput = authSignupForm.querySelector('#signupEmail');
+                      const passwordInput = authSignupForm.querySelector('#signupPassword');
+                      const confirmInput = authSignupForm.querySelector('#signupPasswordConfirm');
+
+                      const name = nameInput && nameInput.value ? nameInput.value.trim() : '';
+                      const email = emailInput && emailInput.value ? emailInput.value.trim().toLowerCase() : '';
+                      const password = passwordInput && passwordInput.value ? passwordInput.value : '';
+                      const confirm = confirmInput && confirmInput.value ? confirmInput.value : '';
+
+                      if (!name || !email || !password || !confirm) {
+                          setAuthMessage('error', 'يرجى تعبئة جميع الحقول المطلوبة.');
+                          return;
+                      }
+                      if (password.length < 6) {
+                          setAuthMessage('error', 'كلمة المرور يجب أن تتكون من 6 أحرف على الأقل.');
+                          return;
+                      }
+                      if (password !== confirm) {
+                          setAuthMessage('error', 'تأكيد كلمة المرور غير مطابق.');
+                          return;
+                      }
+
+                      const users = getStoredUsers();
+                      if (users.some((item) => item.email === email)) {
+                          setAuthMessage('error', 'هذا البريد مسجل بالفعل. يرجى استخدام بريد آخر أو تسجيل الدخول.');
+                          return;
+                      }
+
+                      const passwordHash = await hashPassword(password);
+                      const newUser = {
+                          id: `user-${Date.now()}`,
+                          name,
+                          email,
+                          passwordHash,
+                          createdAt: new Date().toISOString(),
+                      };
+                      users.push(newUser);
+                      setStoredUsers(users);
+                      setActiveSession(newUser);
+                      applyAuthState();
+                      hideAuthScreen();
+                      clearAuthForms();
+                  });
+              }
+
+              if (logoutButton) {
+                  logoutButton.addEventListener('click', () => {
+                      setActiveSession(null);
+                      applyAuthState();
+                      clearAuthForms();
+                      showAuthScreen('login');
+                      setAuthMessage('success', 'تم تسجيل الخروج بنجاح.');
+                  });
+              }
+
+              const existingSession = getActiveSession();
+              if (existingSession) {
+                  currentUser = existingSession;
+                  applyAuthState();
+                  hideAuthScreen();
+              } else {
+                  applyAuthState();
+                  showAuthScreen('signup');
+              }
+          }
 
         function animateCounters() {
             const counters = document.querySelectorAll('[data-count]');
@@ -660,13 +1260,32 @@
         document.addEventListener('DOMContentLoaded', () => {
             renderFilters();
             renderProjects();
+            renderApprovedSuggestions();
             animateCounters();
+            initJourneyGallery();
+            initAuthSystem();
         });
 
         document.addEventListener('keydown', (event) => {
-            if (event.key === 'Escape' && projectModal && projectModal.classList.contains('active')) {
-                closeProjectModal();
-            }
+              if (event.key === 'Escape') {
+                  if (journeyGalleryModal && journeyGalleryModal.classList.contains('active')) {
+                      closeJourneyGallery();
+                      return;
+                  }
+                  if (projectModal && projectModal.classList.contains('active')) {
+                      closeProjectModal();
+                      return;
+                  }
+              }
+              if (journeyGalleryModal && journeyGalleryModal.classList.contains('active')) {
+                  if (event.key === 'ArrowLeft') {
+                      event.preventDefault();
+                      showNextJourneyImage();
+                  } else if (event.key === 'ArrowRight') {
+                      event.preventDefault();
+                      showPrevJourneyImage();
+                  }
+              }
         });
 
         if (projectModal) {
