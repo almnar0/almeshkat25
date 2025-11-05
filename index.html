@@ -13,6 +13,52 @@
     <title>قسم التقنية - مدارس المشكاة</title>
 </head>
 <body>
+    <div class="auth-screen" id="authScreen" aria-hidden="true">
+        <div class="auth-card" role="dialog" aria-labelledby="authTitle" aria-describedby="authSubtitle">
+            <div class="auth-card__logo">
+                <img src="assets/logo.svg" alt="شعار مدارس المشكاة">
+            </div>
+            <h2 class="auth-card__title" id="authTitle">أهلاً بك في قسم التقنية</h2>
+            <p class="auth-card__subtitle" id="authSubtitle">يرجى إنشاء حساب أو تسجيل الدخول للمتابعة واستكشاف رحلات الإنجاز.</p>
+            <div class="auth-tabs" role="tablist">
+                <button type="button" class="auth-tab active" data-auth-mode="login" role="tab" aria-selected="true">تسجيل الدخول</button>
+                <button type="button" class="auth-tab" data-auth-mode="signup" role="tab" aria-selected="false">إنشاء حساب</button>
+            </div>
+            <div class="auth-message" id="authMessage" role="status" aria-live="polite"></div>
+            <form class="auth-form" id="authLoginForm" data-auth-form="login" novalidate>
+                <div class="auth-field">
+                    <label for="loginEmail">البريد الإلكتروني</label>
+                    <input type="email" id="loginEmail" name="email" autocomplete="username" required>
+                </div>
+                <div class="auth-field">
+                    <label for="loginPassword">كلمة المرور</label>
+                    <input type="password" id="loginPassword" name="password" autocomplete="current-password" required minlength="6">
+                </div>
+                <button type="submit" class="auth-submit">تسجيل الدخول</button>
+            </form>
+            <form class="auth-form" id="authSignupForm" data-auth-form="signup" novalidate hidden>
+                <div class="auth-field">
+                    <label for="signupName">الاسم الكامل</label>
+                    <input type="text" id="signupName" name="name" autocomplete="name" required>
+                </div>
+                <div class="auth-field">
+                    <label for="signupEmail">البريد الإلكتروني</label>
+                    <input type="email" id="signupEmail" name="email" autocomplete="email" required>
+                </div>
+                <div class="auth-field">
+                    <label for="signupPassword">كلمة المرور</label>
+                    <input type="password" id="signupPassword" name="password" autocomplete="new-password" required minlength="6">
+                    <small class="auth-hint">يجب أن تتكون كلمة المرور من 6 أحرف على الأقل.</small>
+                </div>
+                <div class="auth-field">
+                    <label for="signupPasswordConfirm">تأكيد كلمة المرور</label>
+                    <input type="password" id="signupPasswordConfirm" name="passwordConfirm" autocomplete="new-password" required minlength="6">
+                </div>
+                <button type="submit" class="auth-submit">إنشاء حساب</button>
+            </form>
+        </div>
+    </div>
+
     <button class="back-button" aria-hidden="true" onclick="goBack()">← العودة للمشاريع</button>
 
     <div class="page-wrapper">
@@ -29,8 +75,29 @@
                     <a class="nav-link" href="#timeline" data-gallery-trigger="journey">رحلة الإنجاز</a>
                     <a class="nav-link" href="#spotlight">أبرز الأعمال</a>
                     <button class="nav-cta" type="button" onclick="document.getElementById('reviewsAnchor').scrollIntoView({ behavior: 'smooth' });">أصوات الزوار</button>
+                      <div class="nav-account" id="navAccount" hidden>
+                          <div class="nav-account__pill">
+                              <span class="nav-account__icon" aria-hidden="true">👤</span>
+                              <div class="nav-account__info">
+                                  <span class="nav-account__label">مرحباً</span>
+                                  <strong class="nav-account__name" id="navAccountName"></strong>
+                              </div>
+                          </div>
+                          <button class="nav-account__logout" type="button" id="logoutButton">تسجيل الخروج</button>
+                      </div>
                 </div>
             </nav>
+
+              <aside class="approved-suggestions" id="approvedSuggestions" aria-labelledby="approvedSuggestionsTitle">
+                  <div class="approved-suggestions__header">
+                      <span class="approved-suggestions__icon" aria-hidden="true">💡</span>
+                      <div>
+                          <h3 id="approvedSuggestionsTitle">اقتراحات معتمدة</h3>
+                          <p>إضاءات مختارة من أفكار مجتمعنا.</p>
+                      </div>
+                  </div>
+                  <ul class="approved-suggestions__list" id="approvedSuggestionsList"></ul>
+              </aside>
 
             <header class="hero container" id="home">
                 <div class="hero-body">
@@ -397,6 +464,21 @@
             }
         ];
 
+      const approvedSuggestionsData = [
+          {
+              title: 'تحدي الابتكار الأسبوعي',
+              summary: 'تخصيص 20 دقيقة في الحصة الأخيرة كل أربعاء لعرض ابتكارات طلابية سريعة مع تصويت رقمي.'
+          },
+          {
+              title: 'زاوية قراءة واقع معزز',
+              summary: 'تهيئة ركن صغير يدعم الواقع المعزز للموسوعة الرقمية لتشجيع القراءة التفاعلية.'
+          },
+          {
+              title: 'مسار سفراء التقنية',
+              summary: 'توزيع مهام إشراف تقنية على طلاب مختارين وتوثيق إنجازاتهم في لوحة شرف رقمية.'
+          }
+      ];
+
         const grid = document.getElementById('projectsGrid');
         const filtersContainer = document.getElementById('projectsFilters');
         const viewToggle = document.getElementById('projectsViewToggle');
@@ -414,6 +496,16 @@
         const modalTags = document.getElementById('projectModalTags');
         const modalMeta = document.getElementById('projectModalMeta');
         const modalLaunch = document.getElementById('projectModalLaunch');
+        const approvedSuggestionsContainer = document.getElementById('approvedSuggestions');
+        const approvedSuggestionsList = document.getElementById('approvedSuggestionsList');
+        const authScreen = document.getElementById('authScreen');
+        const authTabs = authScreen ? authScreen.querySelectorAll('.auth-tab') : [];
+        const authMessage = document.getElementById('authMessage');
+        const authLoginForm = document.getElementById('authLoginForm');
+        const authSignupForm = document.getElementById('authSignupForm');
+        const navAccount = document.getElementById('navAccount');
+        const navAccountName = document.getElementById('navAccountName');
+        const logoutButton = document.getElementById('logoutButton');
         let activeCategory = 'الكل';
         let activeView = 'grid';
         let currentProjectId = null;
@@ -455,6 +547,10 @@
 
           let journeyGalleryImages = normalizeJourneyGalleryItems(window.JOURNEY_GALLERY_IMAGES);
           let journeyGalleryIndex = 0;
+        const AUTH_USERS_KEY = 'mishkat-auth-users';
+        const AUTH_SESSION_KEY = 'mishkat-auth-session';
+        let currentUser = null;
+        let authMode = 'login';
 
           function updateBodyModalState() {
               const isProjectOpen = projectModal && projectModal.classList.contains('active');
@@ -465,6 +561,25 @@
                   document.body.classList.remove('modal-open');
               }
           }
+
+        function renderApprovedSuggestions() {
+            if (!approvedSuggestionsContainer || !approvedSuggestionsList) return;
+            if (!approvedSuggestionsData.length) {
+                approvedSuggestionsContainer.style.display = 'none';
+                return;
+            }
+
+            approvedSuggestionsList.innerHTML = approvedSuggestionsData.map((item, idx) => {
+                const title = typeof item.title === 'string' ? item.title : `اقتراح ${idx + 1}`;
+                const summary = typeof item.summary === 'string' ? item.summary : '';
+                return `
+                    <li class="approved-suggestions__item">
+                        <h4>${title}</h4>
+                        ${summary ? `<p>${summary}</p>` : ''}
+                    </li>
+                `;
+            }).join('');
+        }
 
         function formatTeamLabel(size) {
             if (size === 1) return 'طالب واحد';
@@ -656,6 +771,7 @@
         }
 
           function showProjectModal(id) {
+              if (!ensureAuthenticated()) return;
               const project = projects.find(item => item.id === Number(id));
               if (!project || !projectModal) return;
               currentProjectId = project.id;
@@ -676,6 +792,7 @@
           }
 
         function openProject(filename) {
+              if (!ensureAuthenticated()) return;
             mainContent.style.display = 'none';
             projectViewer.classList.add('active');
             backButton.style.display = 'block';
@@ -851,6 +968,251 @@
           window.closeJourneyGallery = closeJourneyGallery;
           window.setJourneyGalleryImages = setJourneyGalleryImages;
 
+          function setAuthMessage(type = '', text = '') {
+              if (!authMessage) return;
+              authMessage.textContent = text || '';
+              authMessage.className = 'auth-message';
+              if (type) {
+                  authMessage.classList.add(`auth-message--${type}`);
+              }
+          }
+
+          function switchAuthMode(mode) {
+              if (!authScreen) return;
+              authMode = mode === 'signup' ? 'signup' : 'login';
+              authTabs.forEach((tab) => {
+                  const tabMode = tab.dataset.authMode;
+                  const isActive = tabMode === authMode;
+                  tab.classList.toggle('active', isActive);
+                  tab.setAttribute('aria-selected', isActive ? 'true' : 'false');
+              });
+              if (authLoginForm) authLoginForm.hidden = authMode !== 'login';
+              if (authSignupForm) authSignupForm.hidden = authMode !== 'signup';
+              setAuthMessage('', '');
+              const targetForm = authMode === 'login' ? authLoginForm : authSignupForm;
+              if (targetForm) {
+                  const focusable = targetForm.querySelector('input');
+                  if (focusable) {
+                      requestAnimationFrame(() => focusable.focus({ preventScroll: true }));
+                  }
+              }
+          }
+
+          function showAuthScreen(mode = authMode) {
+              if (!authScreen) return;
+              switchAuthMode(mode);
+              authScreen.classList.add('is-visible');
+              authScreen.setAttribute('aria-hidden', 'false');
+              document.body.classList.add('auth-locked');
+          }
+
+          function hideAuthScreen() {
+              if (!authScreen) return;
+              authScreen.classList.remove('is-visible');
+              authScreen.setAttribute('aria-hidden', 'true');
+              document.body.classList.remove('auth-locked');
+              setAuthMessage('', '');
+          }
+
+          function applyAuthState() {
+              if (!navAccount) return;
+              if (currentUser) {
+                  navAccount.hidden = false;
+                  if (navAccountName) {
+                      const displayName = currentUser.name ? currentUser.name.trim() : currentUser.email;
+                      navAccountName.textContent = displayName.split(' ')[0] || displayName;
+                  }
+              } else {
+                  navAccount.hidden = true;
+                  if (navAccountName) navAccountName.textContent = '';
+              }
+          }
+
+          function getStoredUsers() {
+              try {
+                  const raw = localStorage.getItem(AUTH_USERS_KEY);
+                  if (!raw) return [];
+                  const parsed = JSON.parse(raw);
+                  return Array.isArray(parsed) ? parsed : [];
+              } catch (error) {
+                  return [];
+              }
+          }
+
+          function setStoredUsers(users) {
+              try {
+                  localStorage.setItem(AUTH_USERS_KEY, JSON.stringify(users));
+              } catch {}
+          }
+
+          function getActiveSession() {
+              try {
+                  const raw = sessionStorage.getItem(AUTH_SESSION_KEY);
+                  if (!raw) return null;
+                  const data = JSON.parse(raw);
+                  if (!data || typeof data !== 'object') return null;
+                  return data;
+              } catch (error) {
+                  return null;
+              }
+          }
+
+          function setActiveSession(user) {
+              if (!user) {
+                  sessionStorage.removeItem(AUTH_SESSION_KEY);
+                  currentUser = null;
+                  return;
+              }
+              const sessionData = {
+                  id: user.id,
+                  name: user.name,
+                  email: user.email,
+              };
+              sessionStorage.setItem(AUTH_SESSION_KEY, JSON.stringify(sessionData));
+              currentUser = sessionData;
+          }
+
+          function clearAuthForms() {
+              if (authLoginForm) authLoginForm.reset();
+              if (authSignupForm) authSignupForm.reset();
+          }
+
+          function bytesToHex(buffer) {
+              return Array.from(new Uint8Array(buffer))
+                  .map((b) => b.toString(16).padStart(2, '0'))
+                  .join('');
+          }
+
+          async function hashPassword(password) {
+              if (window.crypto && window.crypto.subtle) {
+                  const encoder = new TextEncoder();
+                  const data = encoder.encode(password);
+                  const digest = await window.crypto.subtle.digest('SHA-256', data);
+                  return bytesToHex(digest);
+              }
+              return password;
+          }
+
+          function ensureAuthenticated() {
+              if (currentUser) return true;
+              showAuthScreen('login');
+              setAuthMessage('error', 'يلزم تسجيل الدخول لمتابعة هذه الخطوة.');
+              return false;
+          }
+
+          function initAuthSystem() {
+              if (!authScreen) return;
+
+              if (authTabs.length) {
+                  authTabs.forEach((tab) => {
+                      tab.addEventListener('click', () => {
+                          const mode = tab.dataset.authMode;
+                          switchAuthMode(mode);
+                      });
+                  });
+              }
+
+              if (authLoginForm) {
+                  authLoginForm.addEventListener('submit', async (event) => {
+                      event.preventDefault();
+                      if (!authLoginForm.reportValidity()) return;
+                      const emailInput = authLoginForm.querySelector('#loginEmail');
+                      const passwordInput = authLoginForm.querySelector('#loginPassword');
+                      const email = emailInput && emailInput.value ? emailInput.value.trim().toLowerCase() : '';
+                      const password = passwordInput && passwordInput.value ? passwordInput.value : '';
+                      if (!email || !password) {
+                          setAuthMessage('error', 'يرجى إدخال البريد الإلكتروني وكلمة المرور.');
+                          return;
+                      }
+                      const users = getStoredUsers();
+                      const user = users.find((item) => item.email === email);
+                      if (!user) {
+                          setAuthMessage('error', 'الحساب غير موجود. يرجى إنشاء حساب أولاً.');
+                          return;
+                      }
+                      const hash = await hashPassword(password);
+                      if (hash !== user.passwordHash) {
+                          setAuthMessage('error', 'بيانات الدخول غير صحيحة. حاول مرة أخرى.');
+                          return;
+                      }
+                      setActiveSession(user);
+                      applyAuthState();
+                      hideAuthScreen();
+                      clearAuthForms();
+                  });
+              }
+
+              if (authSignupForm) {
+                  authSignupForm.addEventListener('submit', async (event) => {
+                      event.preventDefault();
+                      if (!authSignupForm.reportValidity()) return;
+                      const nameInput = authSignupForm.querySelector('#signupName');
+                      const emailInput = authSignupForm.querySelector('#signupEmail');
+                      const passwordInput = authSignupForm.querySelector('#signupPassword');
+                      const confirmInput = authSignupForm.querySelector('#signupPasswordConfirm');
+
+                      const name = nameInput && nameInput.value ? nameInput.value.trim() : '';
+                      const email = emailInput && emailInput.value ? emailInput.value.trim().toLowerCase() : '';
+                      const password = passwordInput && passwordInput.value ? passwordInput.value : '';
+                      const confirm = confirmInput && confirmInput.value ? confirmInput.value : '';
+
+                      if (!name || !email || !password || !confirm) {
+                          setAuthMessage('error', 'يرجى تعبئة جميع الحقول المطلوبة.');
+                          return;
+                      }
+                      if (password.length < 6) {
+                          setAuthMessage('error', 'كلمة المرور يجب أن تتكون من 6 أحرف على الأقل.');
+                          return;
+                      }
+                      if (password !== confirm) {
+                          setAuthMessage('error', 'تأكيد كلمة المرور غير مطابق.');
+                          return;
+                      }
+
+                      const users = getStoredUsers();
+                      if (users.some((item) => item.email === email)) {
+                          setAuthMessage('error', 'هذا البريد مسجل بالفعل. يرجى استخدام بريد آخر أو تسجيل الدخول.');
+                          return;
+                      }
+
+                      const passwordHash = await hashPassword(password);
+                      const newUser = {
+                          id: `user-${Date.now()}`,
+                          name,
+                          email,
+                          passwordHash,
+                          createdAt: new Date().toISOString(),
+                      };
+                      users.push(newUser);
+                      setStoredUsers(users);
+                      setActiveSession(newUser);
+                      applyAuthState();
+                      hideAuthScreen();
+                      clearAuthForms();
+                  });
+              }
+
+              if (logoutButton) {
+                  logoutButton.addEventListener('click', () => {
+                      setActiveSession(null);
+                      applyAuthState();
+                      clearAuthForms();
+                      showAuthScreen('login');
+                      setAuthMessage('success', 'تم تسجيل الخروج بنجاح.');
+                  });
+              }
+
+              const existingSession = getActiveSession();
+              if (existingSession) {
+                  currentUser = existingSession;
+                  applyAuthState();
+                  hideAuthScreen();
+              } else {
+                  applyAuthState();
+                  showAuthScreen('signup');
+              }
+          }
+
         function animateCounters() {
             const counters = document.querySelectorAll('[data-count]');
             const observer = new IntersectionObserver((entries) => {
@@ -895,12 +1257,14 @@
             counters.forEach(counter => observer.observe(counter));
         }
 
-          document.addEventListener('DOMContentLoaded', () => {
-              renderFilters();
-              renderProjects();
-              animateCounters();
-              initJourneyGallery();
-          });
+        document.addEventListener('DOMContentLoaded', () => {
+            renderFilters();
+            renderProjects();
+            renderApprovedSuggestions();
+            animateCounters();
+            initJourneyGallery();
+            initAuthSystem();
+        });
 
         document.addEventListener('keydown', (event) => {
               if (event.key === 'Escape') {
