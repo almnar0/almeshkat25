@@ -36,17 +36,17 @@
     }
   }
 
-  // Minor prefetch for project pages when on index
-  function prefetchProjects() {
-    if (!location.pathname.endsWith('index.html') && location.pathname !== '/') return;
-    const links = ['project1.html', 'project3.html', 'project5.html', 'project9.html'];
-    links.forEach(href => {
-      const link = document.createElement('link');
-      link.rel = 'prefetch';
-      link.href = href;
-      document.head.appendChild(link);
-    });
-  }
+    // Minor prefetch for project pages when on index
+    function prefetchProjects() {
+      if (!location.pathname.endsWith('index.html') && location.pathname !== '/') return;
+      const links = ['project9.html', 'project1.html', 'project3.html', 'project5.html'];
+      links.forEach(href => {
+        const link = document.createElement('link');
+        link.rel = 'prefetch';
+        link.href = href;
+        document.head.appendChild(link);
+      });
+    }
 
   // Initialize
   enableLazyLoading();
