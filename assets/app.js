@@ -364,6 +364,8 @@
     if (document.querySelector('.theme-toggle')) return;
     const btn = document.createElement('button');
     btn.className = 'theme-toggle';
+    btn.id = 'globalThemeToggle';
+    btn.type = 'button';
     const icon = document.createElement('span');
     icon.className = 'icon';
     const label = document.createElement('span');
