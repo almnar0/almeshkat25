@@ -346,33 +346,23 @@ img {
   transform: translateY(-4px);
 }
 
-.hero-metrics {
+.hero-highlights {
+  margin: 8px 0 0;
+  padding: 0;
+  list-style: none;
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-  gap: 18px;
-  margin-top: 6px;
+  gap: 12px;
 }
 
-.metric {
-  padding: 18px;
+.hero-highlights li {
+  padding: 14px 18px;
   border-radius: var(--radius-sm);
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  box-shadow: 0 20px 50px rgba(15, 23, 42, 0.28);
-}
-
-.metric dt {
-  margin: 0 0 6px;
-  color: var(--text-muted);
-  font-weight: 600;
-  font-size: 0.88rem;
-}
-
-.metric dd {
-  margin: 0;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  box-shadow: 0 20px 48px rgba(15, 23, 42, 0.25);
   color: var(--heading);
-  font-weight: 800;
-  font-size: 1.9rem;
+  font-weight: 600;
+  line-height: 1.65;
 }
 
 .hero-visual {
@@ -529,87 +519,6 @@ img {
   top: -2px;
   color: var(--primary-2);
   font-size: 1.4rem;
-}
-
-/* ------------------قسم الأثر والنتائج------------------ */
-
-.impact-section {
-  margin-top: var(--section-spacing);
-}
-
-.impact-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: clamp(18px, 4vw, 24px);
-}
-
-.impact-card {
-  position: relative;
-  padding: 24px;
-  border-radius: var(--radius-md);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  background: linear-gradient(160deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0));
-  box-shadow: 0 24px 60px rgba(12, 18, 38, 0.28);
-  display: grid;
-  gap: 10px;
-  overflow: hidden;
-}
-
-.impact-card::after {
-  content: '';
-  position: absolute;
-  inset: auto -25% -35% -25%;
-  height: 60%;
-  background: radial-gradient(circle, rgba(99, 102, 241, 0.28), transparent 75%);
-  opacity: 0;
-  transition: opacity var(--transition-normal);
-}
-
-.impact-card:hover::after {
-  opacity: 1;
-}
-
-.impact-card span {
-  position: relative;
-  z-index: 1;
-}
-
-.impact-card .impact-value {
-  font-size: clamp(2rem, 4vw, 2.8rem);
-  font-weight: 800;
-  color: var(--heading);
-}
-
-.impact-card .impact-label {
-  color: var(--text-muted);
-  font-weight: 600;
-  letter-spacing: 0.02em;
-}
-
-.impact-card .impact-note {
-  color: rgba(255, 255, 255, 0.72);
-  font-size: 0.9rem;
-  line-height: 1.6;
-}
-
-.impact-card .trend {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 6px 12px;
-  border-radius: 999px;
-  font-size: 0.85rem;
-  font-weight: 700;
-}
-
-.trend.positive {
-  background: rgba(34, 197, 94, 0.22);
-  color: #bbf7d0;
-}
-
-.trend.negative {
-  background: rgba(248, 113, 113, 0.22);
-  color: #fecaca;
 }
 
 /* ------------------المشاريع------------------ */
@@ -1335,92 +1244,52 @@ body.modal-open {
   gap: clamp(20px, 4vw, 28px);
 }
 
-.student-metrics {
-  display: grid;
-  gap: 14px;
-}
-
-.student-metric {
-  padding: 20px;
+.student-voice-note {
+  padding: 24px;
   border-radius: var(--radius-md);
   border: 1px solid rgba(255, 255, 255, 0.12);
   background: rgba(12, 18, 38, 0.62);
   box-shadow: 0 26px 60px rgba(12, 18, 38, 0.32);
   display: grid;
-  gap: 8px;
+  gap: 12px;
 }
 
-.student-metric .metric-label {
-  color: var(--text-muted);
-  font-weight: 600;
-  font-size: 0.92rem;
-}
-
-.student-metric .metric-value {
-  color: var(--heading);
-  font-weight: 800;
-  font-size: 1.6rem;
-}
-
-.student-metric .metric-note {
-  color: rgba(255, 255, 255, 0.72);
-  font-size: 0.86rem;
-}
-
-.voice-roadmap {
-  padding: 22px;
-  border-radius: var(--radius-md);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  background: rgba(255, 255, 255, 0.06);
-  box-shadow: 0 24px 58px rgba(12, 18, 38, 0.32);
-  display: grid;
-  gap: 14px;
-}
-
-.voice-roadmap h3 {
+.student-voice-note h3 {
   margin: 0;
   color: var(--heading);
-  font-size: 1.22rem;
+  font-size: 1.24rem;
   font-weight: 800;
 }
 
-.voice-roadmap-list {
+.student-voice-note p {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.75);
+  line-height: 1.7;
+}
+
+.note-list {
   list-style: none;
   margin: 0;
   padding: 0;
   display: grid;
-  gap: 12px;
+  gap: 10px;
 }
 
-.voice-roadmap-item {
+.note-list li {
   position: relative;
-  padding-inline-start: 16px;
+  padding-inline-start: 22px;
+  color: var(--heading);
+  font-weight: 600;
+  line-height: 1.6;
 }
 
-.voice-roadmap-item::before {
-  content: '';
+.note-list li::before {
+  content: '•';
   position: absolute;
   inset-inline-start: 0;
-  inset-block-start: 6px;
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, var(--primary), var(--primary-2));
-  box-shadow: 0 0 0 6px rgba(99, 102, 241, 0.18);
-}
-
-.voice-roadmap-item .step-title {
-  display: block;
-  color: var(--heading);
-  font-weight: 700;
-  margin-bottom: 4px;
-}
-
-.voice-roadmap-item p {
-  margin: 0;
-  color: rgba(255, 255, 255, 0.75);
-  line-height: 1.7;
-  font-size: 0.92rem;
+  top: -2px;
+  color: var(--primary-2);
+  font-size: 1.4rem;
 }
 
 .voice-cta {
@@ -1688,20 +1557,22 @@ footer {
   display: none;
   position: fixed;
   inset: 0;
-  background: #ffffff;
   z-index: 80;
-  overflow: auto;
+  background: var(--bg);
+  overflow: hidden;
 }
 
 .project-viewer.active {
-  display: block;
+  display: flex;
+  flex-direction: column;
 }
 
 #projectFrame {
   width: 100%;
-  height: calc(100vh - 80px);
-  margin-top: 80px;
+  height: 100%;
   border: none;
+  margin: 0;
+  background: var(--bg);
 }
 
 .anchor-spacer {

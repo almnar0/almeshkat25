@@ -1,4 +1,6 @@
 const path = require('path');
+const fs = require('fs');
+const fsPromises = require('fs/promises');
 const express = require('express');
 const cors = require('cors');
 const morgan = require('morgan');
@@ -6,6 +8,9 @@ require('dotenv').config();
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+const DATA_DIR = path.join(__dirname, 'data');
+const REVIEWS_FILE = path.join(DATA_DIR, 'reviews.json');
+const SUGGESTIONS_FILE = path.join(DATA_DIR, 'suggestions.json');
 
 let fetchFn = global.fetch;
 if (!fetchFn) {
@@ -15,6 +20,164 @@ if (!fetchFn) {
 app.use(cors({ origin: true }));
 app.use(express.json({ limit: '1mb' }));
 app.use(morgan('dev'));
+
+const ALLOWED_SUGGESTION_STATUSES = new Set(['pending', 'approved', 'rejected']);
+const ALLOWED_SUGGESTION_CATEGORIES = new Set(['تعليمي', 'ثقافي', 'رياضي', 'خدمات', 'أخرى']);
+const MAX_REVIEWS = 100;
+const MAX_SUGGESTIONS = 200;
+
+async function ensureFileExists(filePath, defaultValue) {
+  try {
+    await fsPromises.access(filePath, fs.constants.F_OK);
+  } catch {
+    await fsPromises.writeFile(filePath, JSON.stringify(defaultValue, null, 2), 'utf8');
+  }
+}
+
+function sanitizeText(value, { max = 500, fallback = '' } = {}) {
+  if (typeof value !== 'string') return fallback;
+  return value.trim().slice(0, max) || fallback;
+}
+
+function sanitizeCategory(value) {
+  const normalized = sanitizeText(value, { max: 40, fallback: 'أخرى' });
+  return ALLOWED_SUGGESTION_CATEGORIES.has(normalized) ? normalized : 'أخرى';
+}
+
+async function readJson(filePath, fallback) {
+  try {
+    const content = await fsPromises.readFile(filePath, 'utf8');
+    const parsed = JSON.parse(content);
+    return parsed;
+  } catch (error) {
+    if (error.code !== 'ENOENT') {
+      console.warn(`⚠️ Failed to read ${path.basename(filePath)}:`, error.message);
+    }
+    return fallback;
+  }
+}
+
+async function writeJson(filePath, data) {
+  await fsPromises.writeFile(filePath, JSON.stringify(data, null, 2), 'utf8');
+}
+
+function seedSuggestions() {
+  const now = new Date();
+  const base = Date.now();
+  const makeHistory = (status, offsetDays, actor, note) => ({
+    status,
+    date: new Date(now.getTime() - offsetDays * 24 * 60 * 60 * 1000).toISOString(),
+    actor,
+    note,
+  });
+
+  return [
+    {
+      id: base,
+      studentId: '22110001',
+      studentName: 'طالب المشكاة',
+      title: 'مساحة ذكاء اصطناعي مصغّرة',
+      text: 'اقتراح لتجهيز ركن دائم للتجارب العملية مع جلسات أسبوعية يشرف عليها القسم.',
+      category: 'تعليمي',
+      status: 'approved',
+      createdAt: new Date(now.getTime() - 18 * 24 * 60 * 60 * 1000).toISOString(),
+      updatedAt: new Date(now.getTime() - 5 * 24 * 60 * 60 * 1000).toISOString(),
+      history: [
+        makeHistory('pending', 18, 'النظام', 'تم استلام الاقتراح وجاري التنسيق.'),
+        makeHistory('approved', 5, 'الإدارة', 'تم اعتماد التنفيذ وتحديد جدول الورش.'),
+      ],
+    },
+    {
+      id: base + 1,
+      studentId: '22090033',
+      studentName: 'طالب التقنية',
+      title: 'جلسة دعم أسبوعية للمنصة',
+      text: 'تنظيم جلسة حوارية أسبوعية تجمع الطلاب بفريق التقنية لمتابعة الاقتراحات المفتوحة.',
+      category: 'ثقافي',
+      status: 'pending',
+      createdAt: new Date(now.getTime() - 6 * 24 * 60 * 60 * 1000).toISOString(),
+      updatedAt: new Date(now.getTime() - 1 * 24 * 60 * 60 * 1000).toISOString(),
+      history: [
+        makeHistory('pending', 6, 'النظام', 'تم الاستلام وسيتم مناقشة التفاصيل مع الفريق.'),
+      ],
+    },
+  ];
+}
+
+async function ensureDataFiles() {
+  await fsPromises.mkdir(DATA_DIR, { recursive: true });
+  await ensureFileExists(REVIEWS_FILE, []);
+  const suggestionsExists = fs.existsSync(SUGGESTIONS_FILE);
+  if (!suggestionsExists) {
+    await writeJson(SUGGESTIONS_FILE, seedSuggestions());
+  } else {
+    await ensureFileExists(SUGGESTIONS_FILE, []);
+  }
+}
+
+function generateId() {
+  return Date.now() + Math.floor(Math.random() * 1000);
+}
+
+function calculateReviewSummary(reviews) {
+  if (!Array.isArray(reviews) || !reviews.length) {
+    return { average: 0, count: 0 };
+  }
+  const valid = reviews.filter((item) => typeof item.rating === 'number' && item.rating >= 1 && item.rating <= 5);
+  if (!valid.length) {
+    return { average: 0, count: 0 };
+  }
+  const total = valid.reduce((sum, item) => sum + item.rating, 0);
+  return { average: Number((total / valid.length).toFixed(2)), count: valid.length };
+}
+
+function createSuggestionRecord(payload) {
+  const now = new Date().toISOString();
+  const studentId = sanitizeText(payload.studentId, { max: 32, fallback: '' });
+  const studentName = sanitizeText(payload.studentName, { max: 80, fallback: studentId ? `طالب ${studentId.slice(0, 4)}` : 'طالب' });
+  const title = sanitizeText(payload.title, { max: 140, fallback: 'اقتراح بدون عنوان' });
+  const text = sanitizeText(payload.text, { max: 1200, fallback: '—' });
+  const category = sanitizeCategory(payload.category);
+
+  return {
+    id: generateId(),
+    studentId,
+    studentName,
+    title,
+    text,
+    category,
+    status: 'pending',
+    createdAt: now,
+    updatedAt: now,
+    history: [
+      {
+        status: 'pending',
+        date: now,
+        actor: studentName,
+        note: 'تم استلام الاقتراح ويجري مراجعته من فريق القسم.',
+      },
+    ],
+  };
+}
+
+function appendHistoryRecord(suggestion, status, { actor = 'الإدارة', note } = {}) {
+  const safeStatus = ALLOWED_SUGGESTION_STATUSES.has(status) ? status : suggestion.status;
+  const safeNote = sanitizeText(note, { max: 300, fallback: undefined });
+  const entry = {
+    status: safeStatus,
+    date: new Date().toISOString(),
+    actor: sanitizeText(actor, { max: 120, fallback: 'الإدارة' }),
+    note: safeNote || (safeStatus === 'approved'
+      ? 'تم اعتماد الاقتراح وسيتم تنفيذ الخطوات المتفق عليها.'
+      : safeStatus === 'rejected'
+        ? 'نقترح إعادة صياغة الفكرة وفق المعايير المحدّثة.'
+        : 'الاقتراح قيد المتابعة من الفريق المختص.'),
+  };
+  suggestion.history = Array.isArray(suggestion.history) ? [...suggestion.history, entry] : [entry];
+  suggestion.status = safeStatus;
+  suggestion.updatedAt = entry.date;
+  return suggestion;
+}
 
 const PROVIDERS = {
   openai: {
@@ -166,6 +329,98 @@ app.post('/api/assistant/chat', async (req, res) => {
   }
 });
 
+app.get('/api/reviews', async (req, res) => {
+  const reviews = await readJson(REVIEWS_FILE, []);
+  const summary = calculateReviewSummary(reviews);
+  res.json({ reviews, ...summary });
+});
+
+app.post('/api/reviews', async (req, res) => {
+  try {
+    const rating = Number(req.body?.rating);
+    const text = sanitizeText(req.body?.text, { max: 600, fallback: '' });
+    const name = sanitizeText(req.body?.name, { max: 80, fallback: 'زائر' });
+
+    if (!Number.isFinite(rating) || rating < 1 || rating > 5) {
+      return res.status(400).json({ error: 'invalid_rating' });
+    }
+    if (!text) {
+      return res.status(400).json({ error: 'text_required' });
+    }
+
+    const reviews = await readJson(REVIEWS_FILE, []);
+    const review = {
+      id: generateId(),
+      rating: Math.round(rating),
+      text,
+      name,
+      createdAt: new Date().toISOString(),
+    };
+    const updated = [...reviews, review].slice(-MAX_REVIEWS);
+    await writeJson(REVIEWS_FILE, updated);
+    const summary = calculateReviewSummary(updated);
+    res.status(201).json({ review, ...summary });
+  } catch (error) {
+    console.error('Failed to store review:', error);
+    res.status(500).json({ error: 'review_store_failed' });
+  }
+});
+
+app.get('/api/suggestions', async (req, res) => {
+  const suggestions = await readJson(SUGGESTIONS_FILE, []);
+  suggestions.sort((a, b) => new Date(b.updatedAt || 0) - new Date(a.updatedAt || 0));
+  res.json({ suggestions });
+});
+
+app.post('/api/suggestions', async (req, res) => {
+  try {
+    const payload = req.body || {};
+    const required = ['studentId', 'studentName', 'title', 'text'];
+    const missing = required.filter((field) => !sanitizeText(payload[field], { fallback: '' }));
+    if (missing.length) {
+      return res.status(400).json({ error: 'missing_fields', fields: missing });
+    }
+
+    const suggestions = await readJson(SUGGESTIONS_FILE, []);
+    const record = createSuggestionRecord(payload);
+    const updated = [...suggestions, record]
+      .sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt))
+      .slice(-MAX_SUGGESTIONS);
+    await writeJson(SUGGESTIONS_FILE, updated);
+    res.status(201).json({ suggestion: record });
+  } catch (error) {
+    console.error('Failed to create suggestion:', error);
+    res.status(500).json({ error: 'suggestion_store_failed' });
+  }
+});
+
+app.patch('/api/suggestions/:id', async (req, res) => {
+  try {
+    const id = Number(req.params.id);
+    if (!Number.isFinite(id)) {
+      return res.status(400).json({ error: 'invalid_id' });
+    }
+    const { status, note, actor } = req.body || {};
+    if (!ALLOWED_SUGGESTION_STATUSES.has(status)) {
+      return res.status(400).json({ error: 'invalid_status' });
+    }
+
+    const suggestions = await readJson(SUGGESTIONS_FILE, []);
+    const index = suggestions.findIndex((item) => Number(item.id) === id);
+    if (index === -1) {
+      return res.status(404).json({ error: 'suggestion_not_found' });
+    }
+
+    const updatedRecord = appendHistoryRecord(suggestions[index], status, { actor, note });
+    suggestions[index] = updatedRecord;
+    await writeJson(SUGGESTIONS_FILE, suggestions);
+    res.json({ suggestion: updatedRecord });
+  } catch (error) {
+    console.error('Failed to update suggestion:', error);
+    res.status(500).json({ error: 'suggestion_update_failed' });
+  }
+});
+
 const rootDir = path.join(__dirname);
 app.use(express.static(rootDir));
 
@@ -176,6 +431,13 @@ app.use((req, res, next) => {
   return res.sendFile(path.join(rootDir, 'index.html'));
 });
 
-app.listen(PORT, () => {
-  console.log(`🚀 Mishkat Tech site running on http://localhost:${PORT}`);
-});
+ensureDataFiles()
+  .then(() => {
+    app.listen(PORT, () => {
+      console.log(`🚀 Mishkat Tech site running on http://localhost:${PORT}`);
+    });
+  })
+  .catch((error) => {
+    console.error('Failed to prepare data storage:', error);
+    process.exit(1);
+  });
