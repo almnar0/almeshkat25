@@ -1,12 +1,33 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>نظام اقتراحات الطلاب</title>
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
-    <style>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>نظام اقتراحات الطلاب</title>
+        <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
+        <script>
+            (function () {
+                try {
+                    var storedTheme = localStorage.getItem('project9-theme');
+                    if (storedTheme === 'light' || storedTheme === 'dark') {
+                        document.documentElement.setAttribute('data-theme', storedTheme);
+                    }
+                } catch (error) {
+                    // ignore
+                }
+            })();
+        </script>
+        <style>
         :root {
+            --radius-lg: 32px;
+            --radius-md: 22px;
+            --radius-sm: 14px;
+            --transition: 0.35s ease;
+        }
+
+        :root,
+        :root[data-theme="dark"] {
+            color-scheme: dark;
             --bg: #0b1021;
             --bg-secondary: rgba(15, 23, 42, 0.85);
             --surface: rgba(16, 24, 48, 0.9);
@@ -19,15 +40,58 @@
             --accent: #fbbf24;
             --primary: #667eea;
             --primary-2: #7645ea;
-            --primary-soft: rgba(102, 126, 234, 0.12);
+            --primary-soft: rgba(102, 126, 234, 0.18);
             --success: #34d399;
             --danger: #f87171;
             --pending: #fbbf24;
-            --radius-lg: 32px;
-            --radius-md: 22px;
-            --radius-sm: 14px;
             --shadow: 0 28px 72px rgba(8, 12, 24, 0.35);
-            --transition: 0.35s ease;
+            --layer-faint: rgba(255, 255, 255, 0.05);
+            --layer-soft: rgba(255, 255, 255, 0.08);
+            --layer-strong: rgba(255, 255, 255, 0.12);
+            --layer-dash: rgba(255, 255, 255, 0.18);
+            --surface-input: rgba(255, 255, 255, 0.08);
+            --filter-bg: rgba(255, 255, 255, 0.08);
+            --filter-bg-active: rgba(102, 126, 234, 0.24);
+            --page-gradient: linear-gradient(135deg, #0b1021 0%, #101b46 48%, #1d47b8 100%);
+            --glow-primary: rgba(99, 102, 241, 0.45);
+            --glow-secondary: rgba(251, 191, 36, 0.28);
+            --button-disabled-bg: rgba(30, 41, 59, 0.7);
+            --button-disabled-text: rgba(226, 232, 240, 0.6);
+            --button-disabled-border: rgba(71, 85, 105, 0.45);
+        }
+
+        :root[data-theme="light"] {
+            color-scheme: light;
+            --bg: #f4f6ff;
+            --bg-secondary: rgba(255, 255, 255, 0.92);
+            --surface: rgba(255, 255, 255, 0.96);
+            --surface-alt: rgba(255, 255, 255, 0.98);
+            --surface-border: rgba(148, 163, 184, 0.28);
+            --surface-strong: rgba(237, 242, 255, 0.95);
+            --text: #1e293b;
+            --text-muted: #4b5878;
+            --heading: #0f172a;
+            --accent: #7c3aed;
+            --primary: #4f46e5;
+            --primary-2: #6366f1;
+            --primary-soft: rgba(99, 102, 241, 0.18);
+            --success: #16a34a;
+            --danger: #dc2626;
+            --pending: #d97706;
+            --shadow: 0 24px 48px rgba(15, 23, 42, 0.14);
+            --layer-faint: rgba(15, 23, 42, 0.04);
+            --layer-soft: rgba(15, 23, 42, 0.08);
+            --layer-strong: rgba(15, 23, 42, 0.12);
+            --layer-dash: rgba(15, 23, 42, 0.2);
+            --surface-input: rgba(241, 245, 255, 0.9);
+            --filter-bg: rgba(15, 23, 42, 0.05);
+            --filter-bg-active: rgba(99, 102, 241, 0.16);
+            --page-gradient: linear-gradient(135deg, #eef2ff 0%, #f8fafc 42%, #dbeafe 100%);
+            --glow-primary: rgba(99, 102, 241, 0.26);
+            --glow-secondary: rgba(251, 191, 36, 0.16);
+            --button-disabled-bg: rgba(226, 232, 240, 0.85);
+            --button-disabled-text: rgba(71, 85, 105, 0.7);
+            --button-disabled-border: rgba(148, 163, 184, 0.4);
         }
 
         *, *::before, *::after {
@@ -38,13 +102,11 @@
             margin: 0;
             min-height: 100vh;
             font-family: 'Tajawal', 'Cairo', sans-serif;
-            background:
-                radial-gradient(circle at 16% 18%, rgba(102, 126, 234, 0.32), transparent 55%),
-                radial-gradient(circle at 84% -10%, rgba(118, 69, 234, 0.35), transparent 58%),
-                linear-gradient(135deg, #0b1021 0%, #101b46 48%, #1d47b8 100%);
+            background: var(--page-gradient);
             color: var(--text);
             padding: clamp(18px, 3.5vw, 38px);
             overflow-x: hidden;
+            transition: background 0.45s ease, color 0.3s ease;
         }
 
         body::before,
@@ -61,7 +123,7 @@
         body::before {
             width: 520px;
             height: 520px;
-            background: radial-gradient(circle, rgba(99, 102, 241, 0.45), rgba(99, 102, 241, 0));
+            background: radial-gradient(circle, var(--glow-primary) 0%, rgba(99, 102, 241, 0));
             top: -140px;
             inset-inline-start: -180px;
         }
@@ -69,7 +131,7 @@
         body::after {
             width: 420px;
             height: 420px;
-            background: radial-gradient(circle, rgba(251, 191, 36, 0.28), rgba(99, 102, 241, 0));
+            background: radial-gradient(circle, var(--glow-secondary) 0%, rgba(99, 102, 241, 0));
             bottom: -160px;
             inset-inline-end: -130px;
         }
@@ -155,7 +217,7 @@
             padding: 18px 20px;
             background: var(--surface-alt);
             border-radius: var(--radius-md);
-            border: 1px solid rgba(255, 255, 255, 0.08);
+            border: 1px solid var(--layer-soft);
             position: relative;
         }
 
@@ -179,7 +241,7 @@
             width: 32px;
             height: 2px;
             border-radius: 999px;
-            background: rgba(255, 255, 255, 0.16);
+            background: var(--primary-soft);
         }
 
         .view-section {
@@ -202,7 +264,7 @@
             padding: clamp(26px, 3.5vw, 34px);
             border-radius: var(--radius-lg);
             background: var(--surface-alt);
-            border: 1px solid rgba(255, 255, 255, 0.08);
+            border: 1px solid var(--layer-soft);
             box-shadow: var(--shadow);
         }
 
@@ -234,8 +296,8 @@
             width: 100%;
             padding: 14px 16px;
             border-radius: var(--radius-sm);
-            border: 1px solid rgba(255, 255, 255, 0.12);
-            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid var(--layer-strong);
+            background: var(--surface-input);
             color: var(--text);
             font-family: 'Tajawal', sans-serif;
             font-size: 1rem;
@@ -284,9 +346,10 @@
         }
 
         .btn-secondary {
-            background: rgba(255, 255, 255, 0.08);
+            background: var(--filter-bg);
             color: var(--text);
             box-shadow: none;
+            border: 1px solid transparent;
         }
 
         .btn-danger {
@@ -296,18 +359,9 @@
 
         .btn-outline {
             background: transparent;
-            border: 1px solid rgba(255, 255, 255, 0.18);
+            border: 1px solid var(--layer-strong);
             color: var(--text);
             box-shadow: none;
-        }
-
-        .link-action {
-            color: var(--accent);
-            font-weight: 700;
-            cursor: pointer;
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
         }
 
         .badge {
@@ -316,7 +370,7 @@
             gap: 8px;
             padding: 6px 12px;
             border-radius: 999px;
-            background: rgba(255, 255, 255, 0.08);
+            background: var(--layer-soft);
             font-size: 0.82rem;
             color: var(--text-muted);
         }
@@ -358,7 +412,7 @@
             padding: 22px;
             border-radius: var(--radius-md);
             background: var(--surface);
-            border: 1px solid rgba(255, 255, 255, 0.08);
+            border: 1px solid var(--layer-soft);
         }
 
         .suggestion-header {
@@ -392,7 +446,7 @@
         .timeline {
             margin-top: 20px;
             padding-inline-start: 18px;
-            border-inline-start: 2px solid rgba(255, 255, 255, 0.12);
+            border-inline-start: 2px solid var(--layer-strong);
             display: grid;
             gap: 16px;
         }
@@ -428,8 +482,8 @@
             text-align: center;
             padding: 42px 28px;
             border-radius: var(--radius-md);
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px dashed rgba(255, 255, 255, 0.14);
+            background: var(--layer-faint);
+            border: 1px dashed var(--layer-dash);
         }
 
         .insights-grid {
@@ -446,7 +500,7 @@
         .chip {
             padding: 6px 12px;
             border-radius: 999px;
-            background: rgba(255, 255, 255, 0.08);
+            background: var(--layer-soft);
             font-size: 0.82rem;
             color: var(--text-muted);
         }
@@ -461,7 +515,7 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            background: rgba(255, 255, 255, 0.05);
+            background: var(--layer-faint);
             border-radius: var(--radius-sm);
             padding: 10px 14px;
             font-size: 0.88rem;
@@ -471,7 +525,7 @@
             position: relative;
             height: 6px;
             border-radius: 999px;
-            background: rgba(255, 255, 255, 0.08);
+            background: var(--layer-soft);
             overflow: hidden;
             margin-top: 8px;
         }
@@ -504,7 +558,7 @@
         }
 
         .filter-button {
-            background: rgba(255, 255, 255, 0.08);
+            background: var(--filter-bg);
             color: var(--text-muted);
             border-radius: 999px;
             padding: 8px 16px;
@@ -515,7 +569,7 @@
         }
 
         .filter-button.active {
-            background: rgba(102, 126, 234, 0.18);
+            background: var(--filter-bg-active);
             color: #fff;
             border-color: rgba(102, 126, 234, 0.35);
         }
@@ -552,8 +606,8 @@
         .status-banner {
             padding: 16px 18px;
             border-radius: var(--radius-md);
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.12);
+            background: var(--layer-faint);
+            border: 1px solid var(--layer-strong);
             margin-bottom: 18px;
         }
 
@@ -573,8 +627,8 @@
         }
 
         .highlight-card {
-            background: rgba(255, 255, 255, 0.06);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: var(--layer-faint);
+            border: 1px solid var(--layer-soft);
             border-radius: var(--radius-md);
             padding: 18px 20px;
             display: grid;
@@ -590,9 +644,9 @@
             margin-top: 22px;
             padding: 18px;
             border-radius: var(--radius-md);
-            background: rgba(102, 126, 234, 0.12);
+            background: var(--primary-soft);
             border: 1px solid rgba(102, 126, 234, 0.28);
-            color: #e0e7ff;
+            color: var(--text);
             font-size: 0.88rem;
         }
 
@@ -628,6 +682,140 @@
             font-size: 0.84rem;
             font-weight: 600;
             color: var(--accent);
+        }
+
+        .theme-toggle {
+            position: fixed;
+            inset-block-start: 22px;
+            inset-inline-end: 24px;
+            z-index: 1200;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 18px;
+            border-radius: 999px;
+            border: 1px solid var(--layer-strong);
+            background: var(--surface-alt);
+            color: var(--text);
+            font-weight: 700;
+            font-size: 0.95rem;
+            cursor: pointer;
+            box-shadow: 0 16px 32px rgba(15, 23, 42, 0.18);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .theme-toggle:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 22px 40px rgba(15, 23, 42, 0.22);
+        }
+
+        .theme-toggle .icon {
+            font-size: 1.2rem;
+        }
+
+        .theme-toggle:focus-visible {
+            outline: 3px solid rgba(99, 102, 241, 0.35);
+            outline-offset: 4px;
+        }
+
+        .admin-access-cta {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-2));
+            color: #fff;
+            padding: 12px 22px;
+            border-radius: 999px;
+            font-size: 0.96rem;
+            font-weight: 800;
+            border: none;
+            box-shadow: 0 14px 32px rgba(102, 126, 234, 0.25);
+        }
+
+        .admin-access-cta:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 20px 36px rgba(102, 126, 234, 0.32);
+        }
+
+        .admin-access-cta:focus-visible {
+            outline: 3px solid rgba(99, 102, 241, 0.45);
+            outline-offset: 4px;
+        }
+
+        button:disabled {
+            cursor: not-allowed;
+            opacity: 0.85;
+            background: var(--button-disabled-bg);
+            color: var(--button-disabled-text);
+            box-shadow: none;
+            border: 1px solid var(--button-disabled-border);
+            transform: none;
+        }
+
+        .status-actions button {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .status-actions button:not(:disabled)::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: inherit;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), transparent);
+            opacity: 0;
+            transition: opacity 0.25s ease;
+        }
+
+        .status-actions button:not(:disabled):hover::after {
+            opacity: 1;
+        }
+
+        .status-actions button.is-current:disabled {
+            opacity: 1;
+            animation: selectPulse 0.6s ease;
+            box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.25);
+        }
+
+        .status-actions .btn-secondary:disabled {
+            background: linear-gradient(135deg, var(--primary), var(--primary-2));
+            color: #fff;
+        }
+
+        .status-actions .btn-success:disabled {
+            background: linear-gradient(135deg, #22c55e, #16a34a);
+            color: #fff;
+            box-shadow: 0 16px 32px rgba(34, 197, 94, 0.3);
+        }
+
+        .status-actions .btn-danger:disabled {
+            background: linear-gradient(135deg, #f87171, #ef4444);
+            color: #fff;
+            box-shadow: 0 16px 32px rgba(248, 113, 113, 0.28);
+        }
+
+        .status-actions button.is-current.btn-success:disabled {
+            box-shadow: 0 0 0 2px rgba(34, 197, 94, 0.35);
+        }
+
+        .status-actions button.is-current.btn-danger:disabled {
+            box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.3);
+        }
+
+        .status-actions button.is-current.btn-secondary:disabled {
+            box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.25);
+        }
+
+        @keyframes selectPulse {
+            0% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.02);
+            }
+            100% {
+                transform: scale(1);
+            }
         }
 
         @keyframes fadeInUp {
@@ -671,10 +859,21 @@
             .status-actions {
                 flex-direction: column;
             }
+
+            .theme-toggle {
+                inset-block-start: auto;
+                inset-block-end: 24px;
+                inset-inline-end: 50%;
+                transform: translateX(50%);
+            }
         }
     </style>
 </head>
 <body>
+        <button id="themeToggle" class="theme-toggle" type="button" aria-label="تبديل وضع الألوان" aria-pressed="false">
+            <span class="icon">🌙</span>
+            <span class="label">وضع ليلي</span>
+        </button>
     <div class="app-shell">
         <header class="surface-card hero-card">
             <div class="hero-top">
@@ -727,17 +926,16 @@
                                 <input type="password" id="studentPass" placeholder="أدخل أي كلمة مرور للتجربة" autocomplete="off">
                             </div>
                         </div>
-                        <div class="action-row" style="margin-top: 22px;">
-                            <button type="button" onclick="studentLogin()">دخول الطالب</button>
-                            <button type="button" class="btn-secondary" onclick="resetStudentForm()">تفريغ الحقول</button>
-                        </div>
-                        <div class="helper-strip">
-                            <strong>🛈 للاستخدام التجريبي</strong>
-                            <p>يمكنك استخدام أي رقم هوية وأي كلمة مرور لاستعراض التجربة. يتم حفظ اقتراحاتك على المتصفح فقط.</p>
-                        </div>
-                        <div style="margin-top: 18px;">
-                            <span class="link-action" onclick="showAdminLogin()">🔐 لدي صلاحيات الإدارة</span>
-                        </div>
+                          <div class="action-row" style="margin-top: 22px;">
+                              <button type="button" onclick="studentLogin()">دخول الطالب</button>
+                          </div>
+                          <div class="helper-strip">
+                              <strong>🛈 للاستخدام التجريبي</strong>
+                              <p>يمكنك استخدام أي رقم هوية وأي كلمة مرور لاستعراض التجربة. يتم حفظ اقتراحاتك على المتصفح فقط.</p>
+                          </div>
+                          <div style="margin-top: 18px;">
+                              <button type="button" class="admin-access-cta" onclick="showAdminLogin()">🔐 لدي صلاحيات الإدارة</button>
+                          </div>
                     </div>
                     <div class="card">
                         <div class="section-heading">
@@ -927,6 +1125,84 @@
             'خدمات': '🛠️',
             'أخرى': '📌'
         };
+
+        function detectSystemTheme() {
+            if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+                return 'dark';
+            }
+            if (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches) {
+                return 'light';
+            }
+            return 'dark';
+        }
+
+        function syncThemeToggleUi(theme) {
+            const toggle = document.getElementById('themeToggle');
+            if (!toggle) return;
+            const icon = toggle.querySelector('.icon');
+            const label = toggle.querySelector('.label');
+            if (icon) icon.textContent = theme === 'dark' ? '🌙' : '☀️';
+            if (label) label.textContent = theme === 'dark' ? 'وضع ليلي' : 'وضع نهاري';
+            toggle.setAttribute('aria-pressed', theme === 'dark' ? 'true' : 'false');
+        }
+
+        function applyPreferredTheme(theme, persist = true) {
+            const normalized = theme === 'light' ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', normalized);
+            if (persist) {
+                try {
+                    localStorage.setItem(THEME_STORAGE_KEY, normalized);
+                } catch (error) {
+                    // no-op
+                }
+            }
+            syncThemeToggleUi(normalized);
+        }
+
+        function initThemeControls() {
+            const toggle = document.getElementById('themeToggle');
+            if (!toggle) return;
+            toggle.addEventListener('click', () => {
+                const current = document.documentElement.getAttribute('data-theme') === 'light' ? 'light' : 'dark';
+                const next = current === 'dark' ? 'light' : 'dark';
+                applyPreferredTheme(next);
+            });
+            const current = document.documentElement.getAttribute('data-theme') || detectSystemTheme();
+            syncThemeToggleUi(current);
+        }
+
+        const themeMediaQuery = window.matchMedia ? window.matchMedia('(prefers-color-scheme: dark)') : null;
+        const storedTheme = (() => {
+            try {
+                return localStorage.getItem(THEME_STORAGE_KEY);
+            } catch (error) {
+                return null;
+            }
+        })();
+        const initialTheme = storedTheme === 'light' || storedTheme === 'dark' ? storedTheme : detectSystemTheme();
+        applyPreferredTheme(initialTheme, Boolean(storedTheme));
+        initThemeControls();
+
+        if (themeMediaQuery) {
+            const handleThemeChange = (event) => {
+                const saved = (() => {
+                    try {
+                        return localStorage.getItem(THEME_STORAGE_KEY);
+                    } catch (error) {
+                        return null;
+                    }
+                })();
+                if (saved === 'light' || saved === 'dark') return;
+                applyPreferredTheme(event.matches ? 'dark' : 'light', false);
+            };
+            try {
+                themeMediaQuery.addEventListener('change', handleThemeChange);
+            } catch (error) {
+                if (typeof themeMediaQuery.addListener === 'function') {
+                    themeMediaQuery.addListener(handleThemeChange);
+                }
+            }
+        }
 
         let suggestions = loadSuggestions();
         let currentUser = null;
@@ -1237,8 +1513,11 @@
 
             container.innerHTML = filtered.map(suggestion => {
                 const statusCfg = STATUS_CONFIG[suggestion.status];
+                const isApproved = suggestion.status === 'approved';
+                const isPending = suggestion.status === 'pending';
+                const isRejected = suggestion.status === 'rejected';
                 return `
-                    <div class="suggestion-item">
+                    <div class="suggestion-item" data-suggestion-id="${suggestion.id}" data-status="${suggestion.status}">
                         <div class="suggestion-header">
                             <div>
                                 <h3 class="suggestion-title">${statusCfg.icon} ${suggestion.title}</h3>
@@ -1252,10 +1531,10 @@
                         </div>
                         <p class="suggestion-text">${escapeHtml(suggestion.text)}</p>
                         ${renderTimeline(suggestion.history)}
-                        <div class="status-actions">
-                            <button type="button" class="btn-success" onclick="changeStatus(${suggestion.id}, 'approved')">اعتماد</button>
-                            <button type="button" class="btn-secondary" onclick="changeStatus(${suggestion.id}, 'pending')">إرجاع للمراجعة</button>
-                            <button type="button" class="btn-danger" onclick="changeStatus(${suggestion.id}, 'rejected')">اعتذار</button>
+                        <div class="status-actions" role="group" aria-label="تغيير حالة الاقتراح">
+                            <button type="button" class="btn-success${isApproved ? ' is-current' : ''}" onclick="changeStatus(${suggestion.id}, 'approved')" ${isApproved ? 'disabled aria-pressed="true"' : 'aria-pressed="false"'}>✅ اعتماد</button>
+                            <button type="button" class="btn-secondary${isPending ? ' is-current' : ''}" onclick="changeStatus(${suggestion.id}, 'pending')" ${isPending ? 'disabled aria-pressed="true"' : 'aria-pressed="false"'}>⏳ إرجاع للمراجعة</button>
+                            <button type="button" class="btn-danger${isRejected ? ' is-current' : ''}" onclick="changeStatus(${suggestion.id}, 'rejected')" ${isRejected ? 'disabled aria-pressed="true"' : 'aria-pressed="false"'}>❌ اعتذار</button>
                         </div>
                     </div>
                 `;
