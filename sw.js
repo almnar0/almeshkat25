@@ -31,6 +31,11 @@ self.addEventListener('fetch', (event) => {
   const { request } = event;
   const url = new URL(request.url);
 
+  // Skip API requests so dynamic data (like ratings) always goes straight to the server without caching.
+  if (url.pathname === '/api' || url.pathname.startsWith('/api/')) {
+    return;
+  }
+
   // Only handle same-origin GET requests
   if (request.method !== 'GET' || url.origin !== location.origin) {
     return; // let the network handle it (e.g., AI provider APIs)
