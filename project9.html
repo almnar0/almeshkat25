@@ -890,20 +890,20 @@
             </div>
             <div class="hero-pills">
                 <div class="hero-pill">
-                    <strong id="totalSuggestions">0</strong>
-                    <small>إجمالي الاقتراحات المسجّلة</small>
+                    <strong id="totalSuggestions">جار التحميل...</strong>
+                    <small>حالة المنصة</small>
                 </div>
                 <div class="hero-pill">
-                    <strong id="pendingCount">0</strong>
-                    <small>طلبات قيد المتابعة</small>
+                    <strong id="pendingCount">—</strong>
+                    <small>متابعة المشرف</small>
                 </div>
                 <div class="hero-pill">
-                    <strong id="approvedCount">0</strong>
-                    <small>اقتراحات معتمدة</small>
+                    <strong id="approvedCount">—</strong>
+                    <small>أفكار جاهزة</small>
                 </div>
                 <div class="hero-pill">
-                    <strong id="rejectedCount">0</strong>
-                    <small>اقتراحات تم الاعتذار عنها</small>
+                    <strong id="rejectedCount">—</strong>
+                    <small>بحاجة لإعادة صياغة</small>
                 </div>
             </div>
         </header>
@@ -1091,8 +1091,7 @@
     <div id="toast" class="toast" role="status" aria-live="polite"></div>
 
     <script>
-        const STORAGE_KEY = 'project9-suggestions';
-        const SEED_KEY = 'project9-seeded';
+        const SUGGESTIONS_ENDPOINT = '/api/suggestions';
 
         const STATUS_CONFIG = {
             pending: {
@@ -1204,33 +1203,29 @@
             }
         }
 
-        let suggestions = loadSuggestions();
+        let suggestions = [];
         let currentUser = null;
         let adminFilter = 'all';
         let adminSearchTerm = '';
+        let suggestionsLoaded = false;
+        let suggestionsLoading = false;
+        let suggestionsPromise = null;
 
-        if (!suggestions.length && !localStorage.getItem(SEED_KEY)) {
-            suggestions = seedSuggestions();
-            saveSuggestions();
-            localStorage.setItem(SEED_KEY, 'true');
-        }
-
-        updateStats();
-
-        function loadSuggestions() {
-            try {
-                const raw = localStorage.getItem(STORAGE_KEY);
-                if (!raw) return [];
-                const parsed = JSON.parse(raw);
-                if (!Array.isArray(parsed)) return [];
-                return parsed
-                    .map(normalizeSuggestion)
-                    .filter(Boolean);
-            } catch (error) {
-                console.warn('⚠️ تعذر قراءة البيانات المحفوظة، سيتم البدء بسجل جديد.', error);
-                return [];
-            }
-        }
+          async function fetchSuggestionsFromServer() {
+              try {
+                  const response = await fetch(SUGGESTIONS_ENDPOINT, { cache: 'no-store' });
+                  if (!response.ok) throw new Error(`HTTP ${response.status}`);
+                  const data = await response.json();
+                  const list = Array.isArray(data.suggestions) ? data.suggestions : [];
+                  return list
+                      .map(normalizeSuggestion)
+                      .filter(Boolean)
+                      .sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt));
+              } catch (error) {
+                  console.warn('⚠️ تعذر تحميل الاقتراحات من الخادم:', error);
+                  return [];
+              }
+          }
 
         function normalizeSuggestion(item) {
             if (!item || typeof item !== 'object') return null;
@@ -1282,72 +1277,66 @@
             return Number.isFinite(date.getTime()) ? date.toISOString() : null;
         }
 
-        function seedSuggestions() {
-            const now = new Date();
-            const makeHistory = (entries) => entries.map(entry => ({
-                status: entry.status,
-                date: new Date(now.getTime() - entry.offset).toISOString(),
-                actor: entry.actor || STATUS_CONFIG[entry.status].actorDefault,
-                note: entry.note || STATUS_CONFIG[entry.status].note
-            })).sort((a, b) => new Date(a.date) - new Date(b.date));
+          async function ensureSuggestionsLoaded() {
+              if (suggestionsLoaded) return;
+              if (suggestionsPromise) {
+                  await suggestionsPromise;
+                  return;
+              }
+                suggestionsLoading = true;
+                updateStats();
+                suggestionsPromise = fetchSuggestionsFromServer().then((list) => {
+                  suggestions = list;
+                  suggestionsLoaded = true;
+                  suggestionsLoading = false;
+                  suggestionsPromise = null;
+                  updateStats();
+                  if (currentUser?.type === 'student') {
+                      showMySuggestions();
+                  }
+                  if (currentUser?.type === 'admin') {
+                      renderAdminInsights();
+                      showAllSuggestions();
+                  }
+              }).catch(() => {
+                  suggestions = [];
+                  suggestionsLoaded = true;
+                  suggestionsLoading = false;
+                  suggestionsPromise = null;
+                  updateStats();
+              });
+              await suggestionsPromise;
+          }
 
-            return [
-                {
-                    id: Date.now(),
-                    studentId: '22110001',
-                    studentName: 'طالب 2211',
-                    title: 'تفعيل مساحة تعلم للذكاء الاصطناعي',
-                    text: 'اقتراح بتجهيز مساحة للذكاء الاصطناعي تضم أجهزة قوية ودورات توجيهية تساعد الطلبة على بناء نماذج عملية.',
-                    category: 'تعليمي',
-                    status: 'approved',
-                    createdAt: new Date(now.getTime() - 1000 * 60 * 60 * 24 * 18).toISOString(),
-                    updatedAt: new Date(now.getTime() - 1000 * 60 * 60 * 24 * 6).toISOString(),
-                    history: makeHistory([
-                        { status: 'pending', offset: 1000 * 60 * 60 * 24 * 18, actor: 'النظام', note: 'تم الاستلام وجاري التقييم' },
-                        { status: 'approved', offset: 1000 * 60 * 60 * 24 * 6, actor: 'الإدارة', note: 'تم الاعتماد وسيتم تجهيز الخطة التنفيذية' }
-                    ])
-                },
-                {
-                    id: Date.now() + 1,
-                    studentId: '22110077',
-                    studentName: 'طالب 2211',
-                    title: 'إطلاق دوري الرياضات الإلكترونية',
-                    text: 'تنظيم دوري للرياضات الإلكترونية بإشراف القسم التقني لتعزيز مهارات العمل الجماعي والتفكير الاستراتيجي.',
-                    category: 'ثقافي',
-                    status: 'pending',
-                    createdAt: new Date(now.getTime() - 1000 * 60 * 60 * 24 * 4).toISOString(),
-                    updatedAt: new Date(now.getTime() - 1000 * 60 * 60 * 12).toISOString(),
-                    history: makeHistory([
-                        { status: 'pending', offset: 1000 * 60 * 60 * 24 * 4, actor: 'النظام', note: 'بصدد التقييم من قبل المشرف المسؤول' }
-                    ])
-                },
-                {
-                    id: Date.now() + 2,
-                    studentId: '22090033',
-                    studentName: 'طالب 2209',
-                    title: 'تحسين نظام حجز الملاعب الرياضية',
-                    text: 'إضافة نظام حجز رقمي للملاعب مع إشعارات تلقائية لتقليل التعارض بين الحصص والأنشطة.',
-                    category: 'رياضي',
-                    status: 'rejected',
-                    createdAt: new Date(now.getTime() - 1000 * 60 * 60 * 24 * 12).toISOString(),
-                    updatedAt: new Date(now.getTime() - 1000 * 60 * 60 * 24 * 2).toISOString(),
-                    history: makeHistory([
-                        { status: 'pending', offset: 1000 * 60 * 60 * 24 * 12, actor: 'النظام', note: 'تم الاستلام وجاري التقييم' },
-                        { status: 'rejected', offset: 1000 * 60 * 60 * 24 * 2, actor: 'الإدارة', note: 'الاقتراح قيد المراجعة في نظام آخر، نرجو التطوير وفق المعايير الجديدة' }
-                    ])
-                }
-            ];
-        }
-
-        function saveSuggestions() {
-            try {
-                localStorage.setItem(STORAGE_KEY, JSON.stringify(suggestions));
-            } catch (error) {
-                console.warn('⚠️ تعذر حفظ الاقتراحات محلياً.', error);
+        async function createSuggestionRemote(payload) {
+            const response = await fetch(SUGGESTIONS_ENDPOINT, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+            if (!response.ok) {
+                const error = await response.json().catch(() => ({}));
+                throw new Error(error.error || 'suggestion_store_failed');
             }
+            const data = await response.json();
+            return normalizeSuggestion(data.suggestion);
         }
 
-        function studentLogin() {
+        async function updateSuggestionRemote(id, status) {
+            const response = await fetch(`${SUGGESTIONS_ENDPOINT}/${id}`, {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ status })
+            });
+            if (!response.ok) {
+                const error = await response.json().catch(() => ({}));
+                throw new Error(error.error || 'suggestion_update_failed');
+            }
+            const data = await response.json();
+            return normalizeSuggestion(data.suggestion);
+        }
+
+        async function studentLogin() {
             const id = document.getElementById('studentId').value.trim();
             const pass = document.getElementById('studentPass').value.trim();
 
@@ -1365,12 +1354,13 @@
             toggleView('loginPage', false);
             toggleView('studentPage', true);
             document.getElementById('studentWelcome').textContent = `مرحباً ${currentUser.name}`;
+            await ensureSuggestionsLoaded();
             showMySuggestions();
             renderStudentSnapshot();
             showToast('👋 أهلاً بك! يمكنك الآن إرسال اقتراحك.');
         }
 
-        function adminLogin() {
+        async function adminLogin() {
             const user = document.getElementById('adminUser').value.trim();
             const pass = document.getElementById('adminPass').value.trim();
 
@@ -1388,16 +1378,18 @@
             toggleView('adminPage', true);
             document.getElementById('adminWelcome').textContent = 'لوحة الإدارة الذكية — مرحباً بكم';
             updateAdminFiltersUI();
+            await ensureSuggestionsLoaded();
             renderAdminInsights();
             showAllSuggestions();
             showToast('✅ تم تسجيل الدخول إلى لوحة الإدارة');
         }
 
-        function addSuggestion() {
+        async function addSuggestion() {
             if (!currentUser || currentUser.type !== 'student') {
                 showToast('⚠️ يلزم تسجيل دخول الطالب أولاً');
                 return;
             }
+            await ensureSuggestionsLoaded();
 
             const title = document.getElementById('title').value.trim();
             const text = document.getElementById('text').value.trim();
@@ -1408,38 +1400,36 @@
                 return;
             }
 
-            const now = new Date().toISOString();
-            const suggestion = {
-                id: Date.now(),
+            const payload = {
                 studentId: currentUser.id,
                 studentName: currentUser.name,
                 title,
                 text,
-                category,
-                status: 'pending',
-                createdAt: now,
-                updatedAt: now,
-                history: [
-                    {
-                        status: 'pending',
-                        date: now,
-                        actor: currentUser.name,
-                        note: 'تم إرسال الاقتراح وجاري التقييم'
-                    }
-                ]
+                category
             };
 
-            suggestions.push(suggestion);
-            saveSuggestions();
-            resetSuggestionForm();
-            updateStats();
-            showMySuggestions();
-            renderStudentSnapshot();
-            displaySubmissionFeedback(suggestion);
-            showToast('✅ تم إرسال الاقتراح بنجاح! ستتلقى مستجداته هنا.');
+            try {
+                showToast('⏳ جاري إرسال الاقتراح...');
+                const record = await createSuggestionRemote(payload);
+                if (!record) {
+                    throw new Error('invalid_record');
+                }
+                suggestions.push(record);
+                suggestions.sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt));
+                resetSuggestionForm();
+                updateStats();
+                showMySuggestions();
+                renderStudentSnapshot();
+                displaySubmissionFeedback(record);
+                showToast('✅ تم إرسال الاقتراح بنجاح! ستتلقى مستجداته هنا.');
+            } catch (error) {
+                console.warn('⚠️ تعذر حفظ الاقتراح:', error);
+                showToast('تعذر حفظ الاقتراح حالياً، حاول مرة أخرى.');
+            }
         }
 
-        function changeStatus(id, status) {
+        async function changeStatus(id, status) {
+            await ensureSuggestionsLoaded();
             const suggestion = suggestions.find(item => item.id === id);
             if (!suggestion) return;
             if (suggestion.status === status) {
@@ -1447,31 +1437,38 @@
                 return;
             }
 
-            suggestion.status = status;
-            suggestion.updatedAt = new Date().toISOString();
-            suggestion.history = suggestion.history || [];
-            suggestion.history.push({
-                status,
-                date: suggestion.updatedAt,
-                actor: 'الإدارة',
-                note: STATUS_CONFIG[status].note
-            });
+            try {
+                const updatedRecord = await updateSuggestionRemote(id, status);
+                if (!updatedRecord) {
+                    throw new Error('invalid_record');
+                }
+                const index = suggestions.findIndex(item => item.id === id);
+                if (index !== -1) {
+                    suggestions[index] = updatedRecord;
+                }
+                updateStats();
 
-            saveSuggestions();
-            updateStats();
+                if (currentUser && currentUser.type === 'admin') {
+                    showAllSuggestions();
+                    renderAdminInsights();
+                }
 
-            if (currentUser && currentUser.type === 'admin') {
-                showAllSuggestions();
-                renderAdminInsights();
+                if (currentUser && currentUser.type === 'student' && currentUser.id === updatedRecord.studentId) {
+                    showMySuggestions();
+                    renderStudentSnapshot();
+                    displaySubmissionFeedback(updatedRecord);
+                }
+
+                const statusMessage = status === 'approved'
+                    ? '✅ تم اعتماد الاقتراح'
+                    : status === 'rejected'
+                        ? '❌ تم الاعتذار عن الاقتراح'
+                        : 'ℹ️ تمت إعادة الحالة إلى قيد المتابعة';
+                showToast(statusMessage);
+            } catch (error) {
+                console.warn('⚠️ تعذر تحديث الحالة:', error);
+                showToast('تعذر تحديث حالة الاقتراح حالياً.');
             }
-
-            if (currentUser && currentUser.type === 'student' && currentUser.id === suggestion.studentId) {
-                showMySuggestions();
-                renderStudentSnapshot();
-                displaySubmissionFeedback(suggestion);
-            }
-
-            showToast(status === 'approved' ? '✅ تم اعتماد الاقتراح' : status === 'rejected' ? '❌ تم الاعتذار عن الاقتراح' : 'ℹ️ تم تحديث الحالة');
         }
 
         function showMySuggestions() {
@@ -1589,7 +1586,6 @@
                 return;
             }
 
-            const total = mySuggestions.length;
             const pending = mySuggestions.filter(s => s.status === 'pending').length;
             const approved = mySuggestions.filter(s => s.status === 'approved').length;
             const rejected = mySuggestions.filter(s => s.status === 'rejected').length;
@@ -1597,13 +1593,21 @@
                 .slice()
                 .sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt))[0];
 
+            const chips = [];
+            if (pending) chips.push('⏳ اقتراحات قيد المتابعة');
+            if (approved) chips.push('✅ اقتراحات جاهزة للتنفيذ');
+            if (rejected) chips.push('💡 اقتراحات بحاجة لإعادة صياغة');
+            if (!chips.length) chips.push('كل اقتراحاتك محدثة حالياً.');
+
+            const summaryText = pending
+                ? 'هناك أفكار بانتظار متابعة المشرف. سنرسل لك تنبيهاً عند كل تحديث.'
+                : 'كل الأفكار التي أرسلتها تم التعامل معها حتى اللحظة.';
+
             container.innerHTML = `
                 <div class="highlight-card">
-                    <div><strong>إجمالي اقتراحاتك</strong><p>${total} اقتراح/اقتراحات حتى الآن.</p></div>
+                    <div><strong>ملخص اقتراحاتك</strong><p>${summaryText}</p></div>
                     <div class="insight-row">
-                        <span class="chip">⏳ قيد المراجعة: ${pending}</span>
-                        <span class="chip">✅ معتمدة: ${approved}</span>
-                        <span class="chip">❌ اعتذار: ${rejected}</span>
+                        ${chips.map(chip => `<span class="chip">${chip}</span>`).join('')}
                     </div>
                     <div>
                         <strong>آخر تحديث</strong>
@@ -1616,21 +1620,26 @@
         function renderAdminInsights() {
             const container = document.getElementById('adminInsights');
             if (!container) return;
-            const total = suggestions.length;
             const pending = suggestions.filter(s => s.status === 'pending').length;
             const approved = suggestions.filter(s => s.status === 'approved').length;
             const rejected = suggestions.filter(s => s.status === 'rejected').length;
-            const approvalRate = total ? Math.round((approved / total) * 100) : 0;
-            const responseRate = total ? Math.round(((approved + rejected) / total) * 100) : 0;
             const recent = suggestions.slice().sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt))[0];
+
+            const summaryText = pending
+                ? 'هناك اقتراحات تحتاج قرار الإدارة خلال الفترة القريبة.'
+                : 'لا توجد طلبات معلّقة حالياً. يمكن التركيز على متابعة التنفيذ.';
+
+            const chips = [
+                pending ? '⏳ بنك المتابعة نشط' : '⏳ لا توجد طلبات معلّقة',
+                approved ? '✅ أفكار جاهزة للتطبيق' : '✅ بانتظار الاعتماد القادم',
+                rejected ? '💡 اقتراحات بحاجة لإعادة صياغة' : '💡 جميع الأفكار ضمن المسار الصحيح'
+            ];
 
             container.innerHTML = `
                 <div class="highlight-card">
-                    <div><strong>ملخص اليوم</strong><p>هناك ${pending} اقتراح/اقتراحات تنتظر المراجعة.</p></div>
+                    <div><strong>ملخص اليوم</strong><p>${summaryText}</p></div>
                     <div class="insight-row">
-                        <span class="chip">✅ معدل الاعتماد: ${approvalRate}%</span>
-                        <span class="chip">⚡ سرعة الاستجابة: ${responseRate}%</span>
-                        <span class="chip">📥 جديد اليوم: ${countToday()}</span>
+                        ${chips.map(chip => `<span class="chip">${chip}</span>`).join('')}
                     </div>
                     <div><strong>آخر تحديث</strong><p>${recent ? `${formatDate(recent.updatedAt)} — ${recent.title}` : 'لا يوجد تحديثات بعد.'}</p></div>
                 </div>
@@ -1653,14 +1662,17 @@
             }, {});
             const total = suggestions.length;
 
-            container.innerHTML = Object.entries(counts).map(([category, count]) => {
+              container.innerHTML = Object.entries(counts).map(([category, count]) => {
                 const icon = CATEGORY_CONFIG[category] || '📌';
                 const percent = Math.round((count / total) * 100);
+                  const descriptor = percent >= 60 ? 'نشاط مرتفع'
+                      : percent >= 30 ? 'نشاط متوسط'
+                      : 'نشاط محدود';
                 return `
                     <div>
                         <div class="distribution-item">
                             <span>${icon} ${category}</span>
-                            <strong>${count}</strong>
+                              <strong>${descriptor}</strong>
                         </div>
                         <div class="progress-bar"><span style="width:${percent}%"></span></div>
                     </div>
@@ -1685,10 +1697,23 @@
             const approved = suggestions.filter(s => s.status === 'approved').length;
             const rejected = suggestions.filter(s => s.status === 'rejected').length;
 
-            document.getElementById('totalSuggestions').textContent = total;
-            document.getElementById('pendingCount').textContent = pending;
-            document.getElementById('approvedCount').textContent = approved;
-            document.getElementById('rejectedCount').textContent = rejected;
+            const totalEl = document.getElementById('totalSuggestions');
+            const pendingEl = document.getElementById('pendingCount');
+            const approvedEl = document.getElementById('approvedCount');
+            const rejectedEl = document.getElementById('rejectedCount');
+
+            if (totalEl) {
+                totalEl.textContent = suggestionsLoading ? 'جار التحميل...' : total ? 'منصة نشطة' : 'بانتظار اقتراحاتكم';
+            }
+            if (pendingEl) {
+                pendingEl.textContent = pending ? 'طلبات قيد المتابعة' : 'لا مهام معلّقة';
+            }
+            if (approvedEl) {
+                approvedEl.textContent = approved ? 'مبادرات جاهزة للتنفيذ' : 'بانتظار الاعتماد';
+            }
+            if (rejectedEl) {
+                rejectedEl.textContent = rejected ? 'اقتراحات تحتاج تطوير' : 'كل الأفكار على المسار الصحيح';
+            }
 
             if (currentUser && currentUser.type === 'student') {
                 renderStudentSnapshot();
@@ -1845,28 +1870,25 @@
             });
         }
 
-        function countToday() {
-            const start = new Date();
-            start.setHours(0, 0, 0, 0);
-            return suggestions.filter(s => new Date(s.createdAt) >= start).length;
-        }
-
-        document.addEventListener('visibilitychange', () => {
-            if (document.visibilityState === 'visible') {
-                suggestions = loadSuggestions();
-                updateStats();
-                if (currentUser?.type === 'student') {
-                    showMySuggestions();
-                }
-                if (currentUser?.type === 'admin') {
-                    showAllSuggestions();
-                }
+        document.addEventListener('visibilitychange', async () => {
+            if (document.visibilityState !== 'visible') return;
+            suggestionsLoading = true;
+            updateStats();
+            const list = await fetchSuggestionsFromServer();
+            suggestions = list;
+            suggestionsLoaded = true;
+            suggestionsLoading = false;
+            updateStats();
+            if (currentUser?.type === 'student') {
+                showMySuggestions();
+            }
+            if (currentUser?.type === 'admin') {
+                renderAdminInsights();
+                showAllSuggestions();
             }
         });
 
-        window.addEventListener('beforeunload', () => {
-            saveSuggestions();
-        });
+        ensureSuggestionsLoaded();
 
         // Expose functions to the global scope for inline handlers
         window.addSuggestion = addSuggestion;

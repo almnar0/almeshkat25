@@ -317,11 +317,6 @@
       .mishkat-remove { position: absolute; top: 8px; left: 8px; background: rgba(0,0,0,.55); color: #fff; border: none; border-radius: 8px; font-size: 12px; padding: 6px 8px; cursor: pointer; }
       .mishkat-remove:hover { background: rgba(0,0,0,.7); }
 
-      /* Mouse follower */
-      .mouse-follower { position: fixed; top: 0; left: 0; width: 22px; height: 22px; border-radius: 50%; pointer-events: none; z-index: 3000; box-shadow: 0 10px 30px var(--shadow-2); background: radial-gradient(circle at 30% 30%, var(--primary-2), var(--primary)); opacity: .9; transform: translate3d(-9999px, -9999px, 0); transition: width .12s ease, height .12s ease, opacity .2s ease; mix-blend-mode: screen; }
-      .mouse-follower.hidden { opacity: 0; }
-      .mouse-follower.click { width: 30px; height: 30px; }
-
       /* شعار المدرسة العائم لإظهاره على جميع الصفحات */
       .school-logo-fixed {
         position: fixed;
@@ -425,15 +420,7 @@
     header.insertBefore(img, header.firstChild);
   }
 
-  // REVIEWS: Star rating + testimonials stored in localStorage
-  const REVIEWS_KEY = 'mishkat-tech-reviews';
-  function getReviews() {
-    try { return JSON.parse(localStorage.getItem(REVIEWS_KEY) || '[]'); } catch { return []; }
-  }
-  function setReviews(list) {
-    localStorage.setItem(REVIEWS_KEY, JSON.stringify(list));
-  }
-
+  // REVIEWS: Star rating + testimonials persisted عبر واجهة برمجية بسيطة
   function renderStars(rating) {
     const full = Math.round(rating);
     return '★★★★★'.split('').map((s, i) => i < full ? '★' : '☆').join('');
@@ -469,66 +456,131 @@
     `;
     container.insertBefore(section, footer);
 
-    // Build interactive stars
-    const starInput = section.querySelector('#starInput');
-    let selected = 5;
-    for (let i = 1; i <= 5; i++) {
-      const b = document.createElement('button');
-      b.setAttribute('type', 'button');
-      b.textContent = '★';
-      b.addEventListener('click', () => {
-        selected = i;
-        [...starInput.children].forEach((el, idx) => el.classList.toggle('active', idx < i));
-      });
-      b.className = 'active';
-      starInput.appendChild(b);
-    }
+      const avgScoreEl = section.querySelector('#avgScore');
+      const avgStarsEl = section.querySelector('#avgStars');
+      const reviewsCountEl = section.querySelector('#reviewsCount');
+      const reviewsListEl = section.querySelector('#reviewsList');
+      const reviewTextEl = section.querySelector('#reviewText');
+      const reviewNameEl = section.querySelector('#reviewName');
+      const submitBtn = section.querySelector('#submitReview');
+      const starInput = section.querySelector('#starInput');
 
-    function refresh() {
-      const reviews = getReviews();
-      const count = reviews.length;
-      const avg = count ? (reviews.reduce((a, r) => a + (r.rating || 0), 0) / count) : 0;
-      section.querySelector('#avgScore').textContent = avg.toFixed(1);
-      section.querySelector('#avgStars').textContent = renderStars(avg);
-      section.querySelector('#reviewsCount').textContent = count ? `${count} تقييم` : 'لا توجد تقييمات بعد';
-      const list = section.querySelector('#reviewsList');
-      list.innerHTML = reviews.slice().reverse().map(r => `
-        <div class="review-item">
-          <div class="meta">
-            <span>${renderStars(r.rating)}</span>
-            <span>•</span>
-            <span>${r.name ? r.name : 'مستخدم'}</span>
-            <span style="margin-inline-start:auto;">${new Date(r.date).toLocaleDateString('ar-SA')}</span>
-          </div>
-          <div>${(r.text || '').replace(/</g, '&lt;')}</div>
-        </div>
-      `).join('');
-    }
+      let selected = 5;
+      let isSubmitting = false;
+      let state = { reviews: [], average: 0, count: 0 };
 
-    section.querySelector('#submitReview').addEventListener('click', () => {
-      const text = section.querySelector('#reviewText').value.trim();
-      const name = section.querySelector('#reviewName').value.trim();
-      const rating = selected;
-      if (!rating || !text) {
-        alert('يرجى اختيار تقييم وكتابة تجربتك بإيجاز.');
-        return;
+      function setLoading(isLoading) {
+        submitBtn.disabled = isLoading;
+        submitBtn.textContent = isLoading ? 'جاري الإرسال...' : 'إرسال التقييم';
       }
-      const reviews = getReviews();
-      reviews.push({ rating, text, name, date: new Date().toISOString() });
-      setReviews(reviews);
-      section.querySelector('#reviewText').value = '';
-      section.querySelector('#reviewName').value = '';
-      refresh();
-      alert('✅ تم حفظ تقييمك محلياً، شكراً لمشاركتك!');
-    });
 
-    // Seed one sample review if none exist to demonstrate UI
-    if (getReviews().length === 0) {
-      setReviews([
-        { rating: 5, text: 'تجربة رائعة ومفيدة جداً، تصميم مرتب وألوان جميلة!', name: 'زائر', date: new Date().toISOString() }
-      ]);
-    }
-    refresh();
+      function formatDateShort(iso) {
+        try {
+          return new Date(iso).toLocaleDateString('ar-SA', { year: 'numeric', month: 'short', day: 'numeric' });
+        } catch {
+          return '';
+        }
+      }
+
+      function refreshUI(message) {
+        const { reviews, average, count } = state;
+        avgScoreEl.textContent = average.toFixed(1);
+        avgStarsEl.textContent = renderStars(average);
+        reviewsCountEl.textContent = message || (count ? 'تمت مشاركة تجارب من الزوار.' : 'بانتظار أوّل تجربة من الزوار.');
+        reviewsListEl.innerHTML = reviews.slice().reverse().map((r) => {
+          const safeText = String(r.text || '').replace(/</g, '&lt;');
+          const reviewer = r.name || 'زائر';
+          const createdAt = formatDateShort(r.createdAt || r.date);
+          return `
+            <div class="review-item">
+              <div class="meta">
+                <span>${renderStars(r.rating || 0)}</span>
+                <span>•</span>
+                <span>${reviewer}</span>
+                ${createdAt ? `<span style="margin-inline-start:auto;">${createdAt}</span>` : ''}
+              </div>
+              <div>${safeText}</div>
+            </div>
+          `;
+        }).join('') || '<div style="color: var(--text-muted);">لا توجد تقييمات بعد.</div>';
+      }
+
+      async function fetchReviews() {
+        try {
+          reviewsCountEl.textContent = 'جار تحميل آراء الزوار...';
+          const response = await fetch('/api/reviews', { cache: 'no-store' });
+          if (!response.ok) throw new Error('failed');
+          const data = await response.json();
+          const reviews = Array.isArray(data.reviews) ? data.reviews : [];
+          const average = Number.isFinite(data.average) ? data.average : 0;
+          const count = Number.isFinite(data.count) ? data.count : reviews.length;
+          state = { reviews, average, count };
+          refreshUI();
+        } catch (error) {
+          console.warn('⚠️ تعذر تحميل التقييمات:', error);
+          state = { reviews: [], average: 0, count: 0 };
+          refreshUI('تعذر تحميل التقييمات حالياً.');
+        }
+      }
+
+      async function submitReview(rating, text, name) {
+        const payload = { rating, text, name };
+        const response = await fetch('/api/reviews', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+        });
+        if (!response.ok) {
+          const error = await response.json().catch(() => ({}));
+          throw new Error(error.error || 'review_failed');
+        }
+        const data = await response.json();
+        const reviews = Array.isArray(state.reviews) ? [...state.reviews, data.review] : [data.review];
+        const average = Number.isFinite(data.average) ? data.average : state.average;
+        const count = Number.isFinite(data.count) ? data.count : reviews.length;
+        state = { reviews, average, count };
+        refreshUI();
+      }
+
+      // Build interactive stars
+      for (let i = 1; i <= 5; i++) {
+        const b = document.createElement('button');
+        b.setAttribute('type', 'button');
+        b.textContent = '★';
+        b.addEventListener('click', () => {
+          selected = i;
+          [...starInput.children].forEach((el, idx) => el.classList.toggle('active', idx < i));
+        });
+        b.className = 'active';
+        starInput.appendChild(b);
+      }
+
+      submitBtn.addEventListener('click', async () => {
+        if (isSubmitting) return;
+        const text = reviewTextEl.value.trim();
+        const name = reviewNameEl.value.trim();
+        const rating = selected;
+        if (!rating || !text) {
+          alert('يرجى اختيار تقييم وكتابة تجربتك بإيجاز.');
+          return;
+        }
+        try {
+          isSubmitting = true;
+          setLoading(true);
+          await submitReview(rating, text, name);
+          reviewTextEl.value = '';
+          reviewNameEl.value = '';
+          alert('✅ تم تسجيل تقييمك، شكراً لك!');
+        } catch (error) {
+          console.warn('⚠️ تعذر حفظ التقييم:', error);
+          alert('تعذر حفظ التقييم حالياً. حاول مرة أخرى لاحقاً.');
+        } finally {
+          isSubmitting = false;
+          setLoading(false);
+        }
+      });
+
+      fetchReviews();
   }
 
   // VISITORS: Log visits locally with timestamp and country (via ipwho.is)
@@ -736,78 +788,6 @@
     render();
   }
 
-  // INTERACTIVE: Mouse follower element that tracks the cursor on index page
-  function initMouseFollowerIfNeeded() {
-    const onIndex = document.title.includes('قسم التقنية');
-    if (!onIndex) return;
-    // Always enable follower for better visibility across pages
-    if (document.querySelector('.mouse-follower')) return;
-
-    const follower = document.createElement('div');
-    follower.className = 'mouse-follower hidden';
-    follower.setAttribute('aria-hidden', 'true');
-    document.body.appendChild(follower);
-
-    let targetX = -9999;
-    let targetY = -9999;
-    let currentX = targetX;
-    let currentY = targetY;
-    const size = 22;
-
-    function onMove(event) {
-      targetX = event.clientX - size / 2;
-      targetY = event.clientY - size / 2;
-      follower.classList.remove('hidden');
-    }
-    function onLeave() { follower.classList.add('hidden'); }
-    function onDown() { follower.classList.add('click'); }
-    function onUp() { follower.classList.remove('click'); }
-
-    window.addEventListener('mousemove', onMove, { passive: true });
-    window.addEventListener('mouseleave', onLeave, { passive: true });
-    window.addEventListener('mousedown', onDown, { passive: true });
-    window.addEventListener('mouseup', onUp, { passive: true });
-
-    // Receive cursor events from project iframes to keep tracking active over iframe content
-    window.addEventListener('message', (e) => {
-      const data = e && e.data;
-      if (!data || !data.__fromProjectFrame) return;
-      const frame = document.getElementById('projectFrame');
-      const rect = frame ? frame.getBoundingClientRect() : { left: 0, top: 0 };
-      switch (data.type) {
-        case 'cursor-move':
-        case 'cursor-enter': {
-          const px = rect.left + (Number(data.x) || 0);
-          const py = rect.top + (Number(data.y) || 0);
-          targetX = px - size / 2;
-          targetY = py - size / 2;
-          follower.classList.remove('hidden');
-          break;
-        }
-        case 'cursor-leave':
-          follower.classList.add('hidden');
-          break;
-        case 'cursor-down':
-          follower.classList.add('click');
-          break;
-        case 'cursor-up':
-          follower.classList.remove('click');
-          break;
-        default:
-          break;
-      }
-    }, { passive: true });
-
-    function animate() {
-      // Smoothly approach the target position
-      currentX += (targetX - currentX) * 0.18;
-      currentY += (targetY - currentY) * 0.18;
-      follower.style.transform = `translate3d(${currentX}px, ${currentY}px, 0)`;
-      requestAnimationFrame(animate);
-    }
-    animate();
-  }
-
   // Inject the school logo in a fixed position across all pages
   function injectSchoolLogoFixed() {
     try {
@@ -829,8 +809,6 @@
   initTheme();
   injectTechLogoIfNeeded();
   initReviewsSectionIfNeeded();
-  initVisitorsSectionIfNeeded();
   initMishkatSectionIfNeeded();
-  initMouseFollowerIfNeeded();
   injectSchoolLogoFixed();
 })();
