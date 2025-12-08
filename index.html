@@ -637,19 +637,12 @@
             currentProjectId = null;
         }
 
-        function setGlobalThemeToggleVisibility(visible) {
-            const toggle = document.getElementById('globalThemeToggle');
-            if (!toggle) return;
-            toggle.style.display = visible ? '' : 'none';
-        }
-
         function openProject(filename) {
             mainContent.style.display = 'none';
             projectViewer.classList.add('active');
             backButton.style.display = 'block';
             backButton.setAttribute('aria-hidden', 'false');
             projectFrame.src = filename;
-            setGlobalThemeToggleVisibility(filename !== 'project9.html');
         }
 
         function goBack() {
@@ -658,7 +651,6 @@
             backButton.style.display = 'none';
             backButton.setAttribute('aria-hidden', 'true');
             projectFrame.src = '';
-            setGlobalThemeToggleVisibility(true);
         }
 
         window.openProject = openProject;
