@@ -844,8 +844,8 @@
                         <p class="hero-description">منصة موحدة من قسم التقنية بمدارس المشكاة تمكّن الطلاب من إيصال أفكارهم وتتبع حالة المعالجة لحظة بلحظة، وتمنح فريق الإدارة لوحة معلومات احترافية لاتخاذ القرار.</p>
                     </div>
                 </div>
-                <div class="badge">
-                    <span>🚀 نسخة العرض التفاعلية</span>
+                <div class="badge" id="serverStatusBadge">
+                    <span id="serverStatus">🔄 جار الاتصال...</span>
                 </div>
             </div>
             <div class="hero-pills">
@@ -1051,7 +1051,11 @@
     <div id="toast" class="toast" role="status" aria-live="polite"></div>
 
     <script>
-        const SUGGESTIONS_ENDPOINT = '/api/suggestions';
+        // Auto-detect the correct base URL
+        const BASE_URL = window.location.protocol === 'file:' 
+            ? 'http://localhost:3000' 
+            : window.location.origin;
+        const SUGGESTIONS_ENDPOINT = `${BASE_URL}/api/suggestions`;
 
         const STATUS_CONFIG = {
             pending: {
@@ -1092,6 +1096,7 @@
         let suggestionsLoaded = false;
         let suggestionsLoading = false;
         let suggestionsPromise = null;
+        let serverConnected = true;
 
           async function fetchSuggestionsFromServer() {
               try {
@@ -1099,12 +1104,14 @@
                   if (!response.ok) throw new Error(`HTTP ${response.status}`);
                   const data = await response.json();
                   const list = Array.isArray(data.suggestions) ? data.suggestions : [];
+                  serverConnected = true;
                   return list
                       .map(normalizeSuggestion)
                       .filter(Boolean)
                       .sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt));
               } catch (error) {
                   console.warn('⚠️ تعذر تحميل الاقتراحات من الخادم:', error);
+                  serverConnected = false;
                   return [];
               }
           }
@@ -1306,7 +1313,11 @@
                 showToast('✅ تم إرسال الاقتراح بنجاح! ستتلقى مستجداته هنا.');
             } catch (error) {
                 console.warn('⚠️ تعذر حفظ الاقتراح:', error);
-                showToast('❌ تعذر إرسال الاقتراح. تأكد من اتصالك بالإنترنت أو حاول مرة أخرى لاحقاً.');
+                if (!serverConnected) {
+                    showToast('❌ تعذر الاتصال بالخادم. تأكد من تشغيل الخادم بالأمر: npm start');
+                } else {
+                    showToast('❌ حدث خطأ أثناء إرسال الاقتراح. حاول مرة أخرى لاحقاً.');
+                }
             }
         }
 
@@ -1349,7 +1360,11 @@
                 showToast(statusMessage);
             } catch (error) {
                 console.warn('⚠️ تعذر تحديث الحالة:', error);
-                showToast('❌ تعذر تحديث حالة الاقتراح. تأكد من اتصالك بالإنترنت أو حاول مرة أخرى لاحقاً.');
+                if (!serverConnected) {
+                    showToast('❌ تعذر الاتصال بالخادم. تأكد من تشغيل الخادم بالأمر: npm start');
+                } else {
+                    showToast('❌ حدث خطأ أثناء تحديث حالة الاقتراح. حاول مرة أخرى لاحقاً.');
+                }
             }
         }
 
@@ -1597,12 +1612,31 @@
                 rejectedEl.textContent = rejected ? 'اقتراحات تحتاج تطوير' : 'كل الأفكار على المسار الصحيح';
             }
 
+            // Update server status
+            updateServerStatus();
+
             if (currentUser && currentUser.type === 'student') {
                 renderStudentSnapshot();
             }
             if (currentUser && currentUser.type === 'admin') {
                 renderAdminInsights();
                 showAllSuggestions();
+            }
+        }
+
+        function updateServerStatus() {
+            const statusEl = document.getElementById('serverStatus');
+            const badgeEl = document.getElementById('serverStatusBadge');
+            if (!statusEl || !badgeEl) return;
+
+            if (serverConnected) {
+                statusEl.textContent = '✅ متصل بالخادم';
+                badgeEl.style.background = 'rgba(52, 211, 153, 0.16)';
+                badgeEl.style.border = '1px solid rgba(52, 211, 153, 0.35)';
+            } else {
+                statusEl.textContent = '⚠️ غير متصل - شغّل الخادم';
+                badgeEl.style.background = 'rgba(251, 191, 36, 0.16)';
+                badgeEl.style.border = '1px solid rgba(251, 191, 36, 0.45)';
             }
         }
 
