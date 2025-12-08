@@ -1,0 +1,24 @@
+# Dependencies
+node_modules/
+npm-debug.log*
+
+# Data files (generated at runtime)
+data/
+
+# Build outputs
+dist/
+build/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Logs
+logs/
+*.log
