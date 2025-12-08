@@ -712,7 +712,7 @@
             outline-offset: 4px;
         }
 
-        button:disabled {
+        button:disabled:not(.status-actions button) {
             cursor: not-allowed;
             opacity: 0.85;
             background: var(--button-disabled-bg);
@@ -741,39 +741,46 @@
             opacity: 1;
         }
 
-        .status-actions button.is-current:disabled {
+        .status-actions button:disabled {
+            cursor: not-allowed;
             opacity: 1;
+        }
+
+        .status-actions button.is-current:disabled {
             animation: selectPulse 0.6s ease;
-            box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.25);
         }
 
         .status-actions .btn-secondary:disabled {
             background: linear-gradient(135deg, var(--primary), var(--primary-2));
             color: #fff;
+            border: none;
+            box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.25);
         }
 
         .status-actions .btn-success:disabled {
             background: linear-gradient(135deg, #22c55e, #16a34a);
             color: #fff;
-            box-shadow: 0 16px 32px rgba(34, 197, 94, 0.3);
+            border: none;
+            box-shadow: 0 0 0 2px rgba(34, 197, 94, 0.35);
         }
 
         .status-actions .btn-danger:disabled {
             background: linear-gradient(135deg, #f87171, #ef4444);
             color: #fff;
-            box-shadow: 0 16px 32px rgba(248, 113, 113, 0.28);
-        }
-
-        .status-actions button.is-current.btn-success:disabled {
-            box-shadow: 0 0 0 2px rgba(34, 197, 94, 0.35);
-        }
-
-        .status-actions button.is-current.btn-danger:disabled {
+            border: none;
             box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.3);
         }
 
+        .status-actions button.is-current.btn-success:disabled {
+            box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.4), 0 16px 32px rgba(34, 197, 94, 0.25);
+        }
+
+        .status-actions button.is-current.btn-danger:disabled {
+            box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.35), 0 16px 32px rgba(248, 113, 113, 0.22);
+        }
+
         .status-actions button.is-current.btn-secondary:disabled {
-            box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.25);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.3), 0 16px 32px rgba(102, 126, 234, 0.2);
         }
 
         @keyframes selectPulse {
@@ -940,10 +947,6 @@
                         <div class="action-row" style="margin-top: 22px;">
                             <button type="button" onclick="adminLogin()">دخول لوحة الإدارة</button>
                             <button type="button" class="btn-secondary" onclick="showStudentLogin()">العودة للطلاب</button>
-                        </div>
-                        <div class="helper-strip">
-                            <strong>🔐 بيانات النسخة التجريبية</strong>
-                            <p>اسم المستخدم: admin — كلمة المرور: admin123. يمكنك تعديلها في التكامل الفعلي.</p>
                         </div>
                     </div>
                     <div class="card">
@@ -1118,7 +1121,7 @@
                 const parsed = JSON.parse(stored);
                 return Array.isArray(parsed) ? parsed : [];
             } catch (error) {
-                console.warn('⚠️ تعذر قراءة البيانات المحلية:', error);
+                // Silent error handling for local storage
                 return [];
             }
         }
@@ -1128,7 +1131,7 @@
                 localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
                 return true;
             } catch (error) {
-                console.warn('⚠️ تعذر حفظ البيانات المحلية:', error);
+                // Silent error handling for local storage
                 return false;
             }
         }
@@ -1198,7 +1201,7 @@
                       .filter(Boolean)
                       .sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt));
               } catch (error) {
-                  console.warn('⚠️ تعذر تحميل الاقتراحات من الخادم:', error);
+                  // Server connection failed, use local fallback
                   serverConnected = false;
                   // Fallback to localStorage
                   let localData = loadFromLocalStorage();
@@ -1501,7 +1504,7 @@
                     : '✅ تم حفظ الاقتراح محلياً على هذا الجهاز!';
                 showToast(successMsg);
             } catch (error) {
-                console.warn('⚠️ تعذر حفظ الاقتراح:', error);
+                // Error handling
                 showToast('❌ حدث خطأ أثناء حفظ الاقتراح. حاول مرة أخرى لاحقاً.');
             }
         }
@@ -1544,7 +1547,7 @@
                         : 'ℹ️ تمت إعادة الحالة إلى قيد المتابعة';
                 showToast(statusMessage);
             } catch (error) {
-                console.warn('⚠️ تعذر تحديث الحالة:', error);
+                // Error handling
                 showToast('❌ حدث خطأ أثناء تحديث حالة الاقتراح. حاول مرة أخرى لاحقاً.');
             }
         }
