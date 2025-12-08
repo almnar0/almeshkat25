@@ -226,7 +226,7 @@
         border-right-color: var(--state-danger-border) !important;
       }
 
-      /* Theme toggle control - REMOVED: Permanent dark mode enabled */
+
 
       /* شعار المدرسة في رأس الصفحة (الواجهة) */
       .header-logo {
@@ -326,7 +326,7 @@
     if (themeColor) meta.setAttribute('content', themeColor);
   }
 
-  function applyTheme(theme) {
+  function applyDarkTheme() {
     const root = document.documentElement;
     // Force dark mode permanently
     root.setAttribute('data-theme', 'dark');
@@ -337,7 +337,7 @@
   function initTheme() {
     injectThemeStyles();
     // Always apply dark theme - no toggle, no user preference
-    applyTheme('dark');
+    applyDarkTheme();
   }
 
   // BRAND LOGO: Inject school logo in the main index page header
