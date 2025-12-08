@@ -891,7 +891,7 @@
                           </div>
                           <div class="helper-strip">
                               <strong>🛈 للاستخدام التجريبي</strong>
-                              <p>يمكنك استخدام أي رقم هوية وأي كلمة مرور لاستعراض التجربة. للعمل بشكل كامل، تأكد من تشغيل الخادم باستخدام الأمر: <code>npm start</code></p>
+                              <p>يمكنك استخدام أي رقم هوية وأي كلمة مرور لاستعراض التجربة. النظام يعمل محلياً على جهازك. لمزامنة البيانات عبر الأجهزة، يمكنك تشغيل الخادم: <code>npm start</code></p>
                           </div>
                           <div style="margin-top: 18px;">
                               <button type="button" class="admin-access-cta" onclick="showAdminLogin()">🔐 لدي صلاحيات الإدارة</button>
@@ -1097,6 +1097,81 @@
         let suggestionsLoading = false;
         let suggestionsPromise = null;
         let serverConnected = null; // null = unknown, true = connected, false = disconnected
+        const STORAGE_KEY = 'mishkat_suggestions';
+
+        // localStorage helper functions
+        function loadFromLocalStorage() {
+            try {
+                const stored = localStorage.getItem(STORAGE_KEY);
+                if (!stored) return [];
+                const parsed = JSON.parse(stored);
+                return Array.isArray(parsed) ? parsed : [];
+            } catch (error) {
+                console.warn('⚠️ تعذر قراءة البيانات المحلية:', error);
+                return [];
+            }
+        }
+
+        function saveToLocalStorage(data) {
+            try {
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+                return true;
+            } catch (error) {
+                console.warn('⚠️ تعذر حفظ البيانات المحلية:', error);
+                return false;
+            }
+        }
+
+        function getSeedSuggestions() {
+            const now = new Date();
+            const base = Date.now();
+            return [
+                {
+                    id: base,
+                    studentId: '22110001',
+                    studentName: 'طالب المشكاة',
+                    title: 'مساحة ذكاء اصطناعي مصغّرة',
+                    text: 'اقتراح لتجهيز ركن دائم للتجارب العملية مع جلسات أسبوعية يشرف عليها القسم.',
+                    category: 'تعليمي',
+                    status: 'approved',
+                    createdAt: new Date(now.getTime() - 18 * 24 * 60 * 60 * 1000).toISOString(),
+                    updatedAt: new Date(now.getTime() - 5 * 24 * 60 * 60 * 1000).toISOString(),
+                    history: [
+                        {
+                            status: 'pending',
+                            date: new Date(now.getTime() - 18 * 24 * 60 * 60 * 1000).toISOString(),
+                            actor: 'النظام',
+                            note: 'تم استلام الاقتراح وجاري التنسيق.'
+                        },
+                        {
+                            status: 'approved',
+                            date: new Date(now.getTime() - 5 * 24 * 60 * 60 * 1000).toISOString(),
+                            actor: 'الإدارة',
+                            note: 'تم اعتماد التنفيذ وتحديد جدول الورش.'
+                        }
+                    ]
+                },
+                {
+                    id: base + 1,
+                    studentId: '22090033',
+                    studentName: 'طالب التقنية',
+                    title: 'جلسة دعم أسبوعية للمنصة',
+                    text: 'تنظيم جلسة حوارية أسبوعية تجمع الطلاب بفريق التقنية لمتابعة الاقتراحات المفتوحة.',
+                    category: 'ثقافي',
+                    status: 'pending',
+                    createdAt: new Date(now.getTime() - 6 * 24 * 60 * 60 * 1000).toISOString(),
+                    updatedAt: new Date(now.getTime() - 1 * 24 * 60 * 60 * 1000).toISOString(),
+                    history: [
+                        {
+                            status: 'pending',
+                            date: new Date(now.getTime() - 6 * 24 * 60 * 60 * 1000).toISOString(),
+                            actor: 'النظام',
+                            note: 'تم الاستلام وسيتم مناقشة التفاصيل مع الفريق.'
+                        }
+                    ]
+                }
+            ];
+        }
 
           async function fetchSuggestionsFromServer() {
               try {
@@ -1105,6 +1180,8 @@
                   const data = await response.json();
                   const list = Array.isArray(data.suggestions) ? data.suggestions : [];
                   serverConnected = true;
+                  // Save server data to localStorage for offline use
+                  saveToLocalStorage(list);
                   return list
                       .map(normalizeSuggestion)
                       .filter(Boolean)
@@ -1112,7 +1189,17 @@
               } catch (error) {
                   console.warn('⚠️ تعذر تحميل الاقتراحات من الخادم:', error);
                   serverConnected = false;
-                  return [];
+                  // Fallback to localStorage
+                  let localData = loadFromLocalStorage();
+                  // If no local data, use seed data
+                  if (localData.length === 0) {
+                      localData = getSeedSuggestions();
+                      saveToLocalStorage(localData);
+                  }
+                  return localData
+                      .map(normalizeSuggestion)
+                      .filter(Boolean)
+                      .sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt));
               }
           }
 
@@ -1198,31 +1285,120 @@
           }
 
         async function createSuggestionRemote(payload) {
-            const response = await fetch(SUGGESTIONS_ENDPOINT, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload)
-            });
-            if (!response.ok) {
-                const error = await response.json().catch(() => ({}));
-                throw new Error(error.error || 'suggestion_store_failed');
+            try {
+                const response = await fetch(SUGGESTIONS_ENDPOINT, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                if (!response.ok) {
+                    const error = await response.json().catch(() => ({}));
+                    throw new Error(error.error || 'suggestion_store_failed');
+                }
+                const data = await response.json();
+                serverConnected = true;
+                // Save to localStorage as backup
+                const localData = loadFromLocalStorage();
+                localData.push(data.suggestion);
+                saveToLocalStorage(localData);
+                return normalizeSuggestion(data.suggestion);
+            } catch (error) {
+                // Fallback to localStorage if server is unavailable
+                console.warn('⚠️ الخادم غير متاح، الحفظ محلياً:', error);
+                serverConnected = false;
+                
+                // Create suggestion locally
+                const now = new Date().toISOString();
+                const localSuggestion = {
+                    id: Date.now() + Math.floor(Math.random() * 1000),
+                    studentId: payload.studentId || '',
+                    studentName: payload.studentName || 'طالب',
+                    title: payload.title || 'اقتراح بدون عنوان',
+                    text: payload.text || '',
+                    category: payload.category || 'أخرى',
+                    status: 'pending',
+                    createdAt: now,
+                    updatedAt: now,
+                    history: [
+                        {
+                            status: 'pending',
+                            date: now,
+                            actor: payload.studentName || 'طالب',
+                            note: 'تم حفظ الاقتراح محلياً على هذا الجهاز.'
+                        }
+                    ]
+                };
+                
+                // Save to localStorage
+                const localData = loadFromLocalStorage();
+                localData.push(localSuggestion);
+                saveToLocalStorage(localData);
+                
+                return normalizeSuggestion(localSuggestion);
             }
-            const data = await response.json();
-            return normalizeSuggestion(data.suggestion);
         }
 
         async function updateSuggestionRemote(id, status) {
-            const response = await fetch(`${SUGGESTIONS_ENDPOINT}/${id}`, {
-                method: 'PATCH',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ status })
-            });
-            if (!response.ok) {
-                const error = await response.json().catch(() => ({}));
-                throw new Error(error.error || 'suggestion_update_failed');
+            try {
+                const response = await fetch(`${SUGGESTIONS_ENDPOINT}/${id}`, {
+                    method: 'PATCH',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ status })
+                });
+                if (!response.ok) {
+                    const error = await response.json().catch(() => ({}));
+                    throw new Error(error.error || 'suggestion_update_failed');
+                }
+                const data = await response.json();
+                serverConnected = true;
+                // Update localStorage as backup
+                const localData = loadFromLocalStorage();
+                const index = localData.findIndex(item => Number(item.id) === id);
+                if (index !== -1) {
+                    localData[index] = data.suggestion;
+                    saveToLocalStorage(localData);
+                }
+                return normalizeSuggestion(data.suggestion);
+            } catch (error) {
+                // Fallback to localStorage if server is unavailable
+                console.warn('⚠️ الخادم غير متاح، التحديث محلياً:', error);
+                serverConnected = false;
+                
+                const localData = loadFromLocalStorage();
+                const index = localData.findIndex(item => Number(item.id) === id);
+                
+                if (index === -1) {
+                    throw new Error('suggestion_not_found');
+                }
+                
+                const suggestion = localData[index];
+                const now = new Date().toISOString();
+                const validStatuses = ['pending', 'approved', 'rejected'];
+                const newStatus = validStatuses.includes(status) ? status : suggestion.status;
+                
+                // Add history entry
+                const historyEntry = {
+                    status: newStatus,
+                    date: now,
+                    actor: 'الإدارة',
+                    note: newStatus === 'approved'
+                        ? 'تم اعتماد الاقتراح محلياً.'
+                        : newStatus === 'rejected'
+                            ? 'تم الاعتذار عن الاقتراح محلياً.'
+                            : 'الاقتراح قيد المتابعة محلياً.'
+                };
+                
+                suggestion.status = newStatus;
+                suggestion.updatedAt = now;
+                suggestion.history = Array.isArray(suggestion.history) 
+                    ? [...suggestion.history, historyEntry] 
+                    : [historyEntry];
+                
+                localData[index] = suggestion;
+                saveToLocalStorage(localData);
+                
+                return normalizeSuggestion(suggestion);
             }
-            const data = await response.json();
-            return normalizeSuggestion(data.suggestion);
         }
 
         async function studentLogin() {
@@ -1310,14 +1486,13 @@
                 showMySuggestions();
                 renderStudentSnapshot();
                 displaySubmissionFeedback(record);
-                showToast('✅ تم إرسال الاقتراح بنجاح! ستتلقى مستجداته هنا.');
+                const successMsg = serverConnected 
+                    ? '✅ تم إرسال الاقتراح بنجاح! ستتلقى مستجداته هنا.'
+                    : '✅ تم حفظ الاقتراح محلياً على هذا الجهاز!';
+                showToast(successMsg);
             } catch (error) {
                 console.warn('⚠️ تعذر حفظ الاقتراح:', error);
-                if (!serverConnected) {
-                    showToast('❌ تعذر الاتصال بالخادم. تأكد من تشغيل الخادم بالأمر: npm start');
-                } else {
-                    showToast('❌ حدث خطأ أثناء إرسال الاقتراح. حاول مرة أخرى لاحقاً.');
-                }
+                showToast('❌ حدث خطأ أثناء حفظ الاقتراح. حاول مرة أخرى لاحقاً.');
             }
         }
 
@@ -1360,11 +1535,7 @@
                 showToast(statusMessage);
             } catch (error) {
                 console.warn('⚠️ تعذر تحديث الحالة:', error);
-                if (!serverConnected) {
-                    showToast('❌ تعذر الاتصال بالخادم. تأكد من تشغيل الخادم بالأمر: npm start');
-                } else {
-                    showToast('❌ حدث خطأ أثناء تحديث حالة الاقتراح. حاول مرة أخرى لاحقاً.');
-                }
+                showToast('❌ حدث خطأ أثناء تحديث حالة الاقتراح. حاول مرة أخرى لاحقاً.');
             }
         }
 
