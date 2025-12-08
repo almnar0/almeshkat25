@@ -891,7 +891,7 @@
                           </div>
                           <div class="helper-strip">
                               <strong>🛈 للاستخدام التجريبي</strong>
-                              <p>يمكنك استخدام أي رقم هوية وأي كلمة مرور لاستعراض التجربة. النظام يعمل محلياً على جهازك. لمزامنة البيانات عبر الأجهزة، يمكنك تشغيل الخادم: <code>npm start</code></p>
+                              <p>يمكنك استخدام أي رقم هوية وأي كلمة مرور لاستعراض التجربة. النظام يعمل محلياً على جهازك (البيانات محفوظة فقط على هذا الجهاز). لمزامنة البيانات عبر الأجهزة، يمكنك تشغيل الخادم: <code>npm start</code></p>
                           </div>
                           <div style="margin-top: 18px;">
                               <button type="button" class="admin-access-cta" onclick="showAdminLogin()">🔐 لدي صلاحيات الإدارة</button>
@@ -1098,6 +1098,17 @@
         let suggestionsPromise = null;
         let serverConnected = null; // null = unknown, true = connected, false = disconnected
         const STORAGE_KEY = 'mishkat_suggestions';
+        const ALLOWED_STATUSES = ['pending', 'approved', 'rejected'];
+
+        // Generate unique ID for local suggestions
+        function generateLocalId() {
+            const localData = loadFromLocalStorage();
+            const maxId = localData.reduce((max, item) => {
+                const id = Number(item.id);
+                return Number.isFinite(id) ? Math.max(max, id) : max;
+            }, Date.now());
+            return maxId + 1;
+        }
 
         // localStorage helper functions
         function loadFromLocalStorage() {
@@ -1208,7 +1219,7 @@
             const id = Number(item.id);
             if (!Number.isFinite(id)) return null;
 
-            const status = ['pending', 'approved', 'rejected'].includes(item.status) ? item.status : 'pending';
+            const status = ALLOWED_STATUSES.includes(item.status) ? item.status : 'pending';
             const createdAt = sanitizeDate(item.createdAt) || sanitizeDate(item.date) || new Date().toISOString();
             const updatedAt = sanitizeDate(item.updatedAt) || createdAt;
 
@@ -1216,7 +1227,7 @@
             if (Array.isArray(item.history) && item.history.length) {
                 history = item.history
                     .map(record => ({
-                        status: ['pending', 'approved', 'rejected'].includes(record.status) ? record.status : status,
+                        status: ALLOWED_STATUSES.includes(record.status) ? record.status : status,
                         date: sanitizeDate(record.date) || createdAt,
                         actor: record.actor || (record.status === 'pending' ? 'النظام' : 'الإدارة'),
                         note: record.note || STATUS_CONFIG[record.status || status].note
@@ -1310,7 +1321,7 @@
                 // Create suggestion locally
                 const now = new Date().toISOString();
                 const localSuggestion = {
-                    id: Date.now() + Math.floor(Math.random() * 1000),
+                    id: generateLocalId(),
                     studentId: payload.studentId || '',
                     studentName: payload.studentName || 'طالب',
                     title: payload.title || 'اقتراح بدون عنوان',
@@ -1373,8 +1384,7 @@
                 
                 const suggestion = localData[index];
                 const now = new Date().toISOString();
-                const validStatuses = ['pending', 'approved', 'rejected'];
-                const newStatus = validStatuses.includes(status) ? status : suggestion.status;
+                const newStatus = ALLOWED_STATUSES.includes(status) ? status : suggestion.status;
                 
                 // Add history entry
                 const historyEntry = {
