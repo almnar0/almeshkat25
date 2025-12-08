@@ -226,27 +226,7 @@
         border-right-color: var(--state-danger-border) !important;
       }
 
-      /* Theme toggle control */
-      .theme-toggle {
-        position: fixed;
-        top: 16px;
-        right: 16px;
-        z-index: 2000;
-        display: inline-flex;
-        align-items: center;
-        gap: 8px;
-        background: var(--card-bg);
-        color: var(--text);
-        border: 1px solid var(--card-border);
-        border-radius: 999px;
-        padding: 8px 12px;
-        box-shadow: 0 6px 18px var(--shadow-1);
-        cursor: pointer;
-        user-select: none;
-      }
-      .theme-toggle:hover { box-shadow: 0 10px 26px var(--shadow-2); }
-      .theme-toggle .icon { font-size: 1.1rem; }
-      .theme-toggle .label { font-weight: 700; font-size: 0.95rem; }
+      /* Theme toggle control - REMOVED: Permanent dark mode enabled */
 
       /* شعار المدرسة في رأس الصفحة (الواجهة) */
       .header-logo {
@@ -348,60 +328,16 @@
 
   function applyTheme(theme) {
     const root = document.documentElement;
-    root.setAttribute('data-theme', theme);
-    localStorage.setItem('siteTheme', theme);
+    // Force dark mode permanently
+    root.setAttribute('data-theme', 'dark');
+    localStorage.setItem('siteTheme', 'dark');
     updateThemeColorMeta();
-  }
-
-  function detectInitialTheme() {
-    const saved = localStorage.getItem('siteTheme');
-    if (saved === 'light' || saved === 'dark') return saved;
-    const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-    return prefersDark ? 'dark' : 'light';
-  }
-
-  function createThemeToggle() {
-    if (document.querySelector('.theme-toggle')) return;
-    const btn = document.createElement('button');
-    btn.className = 'theme-toggle';
-    btn.id = 'globalThemeToggle';
-    btn.type = 'button';
-    const icon = document.createElement('span');
-    icon.className = 'icon';
-    const label = document.createElement('span');
-    label.className = 'label';
-
-    function sync() {
-      const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
-      icon.textContent = isDark ? '🌙' : '☀️';
-      label.textContent = isDark ? 'ليلي' : 'نهاري';
-    }
-
-    btn.appendChild(icon);
-    btn.appendChild(label);
-    btn.addEventListener('click', () => {
-      const current = document.documentElement.getAttribute('data-theme');
-      applyTheme(current === 'dark' ? 'light' : 'dark');
-      sync();
-    });
-    document.body.appendChild(btn);
-    sync();
   }
 
   function initTheme() {
     injectThemeStyles();
-    applyTheme(detectInitialTheme());
-    createThemeToggle();
-    if (window.matchMedia) {
-      try {
-        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
-          const saved = localStorage.getItem('siteTheme');
-          if (!saved) {
-            applyTheme(e.matches ? 'dark' : 'light');
-          }
-        });
-      } catch {}
-    }
+    // Always apply dark theme - no toggle, no user preference
+    applyTheme('dark');
   }
 
   // BRAND LOGO: Inject school logo in the main index page header
