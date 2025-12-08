@@ -70,12 +70,31 @@
             justify-content: space-between;
             align-items: center;
             margin-bottom: 30px;
+            flex-wrap: wrap;
+            gap: 15px;
         }
 
         .logo {
             font-size: 1.5em;
             font-weight: bold;
             color: #1e3c72;
+        }
+
+        .add-device-btn {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+        }
+
+        .add-device-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(16, 185, 129, 0.4);
         }
 
         .stats-grid {
@@ -220,6 +239,176 @@
             color: #64748b;
         }
 
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 24px;
+            padding: 35px;
+            max-width: 550px;
+            width: 100%;
+            box-shadow: 0 24px 48px rgba(0, 0, 0, 0.3);
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .modal-title {
+            font-size: 1.8em;
+            color: #1e3c72;
+            font-weight: 800;
+        }
+
+        .close-btn {
+            background: #f1f5f9;
+            border: none;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1.3em;
+            color: #64748b;
+            transition: all 0.3s ease;
+        }
+
+        .close-btn:hover {
+            background: #e2e8f0;
+            color: #1e293b;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            color: #334155;
+            font-weight: 600;
+            font-size: 0.95em;
+        }
+
+        .form-input,
+        .form-select,
+        .form-textarea {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            font-size: 1em;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            transition: all 0.3s ease;
+        }
+
+        .form-input:focus,
+        .form-select:focus,
+        .form-textarea:focus {
+            outline: none;
+            border-color: #1e3c72;
+            box-shadow: 0 0 0 3px rgba(30, 60, 114, 0.1);
+        }
+
+        .form-textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 25px;
+        }
+
+        .btn-primary {
+            flex: 1;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            border: none;
+            padding: 14px 24px;
+            border-radius: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1em;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(30, 60, 114, 0.3);
+        }
+
+        .btn-secondary {
+            flex: 1;
+            background: #f1f5f9;
+            color: #64748b;
+            border: none;
+            padding: 14px 24px;
+            border-radius: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1em;
+        }
+
+        .btn-secondary:hover {
+            background: #e2e8f0;
+            color: #334155;
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: #1e3c72;
+            color: white;
+            padding: 16px 24px;
+            border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+            display: none;
+            align-items: center;
+            gap: 12px;
+            z-index: 2000;
+            animation: slideIn 0.3s ease;
+        }
+
+        .toast.active {
+            display: flex;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(120%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
         @media (max-width: 768px) {
             .navbar {
                 flex-direction: column;
@@ -233,6 +422,20 @@
 
             .devices-grid {
                 grid-template-columns: 1fr;
+            }
+
+            .modal-content {
+                padding: 25px;
+            }
+
+            .form-actions {
+                flex-direction: column;
+            }
+
+            .toast {
+                right: 20px;
+                left: 20px;
+                bottom: 20px;
             }
         }
     </style>
@@ -253,6 +456,9 @@
 
         <div class="navbar">
             <div class="logo">🔧 نظام الأجهزة</div>
+            <button class="add-device-btn" onclick="openAddDeviceModal()">
+                ➕ إضافة جهاز جديد
+            </button>
         </div>
 
         <div class="stats-grid">
@@ -287,6 +493,82 @@
 
             <div class="devices-grid" id="devicesGrid"></div>
         </div>
+    </div>
+
+    <!-- Modal for Adding Device -->
+    <div class="modal" id="addDeviceModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">➕ إضافة جهاز جديد</h2>
+                <button class="close-btn" onclick="closeAddDeviceModal()">×</button>
+            </div>
+            <form id="addDeviceForm" onsubmit="addDevice(event)">
+                <div class="form-group">
+                    <label class="form-label">اسم الجهاز *</label>
+                    <input 
+                        type="text" 
+                        class="form-input" 
+                        id="deviceName" 
+                        placeholder="مثال: بروجكتر - قاعة 301"
+                        required
+                    >
+                </div>
+                <div class="form-group">
+                    <label class="form-label">نوع الجهاز *</label>
+                    <select class="form-select" id="deviceType" required>
+                        <option value="">اختر نوع الجهاز</option>
+                        <option value="projector">📽️ بروجكتر</option>
+                        <option value="computer">💻 حاسوب</option>
+                        <option value="mouse">🖱️ ماوس</option>
+                        <option value="keyboard">⌨️ كيبورد</option>
+                        <option value="smartboard">🖥️ لوحة ذكية</option>
+                        <option value="printer">🖨️ طابعة</option>
+                        <option value="speakers">🔊 سماعات</option>
+                        <option value="other">🔧 أخرى</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">الموقع *</label>
+                    <input 
+                        type="text" 
+                        class="form-input" 
+                        id="deviceLocation" 
+                        placeholder="مثال: الدور الثالث - قاعة 301"
+                        required
+                    >
+                </div>
+                <div class="form-group">
+                    <label class="form-label">حالة الجهاز *</label>
+                    <select class="form-select" id="deviceStatus" required>
+                        <option value="">اختر الحالة</option>
+                        <option value="good">✅ سليم</option>
+                        <option value="maintenance">⚠️ يحتاج صيانة</option>
+                        <option value="repair">🔴 تحت الإصلاح</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">ملاحظات (اختياري)</label>
+                    <textarea 
+                        class="form-textarea" 
+                        id="deviceNotes" 
+                        placeholder="أضف أي ملاحظات إضافية عن الجهاز"
+                    ></textarea>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn-secondary" onclick="closeAddDeviceModal()">
+                        إلغاء
+                    </button>
+                    <button type="submit" class="btn-primary">
+                        ✅ إضافة الجهاز
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div class="toast" id="toast">
+        <span id="toastMessage"></span>
     </div>
 
     <script>
@@ -385,7 +667,81 @@
             repair: 'status-repair'
         };
 
+        const typeIcons = {
+            projector: '📽️',
+            computer: '💻',
+            mouse: '🖱️',
+            keyboard: '⌨️',
+            smartboard: '🖥️',
+            printer: '🖨️',
+            speakers: '🔊',
+            other: '🔧'
+        };
+
         let currentFilter = 'all';
+        let nextId = 9;
+
+        // Modal Functions
+        function openAddDeviceModal() {
+            document.getElementById('addDeviceModal').classList.add('active');
+        }
+
+        function closeAddDeviceModal() {
+            document.getElementById('addDeviceModal').classList.remove('active');
+            document.getElementById('addDeviceForm').reset();
+        }
+
+        // Toast Function
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            const toastMessage = document.getElementById('toastMessage');
+            toastMessage.textContent = message;
+            toast.classList.add('active');
+            
+            setTimeout(() => {
+                toast.classList.remove('active');
+            }, 3000);
+        }
+
+        // Add Device Function
+        function addDevice(event) {
+            event.preventDefault();
+            
+            const name = document.getElementById('deviceName').value.trim();
+            const type = document.getElementById('deviceType').value;
+            const location = document.getElementById('deviceLocation').value.trim();
+            const status = document.getElementById('deviceStatus').value;
+            const notes = document.getElementById('deviceNotes').value.trim() || 'لا توجد ملاحظات';
+            
+            if (!name || !type || !location || !status) {
+                showToast('⚠️ يرجى تعبئة جميع الحقول المطلوبة');
+                return;
+            }
+
+            const newDevice = {
+                id: nextId++,
+                name,
+                type,
+                icon: typeIcons[type] || '🔧',
+                location,
+                status,
+                lastCheck: new Date().toISOString().split('T')[0],
+                notes
+            };
+
+            devices.push(newDevice);
+            updateStats();
+            renderDevices(currentFilter);
+            closeAddDeviceModal();
+            showToast('✅ تم إضافة الجهاز بنجاح!');
+        }
+
+        // Close modal when clicking outside
+        document.getElementById('addDeviceModal')?.addEventListener('click', function(event) {
+            if (event.target === this) {
+                closeAddDeviceModal();
+            }
+        });
 
         function updateStats() {
             const goodCount = devices.filter(d => d.status === 'good').length;
