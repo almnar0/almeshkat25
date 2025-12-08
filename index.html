@@ -707,6 +707,8 @@
             animateCounters();
             
             // Smooth scrolling with offset for navigation links
+            const SCROLL_OFFSET_PADDING = 40; // Extra padding below sticky nav for better visibility
+            
             document.querySelectorAll('a[href^="#"]').forEach(anchor => {
                 anchor.addEventListener('click', function (e) {
                     const href = this.getAttribute('href');
@@ -718,10 +720,10 @@
                     if (targetElement) {
                         e.preventDefault();
                         
-                        // Calculate offset: sticky nav height + some padding
+                        // Calculate offset: sticky nav height + padding
                         const nav = document.querySelector('.site-nav');
                         const navHeight = nav ? nav.offsetHeight : 0;
-                        const offset = navHeight + 40; // Extra padding for better visibility
+                        const offset = navHeight + SCROLL_OFFSET_PADDING;
                         
                         const targetPosition = targetElement.getBoundingClientRect().top + window.pageYOffset - offset;
                         
