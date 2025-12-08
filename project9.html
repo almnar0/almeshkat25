@@ -1096,7 +1096,7 @@
         let suggestionsLoaded = false;
         let suggestionsLoading = false;
         let suggestionsPromise = null;
-        let serverConnected = true;
+        let serverConnected = null; // null = unknown, true = connected, false = disconnected
 
           async function fetchSuggestionsFromServer() {
               try {
@@ -1627,16 +1627,23 @@
         function updateServerStatus() {
             const statusEl = document.getElementById('serverStatus');
             const badgeEl = document.getElementById('serverStatusBadge');
-            if (!statusEl || !badgeEl) return;
+            if (!statusEl || !badgeEl) {
+                console.warn('Server status elements not found in DOM');
+                return;
+            }
 
-            if (serverConnected) {
+            if (serverConnected === true) {
                 statusEl.textContent = '✅ متصل بالخادم';
                 badgeEl.style.background = 'rgba(52, 211, 153, 0.16)';
                 badgeEl.style.border = '1px solid rgba(52, 211, 153, 0.35)';
-            } else {
+            } else if (serverConnected === false) {
                 statusEl.textContent = '⚠️ غير متصل - شغّل الخادم';
                 badgeEl.style.background = 'rgba(251, 191, 36, 0.16)';
                 badgeEl.style.border = '1px solid rgba(251, 191, 36, 0.45)';
+            } else {
+                statusEl.textContent = '🔄 جار الاتصال...';
+                badgeEl.style.background = 'rgba(148, 163, 184, 0.16)';
+                badgeEl.style.border = '1px solid rgba(148, 163, 184, 0.35)';
             }
         }
 
