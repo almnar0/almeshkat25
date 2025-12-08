@@ -679,7 +679,7 @@
         };
 
         let currentFilter = 'all';
-        let nextId = 9;
+        let nextId = Math.max(...devices.map(d => d.id)) + 1;
 
         // Modal Functions
         function openAddDeviceModal() {
