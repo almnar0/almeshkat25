@@ -54,41 +54,13 @@
   prefetchProjects();
   registerSW();
 
-  // THEME: CSS variables, palette overrides, toggle UI, and dynamic meta theme-color
+  // THEME: CSS variables, palette overrides, and dynamic meta theme-color
   function injectThemeStyles() {
     if (document.getElementById('theme-styles')) return;
     const style = document.createElement('style');
     style.id = 'theme-styles';
     style.textContent = `
-        :root[data-theme="light"] {
-          --bg: #f8fafc;
-          --bg-secondary: #ffffff;
-          --text: #0f172a;
-          --text-muted: #334155;
-          --primary: #5b61f6;
-          --primary-2: #7c66f8;
-          --card-bg: #ffffff;
-          --card-border: #dbe3f2;
-          --surface: #eef2fb;
-          --tag-bg: #e2e7ff;
-          --tag-text: #4338ca;
-          --shadow-1: rgba(15, 23, 42, 0.1);
-          --shadow-2: rgba(15, 23, 42, 0.18);
-          --theme-color: #5b61f6;
-          --state-success-bg: #dcfce7;
-          --state-success-text: #166534;
-          --state-success-border: rgba(34, 197, 94, 0.35);
-          --state-warning-bg: #fef3c7;
-          --state-warning-text: #92400e;
-          --state-warning-border: rgba(234, 179, 8, 0.35);
-          --state-danger-bg: #fee2e2;
-          --state-danger-text: #b91c1c;
-          --state-danger-border: rgba(220, 38, 38, 0.35);
-          --state-info-bg: #e0f2fe;
-          --state-info-text: #0c4a6e;
-          --state-info-border: rgba(14, 116, 144, 0.25);
-      }
-
+        /* Dark theme variables - permanently applied */
         :root[data-theme="dark"] {
           --bg: #0b1021;
           --bg-secondary: #0f172a;
