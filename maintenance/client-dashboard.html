@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#7c3aed">
+    <title>لوحة العميل - نظام إدارة الصيانة</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&family=Tajawal:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="auth.css">
+</head>
+<body class="dashboard">
+    <!-- Dashboard Header -->
+    <header class="dashboard-header">
+        <div class="dashboard-header-content">
+            <h1 class="dashboard-title">لوحة العميل</h1>
+            <div class="dashboard-user">
+                <div class="user-avatar" id="userAvatar">ع</div>
+                <div class="user-info">
+                    <div class="user-name" id="userName">عميل</div>
+                    <div class="user-role">عميل</div>
+                </div>
+                <button onclick="logout()" class="btn btn-secondary btn-small">تسجيل الخروج</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Dashboard Content -->
+    <main class="dashboard-content">
+        <!-- Stats -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-card-header">
+                    <div class="stat-card-title">إجمالي الطلبات</div>
+                    <div class="stat-card-icon">📊</div>
+                </div>
+                <div class="stat-card-value" id="totalRequests">0</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-card-header">
+                    <div class="stat-card-title">قيد المعالجة</div>
+                    <div class="stat-card-icon">⏱️</div>
+                </div>
+                <div class="stat-card-value" id="pendingRequests">0</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-card-header">
+                    <div class="stat-card-title">مكتملة</div>
+                    <div class="stat-card-icon">✅</div>
+                </div>
+                <div class="stat-card-value" id="completedRequests">0</div>
+            </div>
+        </div>
+
+        <!-- Requests Section -->
+        <div class="requests-section">
+            <div class="section-header">
+                <h2 class="section-title">طلبات الصيانة</h2>
+                <button onclick="openNewRequestModal()" class="btn btn-primary">طلب صيانة جديد</button>
+            </div>
+            <div class="requests-list" id="requestsList">
+                <!-- Requests will be loaded here -->
+            </div>
+        </div>
+    </main>
+
+    <!-- New Request Modal -->
+    <div class="modal" id="newRequestModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">طلب صيانة جديد</h2>
+                <button class="modal-close" onclick="closeNewRequestModal()">×</button>
+            </div>
+            <form class="auth-form" id="newRequestForm">
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="issueType" class="form-label">نوع العطل *</label>
+                        <select id="issueType" class="form-input" required>
+                            <option value="">اختر نوع العطل</option>
+                            <option value="electrical">كهرباء</option>
+                            <option value="plumbing">سباكة</option>
+                            <option value="carpentry">نجارة</option>
+                            <option value="it">تقنية معلومات</option>
+                            <option value="ac">تكييف</option>
+                            <option value="other">أخرى</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="location" class="form-label">الموقع داخل المدرسة *</label>
+                        <input type="text" id="location" class="form-input" required placeholder="مثال: الفصل 201، المختبر، الإدارة">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="description" class="form-label">وصف المشكلة *</label>
+                        <textarea id="description" class="form-input" rows="4" required placeholder="اشرح المشكلة بالتفصيل..."></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="image" class="form-label">إرفاق صورة (اختياري)</label>
+                        <input type="file" id="image" class="form-input" accept="image/*">
+                        <small class="form-hint">يمكنك إرفاق صورة توضح المشكلة</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="priority" class="form-label">الأولوية</label>
+                        <select id="priority" class="form-input">
+                            <option value="low">منخفضة</option>
+                            <option value="medium" selected>متوسطة</option>
+                            <option value="high">عالية</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" onclick="closeNewRequestModal()" class="btn btn-secondary">إلغاء</button>
+                    <button type="submit" class="btn btn-primary">إرسال الطلب</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Rating Modal -->
+    <div class="modal" id="ratingModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">تقييم الخدمة</h2>
+                <button class="modal-close" onclick="closeRatingModal()">×</button>
+            </div>
+            <div class="modal-body">
+                <p style="text-align: center; margin-bottom: 1.5rem; color: var(--gray-600);">ما مدى رضاك عن الخدمة المقدمة؟</p>
+                <div style="display: flex; justify-content: center; gap: 1rem; font-size: 2.5rem; margin-bottom: 1.5rem;">
+                    <span class="rating-star" data-rating="1" onclick="selectRating(1)">⭐</span>
+                    <span class="rating-star" data-rating="2" onclick="selectRating(2)">⭐</span>
+                    <span class="rating-star" data-rating="3" onclick="selectRating(3)">⭐</span>
+                    <span class="rating-star" data-rating="4" onclick="selectRating(4)">⭐</span>
+                    <span class="rating-star" data-rating="5" onclick="selectRating(5)">⭐</span>
+                </div>
+                <div class="form-group">
+                    <label for="ratingComment" class="form-label">تعليق (اختياري)</label>
+                    <textarea id="ratingComment" class="form-input" rows="3" placeholder="أضف ملاحظاتك..."></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button onclick="closeRatingModal()" class="btn btn-secondary">إلغاء</button>
+                <button onclick="submitRating()" class="btn btn-primary">إرسال التقييم</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="dashboard.js"></script>
+    <script>
+        // Check authentication
+        const currentUser = JSON.parse(localStorage.getItem('currentUser') || 'null');
+        if (!currentUser || currentUser.userType !== 'client') {
+            alert('يجب تسجيل الدخول أولاً');
+            window.location.href = 'login.html';
+        }
+
+        // Display user info
+        document.getElementById('userName').textContent = currentUser.name;
+        document.getElementById('userAvatar').textContent = currentUser.name.charAt(0);
+
+        // Load requests
+        function loadRequests() {
+            const requests = JSON.parse(localStorage.getItem('maintenanceRequests') || '[]');
+            const userRequests = requests.filter(r => r.clientId === currentUser.id);
+            
+            // Update stats
+            document.getElementById('totalRequests').textContent = userRequests.length;
+            document.getElementById('pendingRequests').textContent = userRequests.filter(r => r.status === 'pending' || r.status === 'in-progress').length;
+            document.getElementById('completedRequests').textContent = userRequests.filter(r => r.status === 'completed').length;
+
+            // Display requests
+            const requestsList = document.getElementById('requestsList');
+            if (userRequests.length === 0) {
+                requestsList.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">📋</div>
+                        <h3 class="empty-state-title">لا توجد طلبات حتى الآن</h3>
+                        <p class="empty-state-desc">ابدأ بإنشاء أول طلب صيانة</p>
+                        <button onclick="openNewRequestModal()" class="btn btn-primary">طلب صيانة جديد</button>
+                    </div>
+                `;
+            } else {
+                requestsList.innerHTML = userRequests.map(request => {
+                    const statusText = {
+                        'pending': 'قيد المعالجة',
+                        'in-progress': 'تحت الإصلاح',
+                        'completed': 'مكتمل',
+                        'rejected': 'مرفوض'
+                    };
+                    
+                    const statusClass = {
+                        'pending': 'status-pending',
+                        'in-progress': 'status-in-progress',
+                        'completed': 'status-completed',
+                        'rejected': 'status-rejected'
+                    };
+
+                    const issueTypes = {
+                        'electrical': 'كهرباء',
+                        'plumbing': 'سباكة',
+                        'carpentry': 'نجارة',
+                        'it': 'تقنية معلومات',
+                        'ac': 'تكييف',
+                        'other': 'أخرى'
+                    };
+
+                    const canRate = request.status === 'completed' && !request.rating;
+                    
+                    return `
+                        <div class="request-card">
+                            <div class="request-header">
+                                <div class="request-info">
+                                    <h3>${issueTypes[request.issueType] || request.issueType} - ${request.location}</h3>
+                                    <div class="request-meta">
+                                        <span>📅 ${new Date(request.createdAt).toLocaleDateString('ar-SA')}</span>
+                                        ${request.priority === 'high' ? '<span>🔴 أولوية عالية</span>' : ''}
+                                    </div>
+                                </div>
+                                <span class="request-status ${statusClass[request.status]}">${statusText[request.status]}</span>
+                            </div>
+                            <p class="request-description">${request.description}</p>
+                            ${request.technicianNotes ? `
+                                <div style="background: var(--purple-50); padding: 1rem; border-radius: var(--radius-lg); margin-bottom: 1rem; border-right: 3px solid var(--purple-500);">
+                                    <strong style="color: var(--purple-700); display: block; margin-bottom: 0.5rem;">ملاحظات الفني:</strong>
+                                    <p style="color: var(--gray-700); margin: 0;">${request.technicianNotes}</p>
+                                </div>
+                            ` : ''}
+                            ${canRate ? `
+                                <div class="request-actions">
+                                    <button onclick="openRatingModal('${request.id}')" class="btn btn-primary btn-small">تقييم الخدمة</button>
+                                </div>
+                            ` : ''}
+                            ${request.rating ? `
+                                <div style="background: var(--success-light); padding: 1rem; border-radius: var(--radius-lg); margin-top: 1rem;">
+                                    <strong style="color: var(--success-dark); display: block; margin-bottom: 0.5rem;">تم التقييم: ${'⭐'.repeat(request.rating)}</strong>
+                                    ${request.ratingComment ? `<p style="color: var(--gray-700); margin: 0;">${request.ratingComment}</p>` : ''}
+                                </div>
+                            ` : ''}
+                        </div>
+                    `;
+                }).join('');
+            }
+        }
+
+        // Open/Close New Request Modal
+        function openNewRequestModal() {
+            document.getElementById('newRequestModal').classList.add('active');
+        }
+
+        function closeNewRequestModal() {
+            document.getElementById('newRequestModal').classList.remove('active');
+            document.getElementById('newRequestForm').reset();
+        }
+
+        // Handle new request submission
+        document.getElementById('newRequestForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const formData = {
+                id: Date.now().toString(),
+                clientId: currentUser.id,
+                clientName: currentUser.name,
+                issueType: document.getElementById('issueType').value,
+                location: document.getElementById('location').value,
+                description: document.getElementById('description').value,
+                priority: document.getElementById('priority').value,
+                status: 'pending',
+                createdAt: new Date().toISOString(),
+                updatedAt: new Date().toISOString()
+            };
+
+            // Handle image upload (in real app, this would be uploaded to server)
+            const imageFile = document.getElementById('image').files[0];
+            if (imageFile) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    formData.image = e.target.result;
+                    saveRequest(formData);
+                };
+                reader.readAsDataURL(imageFile);
+            } else {
+                saveRequest(formData);
+            }
+        });
+
+        function saveRequest(formData) {
+            const requests = JSON.parse(localStorage.getItem('maintenanceRequests') || '[]');
+            requests.push(formData);
+            localStorage.setItem('maintenanceRequests', JSON.stringify(requests));
+            
+            alert('تم إرسال الطلب بنجاح! سيتم التواصل معك قريباً.');
+            closeNewRequestModal();
+            loadRequests();
+        }
+
+        // Rating functions
+        let currentRatingRequestId = null;
+        let selectedRating = 0;
+
+        function openRatingModal(requestId) {
+            currentRatingRequestId = requestId;
+            selectedRating = 0;
+            document.getElementById('ratingModal').classList.add('active');
+            // Reset stars
+            document.querySelectorAll('.rating-star').forEach(star => {
+                star.style.opacity = '0.3';
+                star.style.cursor = 'pointer';
+            });
+        }
+
+        function closeRatingModal() {
+            document.getElementById('ratingModal').classList.remove('active');
+            document.getElementById('ratingComment').value = '';
+            currentRatingRequestId = null;
+            selectedRating = 0;
+        }
+
+        function selectRating(rating) {
+            selectedRating = rating;
+            document.querySelectorAll('.rating-star').forEach((star, index) => {
+                star.style.opacity = index < rating ? '1' : '0.3';
+            });
+        }
+
+        function submitRating() {
+            if (selectedRating === 0) {
+                alert('الرجاء اختيار التقييم');
+                return;
+            }
+
+            const requests = JSON.parse(localStorage.getItem('maintenanceRequests') || '[]');
+            const requestIndex = requests.findIndex(r => r.id === currentRatingRequestId);
+            
+            if (requestIndex !== -1) {
+                requests[requestIndex].rating = selectedRating;
+                requests[requestIndex].ratingComment = document.getElementById('ratingComment').value;
+                localStorage.setItem('maintenanceRequests', JSON.stringify(requests));
+                
+                // Update technician rating
+                const request = requests[requestIndex];
+                if (request.technicianId) {
+                    updateTechnicianRating(request.technicianId, selectedRating);
+                }
+                
+                alert('شكراً لتقييمك!');
+                closeRatingModal();
+                loadRequests();
+            }
+        }
+
+        function updateTechnicianRating(technicianId, newRating) {
+            const users = JSON.parse(localStorage.getItem('users') || '[]');
+            const techIndex = users.findIndex(u => u.id === technicianId);
+            
+            if (techIndex !== -1) {
+                const tech = users[techIndex];
+                const currentRating = tech.rating || 0;
+                const completedRequests = tech.completedRequests || 0;
+                const totalRating = (currentRating * completedRequests) + newRating;
+                users[techIndex].rating = totalRating / (completedRequests + 1);
+                users[techIndex].completedRequests = completedRequests + 1;
+                localStorage.setItem('users', JSON.stringify(users));
+            }
+        }
+
+        function logout() {
+            localStorage.removeItem('currentUser');
+            window.location.href = 'login.html';
+        }
+
+        // Load requests on page load
+        loadRequests();
+    </script>
+</body>
+</html>
