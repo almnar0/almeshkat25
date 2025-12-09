@@ -328,15 +328,40 @@
             font-family: 'Tajawal', sans-serif;
             font-size: 1.02rem;
             font-weight: 700;
-            transition: transform 0.18s ease, box-shadow 0.18s ease;
+            transition: transform 0.45s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.45s cubic-bezier(0.4, 0, 0.2, 1), background 0.45s cubic-bezier(0.4, 0, 0.2, 1);
             background: linear-gradient(135deg, var(--primary), var(--primary-2));
             color: #fff;
             box-shadow: 0 16px 32px rgba(102, 126, 234, 0.25);
+            position: relative;
+            overflow: hidden;
+        }
+
+        button::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.2);
+            transform: translate(-50%, -50%);
+            transition: width 0.45s cubic-bezier(0.4, 0, 0.2, 1), height 0.45s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        button:active::before {
+            width: 300px;
+            height: 300px;
         }
 
         button:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 20px 32px rgba(102, 126, 234, 0.32);
+            transform: translateY(-3px) scale(1.02);
+            box-shadow: 0 24px 40px rgba(102, 126, 234, 0.35);
+        }
+
+        button:active {
+            transform: translateY(-1px) scale(0.98);
+            transition: transform 0.1s ease;
         }
 
         .btn-secondary {
@@ -700,11 +725,37 @@
             font-weight: 800;
             border: none;
             box-shadow: 0 14px 32px rgba(102, 126, 234, 0.25);
+            transition: transform 0.45s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.45s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .admin-access-cta::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.2);
+            transform: translate(-50%, -50%);
+            transition: width 0.45s cubic-bezier(0.4, 0, 0.2, 1), height 0.45s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .admin-access-cta:active::before {
+            width: 300px;
+            height: 300px;
         }
 
         .admin-access-cta:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 20px 36px rgba(102, 126, 234, 0.32);
+            transform: translateY(-3px) scale(1.02);
+            box-shadow: 0 24px 40px rgba(102, 126, 234, 0.35);
+        }
+
+        .admin-access-cta:active {
+            transform: translateY(-1px) scale(0.98);
+            transition: transform 0.1s ease;
         }
 
         .admin-access-cta:focus-visible {
@@ -886,15 +937,16 @@
                         <div class="form-grid">
                             <div>
                                 <label for="studentId">رقم الهوية أو السجل</label>
-                                <input type="text" id="studentId" placeholder="أدخل رقم الهوية" autocomplete="off">
+                                <input type="text" id="studentId" placeholder="أدخل رقم الهوية" autocomplete="username">
                             </div>
                             <div>
                                 <label for="studentPass">كلمة المرور</label>
-                                <input type="password" id="studentPass" placeholder="أدخل أي كلمة مرور للتجربة" autocomplete="off">
+                                <input type="password" id="studentPass" placeholder="أدخل كلمة المرور" autocomplete="current-password">
                             </div>
                         </div>
                           <div class="action-row" style="margin-top: 22px;">
                               <button type="button" onclick="studentLogin()">دخول الطالب</button>
+                              <button type="button" class="btn-secondary" onclick="showStudentRegister()">إنشاء حساب جديد</button>
                           </div>
                           <div style="margin-top: 18px;">
                               <button type="button" class="admin-access-cta" onclick="showAdminLogin()">🔐 لدي صلاحيات الإدارة</button>
@@ -923,6 +975,59 @@
                 </div>
             </section>
 
+            <section id="registerPage" class="view-section">
+                <div class="grid-split">
+                    <div class="card">
+                        <div class="section-heading">
+                            <span>إنشاء حساب طالب جديد</span>
+                            <h2>سجّل بياناتك لإنشاء حسابك الخاص</h2>
+                        </div>
+                        <div class="form-grid">
+                            <div>
+                                <label for="regStudentId">رقم الهوية أو السجل</label>
+                                <input type="text" id="regStudentId" placeholder="أدخل رقم الهوية" autocomplete="off">
+                            </div>
+                            <div>
+                                <label for="regStudentName">الاسم الكامل</label>
+                                <input type="text" id="regStudentName" placeholder="أدخل اسمك الكامل" autocomplete="name">
+                            </div>
+                            <div>
+                                <label for="regStudentPass">كلمة المرور</label>
+                                <input type="password" id="regStudentPass" placeholder="أدخل كلمة مرور قوية" autocomplete="new-password">
+                            </div>
+                            <div>
+                                <label for="regStudentPassConfirm">تأكيد كلمة المرور</label>
+                                <input type="password" id="regStudentPassConfirm" placeholder="أعد إدخال كلمة المرور" autocomplete="new-password">
+                            </div>
+                        </div>
+                        <div class="action-row" style="margin-top: 22px;">
+                            <button type="button" onclick="studentRegister()">إنشاء الحساب</button>
+                            <button type="button" class="btn-secondary" onclick="showStudentLogin()">لدي حساب بالفعل</button>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="section-heading">
+                            <span>معلومات مهمة</span>
+                            <h2>إرشادات إنشاء الحساب</h2>
+                        </div>
+                        <div class="highlight-card">
+                            <div>
+                                <strong>🔐 أمان البيانات</strong>
+                                <p>بياناتك محفوظة بشكل آمن ولن يتم مشاركتها مع أي طرف ثالث.</p>
+                            </div>
+                            <div>
+                                <strong>🎯 رقم الهوية</strong>
+                                <p>استخدم رقم هويتك أو رقم السجل المدرسي كمعرّف فريد لحسابك.</p>
+                            </div>
+                            <div>
+                                <strong>🔑 كلمة المرور</strong>
+                                <p>اختر كلمة مرور قوية تحتوي على حروف وأرقام للحماية.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
             <section id="adminLoginPage" class="view-section">
                 <div class="grid-split">
                     <div class="card">
@@ -933,11 +1038,11 @@
                         <div class="form-grid">
                             <div>
                                 <label for="adminUser">اسم المستخدم</label>
-                                <input type="text" id="adminUser" placeholder="اكتب admin" value="admin" autocomplete="username">
+                                <input type="text" id="adminUser" placeholder="admin11" autocomplete="username">
                             </div>
                             <div>
                                 <label for="adminPass">كلمة المرور</label>
-                                <input type="password" id="adminPass" placeholder="اكتب admin123" value="admin123" autocomplete="current-password">
+                                <input type="password" id="adminPass" placeholder="Aa12346" autocomplete="current-password">
                             </div>
                         </div>
                         <div class="action-row" style="margin-top: 22px;">
@@ -1055,6 +1160,40 @@
             ? 'http://localhost:3000' 
             : window.location.origin;
         const SUGGESTIONS_ENDPOINT = `${BASE_URL}/api/suggestions`;
+
+        // Student accounts storage
+        const STUDENT_ACCOUNTS_KEY = 'mishkat_student_accounts';
+        
+        function getStudentAccounts() {
+            try {
+                const stored = localStorage.getItem(STUDENT_ACCOUNTS_KEY);
+                if (!stored) return {};
+                return JSON.parse(stored);
+            } catch {
+                return {};
+            }
+        }
+        
+        function saveStudentAccount(id, password, name) {
+            try {
+                const accounts = getStudentAccounts();
+                accounts[id] = { password, name };
+                localStorage.setItem(STUDENT_ACCOUNTS_KEY, JSON.stringify(accounts));
+                return true;
+            } catch {
+                return false;
+            }
+        }
+        
+        function verifyStudentAccount(id, password) {
+            const accounts = getStudentAccounts();
+            const account = accounts[id];
+            if (!account) return null;
+            if (account.password === password) {
+                return { id, name: account.name };
+            }
+            return null;
+        }
 
         const STATUS_CONFIG = {
             pending: {
@@ -1419,10 +1558,17 @@
                 return;
             }
 
+            // Verify student account
+            const account = verifyStudentAccount(id, pass);
+            if (!account) {
+                showToast('❌ رقم الهوية أو كلمة المرور غير صحيحة');
+                return;
+            }
+
             currentUser = {
                 type: 'student',
-                id,
-                name: id ? `طالب ${id.substring(0, 4)}` : 'طالب'
+                id: account.id,
+                name: account.name
             };
 
             toggleView('loginPage', false);
@@ -1438,7 +1584,7 @@
             const user = document.getElementById('adminUser').value.trim();
             const pass = document.getElementById('adminPass').value.trim();
 
-            if (user !== 'admin' || pass !== 'admin123') {
+            if (user !== 'admin11' || pass !== 'Aa12346') {
                 showToast('❌ خطأ في اسم المستخدم أو كلمة المرور');
                 return;
             }
@@ -1842,6 +1988,7 @@
             toggleView('studentPage', false);
             toggleView('adminPage', false);
             toggleView('adminLoginPage', false);
+            toggleView('registerPage', false);
             toggleView('loginPage', true);
             resetStudentForm();
             resetSuggestionForm();
@@ -1861,12 +2008,76 @@
 
         function showAdminLogin() {
             toggleView('loginPage', false);
+            toggleView('registerPage', false);
             toggleView('adminLoginPage', true);
         }
 
         function showStudentLogin() {
             toggleView('adminLoginPage', false);
+            toggleView('registerPage', false);
             toggleView('loginPage', true);
+        }
+
+        function showStudentRegister() {
+            toggleView('loginPage', false);
+            toggleView('adminLoginPage', false);
+            toggleView('registerPage', true);
+        }
+
+        function studentRegister() {
+            const id = document.getElementById('regStudentId').value.trim();
+            const name = document.getElementById('regStudentName').value.trim();
+            const pass = document.getElementById('regStudentPass').value.trim();
+            const passConfirm = document.getElementById('regStudentPassConfirm').value.trim();
+
+            // Validation
+            if (!id || !name || !pass || !passConfirm) {
+                showToast('❌ يرجى تعبئة جميع الحقول');
+                return;
+            }
+
+            if (id.length < 4) {
+                showToast('❌ رقم الهوية يجب أن يكون 4 أحرف على الأقل');
+                return;
+            }
+
+            if (name.length < 3) {
+                showToast('❌ الاسم يجب أن يكون 3 أحرف على الأقل');
+                return;
+            }
+
+            if (pass.length < 6) {
+                showToast('❌ كلمة المرور يجب أن تكون 6 أحرف على الأقل');
+                return;
+            }
+
+            if (pass !== passConfirm) {
+                showToast('❌ كلمة المرور غير متطابقة');
+                return;
+            }
+
+            // Check if account already exists
+            const accounts = getStudentAccounts();
+            if (accounts[id]) {
+                showToast('❌ رقم الهوية مسجل مسبقاً، يمكنك تسجيل الدخول');
+                return;
+            }
+
+            // Save account
+            if (saveStudentAccount(id, pass, name)) {
+                showToast('✅ تم إنشاء الحساب بنجاح! يمكنك الآن تسجيل الدخول');
+                // Clear form
+                document.getElementById('regStudentId').value = '';
+                document.getElementById('regStudentName').value = '';
+                document.getElementById('regStudentPass').value = '';
+                document.getElementById('regStudentPassConfirm').value = '';
+                // Show login page
+                setTimeout(() => {
+                    showStudentLogin();
+                }, 1500);
+            } else {
+                showToast('❌ حدث خطأ أثناء إنشاء الحساب');
+            }
         }
 
         function resetStudentForm() {
