@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#7c3aed">
+    <title>إدارة الأجهزة - نظام إدارة الصيانة</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&family=Tajawal:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="auth.css">
+</head>
+<body class="dashboard">
+    <!-- Dashboard Header -->
+    <header class="dashboard-header">
+        <div class="dashboard-header-content">
+            <h1 class="dashboard-title">إدارة الأجهزة</h1>
+            <div class="dashboard-user">
+                <div class="user-avatar" id="userAvatar">👨‍💼</div>
+                <div class="user-info">
+                    <div class="user-name" id="userName">المدير</div>
+                    <div class="user-role">مدير النظام</div>
+                </div>
+                <button onclick="logout()" class="btn btn-secondary btn-small">تسجيل الخروج</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Dashboard Content -->
+    <main class="dashboard-content">
+        <!-- Navigation -->
+        <div style="margin-bottom: 2rem;">
+            <a href="admin-dashboard.html" class="btn btn-secondary btn-small">← العودة للوحة الإدارة</a>
+        </div>
+
+        <!-- Stats -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-card-header">
+                    <div class="stat-card-title">إجمالي الأجهزة</div>
+                    <div class="stat-card-icon">📦</div>
+                </div>
+                <div class="stat-card-value" id="totalDevices">0</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-card-header">
+                    <div class="stat-card-title">أجهزة سليمة</div>
+                    <div class="stat-card-icon">✅</div>
+                </div>
+                <div class="stat-card-value" id="operationalDevices">0</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-card-header">
+                    <div class="stat-card-title">أجهزة معطلة</div>
+                    <div class="stat-card-icon">⚠️</div>
+                </div>
+                <div class="stat-card-value" id="faultyDevices">0</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-card-header">
+                    <div class="stat-card-title">قيد الصيانة</div>
+                    <div class="stat-card-icon">🔧</div>
+                </div>
+                <div class="stat-card-value" id="maintenanceDevices">0</div>
+            </div>
+        </div>
+
+        <!-- Filters and Actions -->
+        <div class="requests-section">
+            <div class="section-header">
+                <h2 class="section-title">الأجهزة</h2>
+                <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                    <button onclick="filterDevices('all')" class="btn btn-secondary btn-small filter-btn active" data-filter="all">الكل</button>
+                    <button onclick="filterDevices('operational')" class="btn btn-secondary btn-small filter-btn" data-filter="operational">سليمة</button>
+                    <button onclick="filterDevices('faulty')" class="btn btn-secondary btn-small filter-btn" data-filter="faulty">معطلة</button>
+                    <button onclick="filterDevices('under-maintenance')" class="btn btn-secondary btn-small filter-btn" data-filter="under-maintenance">قيد الصيانة</button>
+                    <button onclick="filterDevices('out-of-service')" class="btn btn-secondary btn-small filter-btn" data-filter="out-of-service">خارج الخدمة</button>
+                    <button onclick="openAddDeviceModal()" class="btn btn-primary btn-small">+ إضافة جهاز</button>
+                </div>
+            </div>
+
+            <!-- Search -->
+            <div style="margin-bottom: 1.5rem;">
+                <input type="text" id="searchInput" placeholder="🔍 ابحث عن جهاز..." class="form-input" onkeyup="searchDevices()" style="max-width: 500px;">
+            </div>
+
+            <!-- Devices List -->
+            <div class="requests-list" id="devicesList">
+                <!-- Devices will be loaded here -->
+            </div>
+        </div>
+    </main>
+
+    <!-- Add Device Modal -->
+    <div class="modal" id="addDeviceModal">
+        <div class="modal-content" style="max-width: 600px;">
+            <div class="modal-header">
+                <h2 class="modal-title">إضافة جهاز جديد</h2>
+                <button class="modal-close" onclick="closeAddDeviceModal()">×</button>
+            </div>
+            <form class="auth-form" id="addDeviceForm">
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="deviceName" class="form-label">اسم الجهاز *</label>
+                        <input type="text" id="deviceName" class="form-input" required placeholder="مثال: طابعة HP LaserJet">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="deviceType" class="form-label">نوع الجهاز *</label>
+                        <select id="deviceType" class="form-input" required>
+                            <option value="">اختر النوع</option>
+                            <option value="computer">حاسوب</option>
+                            <option value="keyboard">كيبورد</option>
+                            <option value="mouse">ماوس</option>
+                            <option value="printer">طابعة</option>
+                            <option value="ac">مكيف</option>
+                            <option value="projector">بروجكتر</option>
+                            <option value="smartboard">سبورة ذكية</option>
+                            <option value="other">أخرى</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="deviceModel" class="form-label">الموديل</label>
+                        <input type="text" id="deviceModel" class="form-input" placeholder="مثال: HP LaserJet Pro MFP M428fdw">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="deviceSerial" class="form-label">الرقم التسلسلي</label>
+                        <input type="text" id="deviceSerial" class="form-input" placeholder="مثال: SN123456789">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="deviceLocation" class="form-label">الموقع *</label>
+                        <input type="text" id="deviceLocation" class="form-input" required placeholder="مثال: مكتب المدير، الفصل 201">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="deviceStatus" class="form-label">الحالة</label>
+                        <select id="deviceStatus" class="form-input">
+                            <option value="operational">سليم</option>
+                            <option value="faulty">معطل</option>
+                            <option value="under-maintenance">قيد الصيانة</option>
+                            <option value="out-of-service">خارج الخدمة</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="deviceLastService" class="form-label">تاريخ آخر فحص</label>
+                        <input type="date" id="deviceLastService" class="form-input">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="devicePurchaseDate" class="form-label">تاريخ الشراء</label>
+                        <input type="date" id="devicePurchaseDate" class="form-input">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="deviceNotes" class="form-label">ملاحظات</label>
+                        <textarea id="deviceNotes" class="form-input" rows="3" placeholder="أي ملاحظات إضافية..."></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" onclick="closeAddDeviceModal()" class="btn btn-secondary">إلغاء</button>
+                    <button type="submit" class="btn btn-primary">إضافة الجهاز</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Edit Device Modal -->
+    <div class="modal" id="editDeviceModal">
+        <div class="modal-content" style="max-width: 600px;">
+            <div class="modal-header">
+                <h2 class="modal-title">تعديل الجهاز</h2>
+                <button class="modal-close" onclick="closeEditDeviceModal()">×</button>
+            </div>
+            <form class="auth-form" id="editDeviceForm">
+                <input type="hidden" id="editDeviceId">
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="editDeviceName" class="form-label">اسم الجهاز *</label>
+                        <input type="text" id="editDeviceName" class="form-input" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="editDeviceType" class="form-label">نوع الجهاز *</label>
+                        <select id="editDeviceType" class="form-input" required>
+                            <option value="computer">حاسوب</option>
+                            <option value="keyboard">كيبورد</option>
+                            <option value="mouse">ماوس</option>
+                            <option value="printer">طابعة</option>
+                            <option value="ac">مكيف</option>
+                            <option value="projector">بروجكتر</option>
+                            <option value="smartboard">سبورة ذكية</option>
+                            <option value="other">أخرى</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="editDeviceModel" class="form-label">الموديل</label>
+                        <input type="text" id="editDeviceModel" class="form-input">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="editDeviceSerial" class="form-label">الرقم التسلسلي</label>
+                        <input type="text" id="editDeviceSerial" class="form-input">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="editDeviceLocation" class="form-label">الموقع *</label>
+                        <input type="text" id="editDeviceLocation" class="form-input" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="editDeviceStatus" class="form-label">الحالة</label>
+                        <select id="editDeviceStatus" class="form-input">
+                            <option value="operational">سليم</option>
+                            <option value="faulty">معطل</option>
+                            <option value="under-maintenance">قيد الصيانة</option>
+                            <option value="out-of-service">خارج الخدمة</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="editDeviceLastService" class="form-label">تاريخ آخر فحص</label>
+                        <input type="date" id="editDeviceLastService" class="form-input">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="editDevicePurchaseDate" class="form-label">تاريخ الشراء</label>
+                        <input type="date" id="editDevicePurchaseDate" class="form-input">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="editDeviceNotes" class="form-label">ملاحظات</label>
+                        <textarea id="editDeviceNotes" class="form-input" rows="3"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" onclick="closeEditDeviceModal()" class="btn btn-secondary">إلغاء</button>
+                    <button type="submit" class="btn btn-primary">حفظ التعديلات</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+    <script>
+        // Check authentication
+        const currentUser = JSON.parse(localStorage.getItem('currentUser') || 'null');
+        if (!currentUser || currentUser.userType !== 'admin') {
+            alert('يجب تسجيل الدخول كمدير للوصول لهذه الصفحة');
+            window.location.href = 'login.html';
+        }
+
+        // Display user info
+        document.getElementById('userName').textContent = currentUser.name;
+
+        let allDevices = [];
+        let currentFilter = 'all';
+
+        // Load devices
+        async function loadDevices() {
+            try {
+                const response = await fetch('http://localhost:3000/api/devices');
+                const data = await response.json();
+                allDevices = data.devices || [];
+                displayDevices(allDevices);
+                updateStats();
+            } catch (error) {
+                console.error('Failed to load devices:', error);
+                // Fallback to localStorage
+                allDevices = JSON.parse(localStorage.getItem('devices') || '[]');
+                displayDevices(allDevices);
+                updateStats();
+            }
+        }
+
+        function updateStats() {
+            document.getElementById('totalDevices').textContent = allDevices.length;
+            document.getElementById('operationalDevices').textContent = allDevices.filter(d => d.status === 'operational').length;
+            document.getElementById('faultyDevices').textContent = allDevices.filter(d => d.status === 'faulty').length;
+            document.getElementById('maintenanceDevices').textContent = allDevices.filter(d => d.status === 'under-maintenance').length;
+        }
+
+        function displayDevices(devices) {
+            const devicesList = document.getElementById('devicesList');
+            
+            if (devices.length === 0) {
+                devicesList.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">📦</div>
+                        <h3 class="empty-state-title">لا توجد أجهزة</h3>
+                        <p class="empty-state-desc">ابدأ بإضافة أول جهاز في النظام</p>
+                        <button onclick="openAddDeviceModal()" class="btn btn-primary">إضافة جهاز</button>
+                    </div>
+                `;
+                return;
+            }
+
+            const statusText = {
+                'operational': 'سليم',
+                'faulty': 'معطل',
+                'under-maintenance': 'قيد الصيانة',
+                'out-of-service': 'خارج الخدمة'
+            };
+
+            const statusClass = {
+                'operational': 'status-completed',
+                'faulty': 'status-rejected',
+                'under-maintenance': 'status-in-progress',
+                'out-of-service': 'status-pending'
+            };
+
+            const typeText = {
+                'computer': 'حاسوب',
+                'keyboard': 'كيبورد',
+                'mouse': 'ماوس',
+                'printer': 'طابعة',
+                'ac': 'مكيف',
+                'projector': 'بروجكتر',
+                'smartboard': 'سبورة ذكية',
+                'other': 'أخرى'
+            };
+
+            devicesList.innerHTML = devices.map(device => `
+                <div class="request-card device-card" data-device-id="${device.id}">
+                    <div class="request-header">
+                        <div class="request-info">
+                            <h3>${device.name}</h3>
+                            <div class="request-meta">
+                                <span>📍 ${device.location}</span>
+                                <span>🏷️ ${typeText[device.type] || device.type}</span>
+                                ${device.serialNumber ? `<span>🔢 ${device.serialNumber}</span>` : ''}
+                            </div>
+                        </div>
+                        <span class="request-status ${statusClass[device.status]}">${statusText[device.status]}</span>
+                    </div>
+                    
+                    ${device.model ? `<p style="color: var(--gray-600); margin-bottom: 0.5rem;"><strong>الموديل:</strong> ${device.model}</p>` : ''}
+                    
+                    ${device.lastServiceDate ? `
+                        <div style="background: var(--purple-50); padding: 0.75rem; border-radius: var(--radius-md); margin-bottom: 0.5rem;">
+                            <strong style="color: var(--purple-700);">📅 آخر فحص:</strong>
+                            <span style="color: var(--gray-700);">${new Date(device.lastServiceDate).toLocaleDateString('ar-SA')}</span>
+                        </div>
+                    ` : ''}
+                    
+                    ${device.purchaseDate ? `
+                        <p style="color: var(--gray-600); font-size: 0.9rem; margin-bottom: 0.5rem;">
+                            <strong>تاريخ الشراء:</strong> ${new Date(device.purchaseDate).toLocaleDateString('ar-SA')}
+                        </p>
+                    ` : ''}
+                    
+                    ${device.notes ? `
+                        <p style="color: var(--gray-600); font-size: 0.9rem; margin-top: 0.5rem; padding-top: 0.5rem; border-top: 1px solid var(--gray-200);">
+                            <strong>ملاحظات:</strong> ${device.notes}
+                        </p>
+                    ` : ''}
+                    
+                    <div class="request-actions" style="margin-top: 1rem;">
+                        <button onclick="openEditDeviceModal('${device.id}')" class="btn btn-primary btn-small">تعديل</button>
+                        <button onclick="deleteDevice('${device.id}', '${device.name}')" class="btn btn-secondary btn-small">حذف</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function filterDevices(status) {
+            currentFilter = status;
+            
+            // Update active button
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            document.querySelector(`[data-filter="${status}"]`).classList.add('active');
+            
+            // Filter devices
+            let filtered = allDevices;
+            if (status !== 'all') {
+                filtered = allDevices.filter(d => d.status === status);
+            }
+            
+            displayDevices(filtered);
+        }
+
+        function searchDevices() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            let filtered = allDevices;
+            
+            if (currentFilter !== 'all') {
+                filtered = filtered.filter(d => d.status === currentFilter);
+            }
+            
+            if (searchTerm) {
+                filtered = filtered.filter(d => 
+                    d.name.toLowerCase().includes(searchTerm) ||
+                    d.location.toLowerCase().includes(searchTerm) ||
+                    (d.model && d.model.toLowerCase().includes(searchTerm)) ||
+                    (d.serialNumber && d.serialNumber.toLowerCase().includes(searchTerm))
+                );
+            }
+            
+            displayDevices(filtered);
+        }
+
+        // Add Device
+        function openAddDeviceModal() {
+            document.getElementById('addDeviceModal').style.display = 'block';
+            document.getElementById('addDeviceForm').reset();
+        }
+
+        function closeAddDeviceModal() {
+            document.getElementById('addDeviceModal').style.display = 'none';
+        }
+
+        document.getElementById('addDeviceForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const deviceData = {
+                name: document.getElementById('deviceName').value,
+                type: document.getElementById('deviceType').value,
+                model: document.getElementById('deviceModel').value,
+                serialNumber: document.getElementById('deviceSerial').value,
+                location: document.getElementById('deviceLocation').value,
+                status: document.getElementById('deviceStatus').value,
+                lastServiceDate: document.getElementById('deviceLastService').value || null,
+                purchaseDate: document.getElementById('devicePurchaseDate').value || null,
+                notes: document.getElementById('deviceNotes').value,
+                userId: currentUser.id,
+                userName: currentUser.name,
+            };
+
+            try {
+                const response = await fetch('http://localhost:3000/api/devices', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(deviceData)
+                });
+
+                if (response.ok) {
+                    alert('✅ تم إضافة الجهاز بنجاح');
+                    closeAddDeviceModal();
+                    loadDevices();
+                } else {
+                    const error = await response.json();
+                    alert('❌ فشل إضافة الجهاز: ' + (error.error || 'خطأ غير معروف'));
+                }
+            } catch (error) {
+                console.error('Failed to add device:', error);
+                alert('❌ فشل إضافة الجهاز. تحقق من الاتصال بالخادم.');
+            }
+        });
+
+        // Edit Device
+        function openEditDeviceModal(deviceId) {
+            const device = allDevices.find(d => d.id === deviceId);
+            if (!device) return;
+
+            document.getElementById('editDeviceId').value = device.id;
+            document.getElementById('editDeviceName').value = device.name;
+            document.getElementById('editDeviceType').value = device.type;
+            document.getElementById('editDeviceModel').value = device.model || '';
+            document.getElementById('editDeviceSerial').value = device.serialNumber || '';
+            document.getElementById('editDeviceLocation').value = device.location;
+            document.getElementById('editDeviceStatus').value = device.status;
+            document.getElementById('editDeviceLastService').value = device.lastServiceDate ? device.lastServiceDate.split('T')[0] : '';
+            document.getElementById('editDevicePurchaseDate').value = device.purchaseDate ? device.purchaseDate.split('T')[0] : '';
+            document.getElementById('editDeviceNotes').value = device.notes || '';
+            
+            document.getElementById('editDeviceModal').style.display = 'block';
+        }
+
+        function closeEditDeviceModal() {
+            document.getElementById('editDeviceModal').style.display = 'none';
+        }
+
+        document.getElementById('editDeviceForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const deviceId = document.getElementById('editDeviceId').value;
+            const updateData = {
+                name: document.getElementById('editDeviceName').value,
+                type: document.getElementById('editDeviceType').value,
+                model: document.getElementById('editDeviceModel').value,
+                serialNumber: document.getElementById('editDeviceSerial').value,
+                location: document.getElementById('editDeviceLocation').value,
+                status: document.getElementById('editDeviceStatus').value,
+                lastServiceDate: document.getElementById('editDeviceLastService').value || null,
+                purchaseDate: document.getElementById('editDevicePurchaseDate').value || null,
+                notes: document.getElementById('editDeviceNotes').value,
+                userId: currentUser.id,
+                userName: currentUser.name,
+            };
+
+            try {
+                const response = await fetch(`http://localhost:3000/api/devices/${deviceId}`, {
+                    method: 'PATCH',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(updateData)
+                });
+
+                if (response.ok) {
+                    alert('✅ تم تحديث الجهاز بنجاح');
+                    closeEditDeviceModal();
+                    loadDevices();
+                } else {
+                    const error = await response.json();
+                    alert('❌ فشل تحديث الجهاز: ' + (error.error || 'خطأ غير معروف'));
+                }
+            } catch (error) {
+                console.error('Failed to update device:', error);
+                alert('❌ فشل تحديث الجهاز. تحقق من الاتصال بالخادم.');
+            }
+        });
+
+        // Delete Device
+        async function deleteDevice(deviceId, deviceName) {
+            if (!confirm(`هل أنت متأكد من حذف الجهاز: ${deviceName}؟`)) {
+                return;
+            }
+
+            try {
+                const response = await fetch(`http://localhost:3000/api/devices/${deviceId}`, {
+                    method: 'DELETE',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        userId: currentUser.id,
+                        userName: currentUser.name,
+                    })
+                });
+
+                if (response.ok) {
+                    alert('✅ تم حذف الجهاز بنجاح');
+                    loadDevices();
+                } else {
+                    const error = await response.json();
+                    alert('❌ فشل حذف الجهاز: ' + (error.error || 'خطأ غير معروف'));
+                }
+            } catch (error) {
+                console.error('Failed to delete device:', error);
+                alert('❌ فشل حذف الجهاز. تحقق من الاتصال بالخادم.');
+            }
+        }
+
+        // Logout
+        function logout() {
+            localStorage.removeItem('currentUser');
+            window.location.href = 'login.html';
+        }
+
+        // Close modals when clicking outside
+        window.onclick = function(event) {
+            if (event.target.classList.contains('modal')) {
+                event.target.style.display = 'none';
+            }
+        };
+
+        // Load devices on page load
+        loadDevices();
+    </script>
+</body>
+</html>

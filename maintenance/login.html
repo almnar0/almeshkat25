@@ -54,37 +54,58 @@
     </div>
 
     <script src="auth.js"></script>
+    <script src="api.js"></script>
     <script>
         // Handle form submission
-        document.getElementById('loginForm').addEventListener('submit', function(e) {
+        document.getElementById('loginForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             
             const email = document.getElementById('email').value;
             const password = document.getElementById('password').value;
 
-            // Get users from localStorage
-            const users = JSON.parse(localStorage.getItem('users') || '[]');
-            
-            // Find user
-            const user = users.find(u => u.email === email && u.password === password);
+            try {
+                // Try API first
+                const result = await UsersAPI.login(email, password);
+                const user = result.user;
+                
+                // Save current user session
+                localStorage.setItem('currentUser', JSON.stringify(user));
+                
+                alert('✅ تم تسجيل الدخول بنجاح!');
+                
+                // Redirect based on user type
+                if (user.userType === 'client') {
+                    window.location.href = 'client-dashboard.html';
+                } else if (user.userType === 'technician') {
+                    window.location.href = 'tech-dashboard.html';
+                } else if (user.userType === 'admin') {
+                    window.location.href = 'admin-dashboard.html';
+                }
+            } catch (error) {
+                console.error('API login failed, falling back to localStorage:', error);
+                
+                // Fallback to localStorage
+                const users = JSON.parse(localStorage.getItem('users') || '[]');
+                const user = users.find(u => u.email === email && u.password === password);
 
-            if (!user) {
-                alert('البريد الإلكتروني أو كلمة المرور غير صحيحة');
-                return;
-            }
+                if (!user) {
+                    alert('❌ البريد الإلكتروني أو كلمة المرور غير صحيحة');
+                    return;
+                }
 
-            // Save current user session
-            localStorage.setItem('currentUser', JSON.stringify(user));
+                // Save current user session
+                localStorage.setItem('currentUser', JSON.stringify(user));
+                
+                alert('✅ تم تسجيل الدخول بنجاح!');
 
-            alert('تم تسجيل الدخول بنجاح!');
-
-            // Redirect based on user type
-            if (user.userType === 'client') {
-                window.location.href = 'client-dashboard.html';
-            } else if (user.userType === 'technician') {
-                window.location.href = 'tech-dashboard.html';
-            } else if (user.userType === 'admin') {
-                window.location.href = 'admin-dashboard.html';
+                // Redirect based on user type
+                if (user.userType === 'client') {
+                    window.location.href = 'client-dashboard.html';
+                } else if (user.userType === 'technician') {
+                    window.location.href = 'tech-dashboard.html';
+                } else if (user.userType === 'admin') {
+                    window.location.href = 'admin-dashboard.html';
+                }
             }
         });
     </script>

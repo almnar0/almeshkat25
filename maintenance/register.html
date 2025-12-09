@@ -119,6 +119,7 @@
     </div>
 
     <script src="auth.js"></script>
+    <script src="api.js"></script>
     <script>
         // Handle user type change
         const userTypeRadios = document.querySelectorAll('input[name="userType"]');
@@ -140,7 +141,7 @@
         });
 
         // Handle form submission
-        document.getElementById('registerForm').addEventListener('submit', function(e) {
+        document.getElementById('registerForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             
             const formData = {
@@ -150,8 +151,7 @@
                 email: document.getElementById('email').value,
                 password: document.getElementById('password').value,
                 confirmPassword: document.getElementById('confirmPassword').value,
-                schoolName: document.getElementById('schoolName').value,
-                specialization: document.getElementById('specialization').value
+                specialty: document.getElementById('specialization').value
             };
 
             // Validate passwords match
@@ -166,38 +166,50 @@
                 return;
             }
 
-            // Get existing users or initialize array
-            let users = JSON.parse(localStorage.getItem('users') || '[]');
-            
-            // Check if email already exists
-            if (users.some(user => user.email === formData.email)) {
-                alert('البريد الإلكتروني مسجل مسبقاً');
-                return;
+            try {
+                // Try to use API first
+                const result = await UsersAPI.register({
+                    name: formData.name,
+                    email: formData.email,
+                    password: formData.password,
+                    phone: formData.phone,
+                    userType: formData.userType,
+                    specialty: formData.specialty
+                });
+                
+                alert('✅ تم إنشاء الحساب بنجاح! سيتم تحويلك لتسجيل الدخول');
+                window.location.href = 'login.html';
+            } catch (error) {
+                console.error('API registration failed, falling back to localStorage:', error);
+                
+                // Fallback to localStorage
+                let users = JSON.parse(localStorage.getItem('users') || '[]');
+                
+                if (users.some(user => user.email === formData.email)) {
+                    alert('البريد الإلكتروني مسجل مسبقاً');
+                    return;
+                }
+
+                const user = {
+                    id: Date.now().toString(),
+                    userType: formData.userType,
+                    name: formData.name,
+                    phone: formData.phone,
+                    email: formData.email,
+                    password: formData.password,
+                    specialty: formData.specialty,
+                    createdAt: new Date().toISOString(),
+                    isActive: true,
+                    averageRating: 0,
+                    completedJobs: 0
+                };
+
+                users.push(user);
+                localStorage.setItem('users', JSON.stringify(users));
+                
+                alert('✅ تم إنشاء الحساب بنجاح! سيتم تحويلك لتسجيل الدخول');
+                window.location.href = 'login.html';
             }
-
-            // Create user object
-            const user = {
-                id: Date.now().toString(),
-                userType: formData.userType,
-                name: formData.name,
-                phone: formData.phone,
-                email: formData.email,
-                password: formData.password, // In production, this should be hashed
-                schoolName: formData.schoolName,
-                specialization: formData.specialization,
-                createdAt: new Date().toISOString(),
-                rating: 0,
-                completedRequests: 0
-            };
-
-            // Add user to array
-            users.push(user);
-            
-            // Save to localStorage
-            localStorage.setItem('users', JSON.stringify(users));
-
-            alert('تم إنشاء الحساب بنجاح! سيتم تحويلك لتسجيل الدخول');
-            window.location.href = 'login.html';
         });
     </script>
 </body>
