@@ -118,8 +118,11 @@
         </div>
     </div>
 
-    <script src="auth.js"></script>
+    <script src="api-client.js"></script>
     <script>
+        // Redirect if already authenticated
+        redirectIfAuthenticated();
+
         // Handle user type change
         const userTypeRadios = document.querySelectorAll('input[name="userType"]');
         const schoolGroup = document.getElementById('schoolGroup');
@@ -140,7 +143,7 @@
         });
 
         // Handle form submission
-        document.getElementById('registerForm').addEventListener('submit', function(e) {
+        document.getElementById('registerForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             
             const formData = {
@@ -149,55 +152,60 @@
                 phone: document.getElementById('phone').value,
                 email: document.getElementById('email').value,
                 password: document.getElementById('password').value,
-                confirmPassword: document.getElementById('confirmPassword').value,
-                schoolName: document.getElementById('schoolName').value,
-                specialization: document.getElementById('specialization').value
+                confirmPassword: document.getElementById('confirmPassword').value
             };
+
+            const submitBtn = this.querySelector('button[type="submit"]');
 
             // Validate passwords match
             if (formData.password !== formData.confirmPassword) {
-                alert('كلمات المرور غير متطابقة');
+                utils.showNotification('كلمات المرور غير متطابقة', 'error');
                 return;
             }
 
             // Validate password length
-            if (formData.password.length < 8) {
-                alert('كلمة المرور يجب أن تكون 8 أحرف على الأقل');
+            if (formData.password.length < 6) {
+                utils.showNotification('كلمة المرور يجب أن تكون 6 أحرف على الأقل', 'error');
                 return;
             }
 
-            // Get existing users or initialize array
-            let users = JSON.parse(localStorage.getItem('users') || '[]');
-            
-            // Check if email already exists
-            if (users.some(user => user.email === formData.email)) {
-                alert('البريد الإلكتروني مسجل مسبقاً');
+            // Validate phone number
+            if (!utils.validatePhone(formData.phone)) {
+                utils.showNotification('رقم الجوال يجب أن يكون بصيغة 05xxxxxxxx', 'error');
                 return;
             }
 
-            // Create user object
-            const user = {
-                id: Date.now().toString(),
-                userType: formData.userType,
-                name: formData.name,
-                phone: formData.phone,
-                email: formData.email,
-                password: formData.password, // In production, this should be hashed
-                schoolName: formData.schoolName,
-                specialization: formData.specialization,
-                createdAt: new Date().toISOString(),
-                rating: 0,
-                completedRequests: 0
-            };
+            try {
+                submitBtn.disabled = true;
+                submitBtn.textContent = 'جاري إنشاء الحساب...';
 
-            // Add user to array
-            users.push(user);
-            
-            // Save to localStorage
-            localStorage.setItem('users', JSON.stringify(users));
+                const response = await api.register({
+                    name: formData.name,
+                    email: formData.email,
+                    password: formData.password,
+                    userType: formData.userType,
+                    phone: formData.phone
+                });
 
-            alert('تم إنشاء الحساب بنجاح! سيتم تحويلك لتسجيل الدخول');
-            window.location.href = 'login.html';
+                // Save user info
+                localStorage.setItem('currentUser', JSON.stringify(response.user));
+
+                utils.showNotification('تم إنشاء الحساب بنجاح!', 'success');
+
+                // Redirect to appropriate dashboard
+                setTimeout(() => {
+                    if (response.user.userType === 'client') {
+                        window.location.href = 'client-dashboard.html';
+                    } else if (response.user.userType === 'technician') {
+                        window.location.href = 'tech-dashboard.html';
+                    }
+                }, 1000);
+            } catch (error) {
+                console.error('Registration error:', error);
+                utils.showNotification(error.message || 'فشل إنشاء الحساب. الرجاء المحاولة مرة أخرى', 'error');
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'إنشاء الحساب';
+            }
         });
     </script>
 </body>
