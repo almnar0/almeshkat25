@@ -2,8 +2,12 @@
 node_modules/
 npm-debug.log*
 
+# Environment variables
+.env
+
 # Data files (generated at runtime)
-data/
+data/*
+!data/.gitkeep
 
 # Build outputs
 dist/
