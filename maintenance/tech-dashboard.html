@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#7c3aed">
+    <title>لوحة الفني - نظام إدارة الصيانة</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&family=Tajawal:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="auth.css">
+</head>
+<body class="dashboard">
+    <!-- Dashboard Header -->
+    <header class="dashboard-header">
+        <div class="dashboard-header-content">
+            <h1 class="dashboard-title">لوحة الفني</h1>
+            <div class="dashboard-user">
+                <div class="user-avatar" id="userAvatar">ف</div>
+                <div class="user-info">
+                    <div class="user-name" id="userName">فني</div>
+                    <div class="user-role">فني صيانة</div>
+                </div>
+                <button onclick="logout()" class="btn btn-secondary btn-small">تسجيل الخروج</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Dashboard Content -->
+    <main class="dashboard-content">
+        <!-- Stats -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-card-header">
+                    <div class="stat-card-title">إجمالي الطلبات</div>
+                    <div class="stat-card-icon">📊</div>
+                </div>
+                <div class="stat-card-value" id="totalRequests">0</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-card-header">
+                    <div class="stat-card-title">قيد المعالجة</div>
+                    <div class="stat-card-icon">⏱️</div>
+                </div>
+                <div class="stat-card-value" id="pendingRequests">0</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-card-header">
+                    <div class="stat-card-title">مكتملة</div>
+                    <div class="stat-card-icon">✅</div>
+                </div>
+                <div class="stat-card-value" id="completedRequests">0</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-card-header">
+                    <div class="stat-card-title">تقييمي</div>
+                    <div class="stat-card-icon">⭐</div>
+                </div>
+                <div class="stat-card-value" id="userRating">-</div>
+            </div>
+        </div>
+
+        <!-- Filters -->
+        <div class="requests-section">
+            <div class="section-header">
+                <h2 class="section-title">طلبات الصيانة</h2>
+                <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                    <button onclick="filterRequests('all')" class="btn btn-secondary btn-small filter-btn active" data-filter="all">الكل</button>
+                    <button onclick="filterRequests('pending')" class="btn btn-secondary btn-small filter-btn" data-filter="pending">معلقة</button>
+                    <button onclick="filterRequests('in-progress')" class="btn btn-secondary btn-small filter-btn" data-filter="in-progress">جارية</button>
+                    <button onclick="filterRequests('completed')" class="btn btn-secondary btn-small filter-btn" data-filter="completed">مكتملة</button>
+                </div>
+            </div>
+            <div class="requests-list" id="requestsList">
+                <!-- Requests will be loaded here -->
+            </div>
+        </div>
+    </main>
+
+    <!-- Update Status Modal -->
+    <div class="modal" id="updateStatusModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">تحديث حالة الطلب</h2>
+                <button class="modal-close" onclick="closeUpdateModal()">×</button>
+            </div>
+            <form class="auth-form" id="updateStatusForm">
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="newStatus" class="form-label">الحالة الجديدة *</label>
+                        <select id="newStatus" class="form-input" required>
+                            <option value="pending">قيد المعالجة</option>
+                            <option value="in-progress">تحت الإصلاح</option>
+                            <option value="completed">مكتمل</option>
+                            <option value="rejected">مرفوض</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="techNotes" class="form-label">ملاحظات *</label>
+                        <textarea id="techNotes" class="form-input" rows="4" required placeholder="أضف ملاحظاتك حول الطلب..."></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" onclick="closeUpdateModal()" class="btn btn-secondary">إلغاء</button>
+                    <button type="submit" class="btn btn-primary">تحديث الحالة</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Check authentication
+        const currentUser = JSON.parse(localStorage.getItem('currentUser') || 'null');
+        if (!currentUser || currentUser.userType !== 'technician') {
+            alert('يجب تسجيل الدخول أولاً');
+            window.location.href = 'login.html';
+        }
+
+        // Display user info
+        document.getElementById('userName').textContent = currentUser.name;
+        document.getElementById('userAvatar').textContent = currentUser.name.charAt(0);
+        document.getElementById('userRating').textContent = (currentUser.rating || 0).toFixed(1);
+
+        let currentFilter = 'all';
+        let currentRequestId = null;
+
+        // Load requests
+        function loadRequests() {
+            const requests = JSON.parse(localStorage.getItem('maintenanceRequests') || '[]');
+            
+            // Filter based on current filter
+            let filteredRequests = requests;
+            if (currentFilter !== 'all') {
+                filteredRequests = requests.filter(r => r.status === currentFilter);
+            }
+            
+            // Update stats
+            document.getElementById('totalRequests').textContent = requests.length;
+            document.getElementById('pendingRequests').textContent = requests.filter(r => r.status === 'pending' || r.status === 'in-progress').length;
+            document.getElementById('completedRequests').textContent = requests.filter(r => r.status === 'completed' && r.technicianId === currentUser.id).length;
+
+            // Display requests
+            const requestsList = document.getElementById('requestsList');
+            if (filteredRequests.length === 0) {
+                requestsList.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">📋</div>
+                        <h3 class="empty-state-title">لا توجد طلبات</h3>
+                        <p class="empty-state-desc">لا توجد طلبات في هذا التصنيف حالياً</p>
+                    </div>
+                `;
+            } else {
+                requestsList.innerHTML = filteredRequests.map(request => {
+                    const statusText = {
+                        'pending': 'قيد المعالجة',
+                        'in-progress': 'تحت الإصلاح',
+                        'completed': 'مكتمل',
+                        'rejected': 'مرفوض'
+                    };
+                    
+                    const statusClass = {
+                        'pending': 'status-pending',
+                        'in-progress': 'status-in-progress',
+                        'completed': 'status-completed',
+                        'rejected': 'status-rejected'
+                    };
+
+                    const issueTypes = {
+                        'electrical': 'كهرباء',
+                        'plumbing': 'سباكة',
+                        'carpentry': 'نجارة',
+                        'it': 'تقنية معلومات',
+                        'ac': 'تكييف',
+                        'other': 'أخرى'
+                    };
+
+                    const priorityText = {
+                        'low': '🟢 منخفضة',
+                        'medium': '🟡 متوسطة',
+                        'high': '🔴 عالية'
+                    };
+                    
+                    return `
+                        <div class="request-card">
+                            <div class="request-header">
+                                <div class="request-info">
+                                    <h3>${issueTypes[request.issueType] || request.issueType} - ${request.location}</h3>
+                                    <div class="request-meta">
+                                        <span>👤 ${request.clientName}</span>
+                                        <span>📅 ${new Date(request.createdAt).toLocaleDateString('ar-SA')}</span>
+                                        <span>${priorityText[request.priority]}</span>
+                                    </div>
+                                </div>
+                                <span class="request-status ${statusClass[request.status]}">${statusText[request.status]}</span>
+                            </div>
+                            <p class="request-description">${request.description}</p>
+                            ${request.image ? `
+                                <div style="margin-bottom: 1rem;">
+                                    <img src="${request.image}" alt="صورة المشكلة" style="max-width: 300px; border-radius: var(--radius-lg); border: 2px solid var(--gray-200);">
+                                </div>
+                            ` : ''}
+                            ${request.technicianNotes ? `
+                                <div style="background: var(--purple-50); padding: 1rem; border-radius: var(--radius-lg); margin-bottom: 1rem; border-right: 3px solid var(--purple-500);">
+                                    <strong style="color: var(--purple-700); display: block; margin-bottom: 0.5rem;">ملاحظاتك:</strong>
+                                    <p style="color: var(--gray-700); margin: 0;">${request.technicianNotes}</p>
+                                </div>
+                            ` : ''}
+                            ${request.rating ? `
+                                <div style="background: var(--success-light); padding: 1rem; border-radius: var(--radius-lg); margin-bottom: 1rem;">
+                                    <strong style="color: var(--success-dark); display: block; margin-bottom: 0.5rem;">تقييم العميل: ${'⭐'.repeat(request.rating)}</strong>
+                                    ${request.ratingComment ? `<p style="color: var(--gray-700); margin: 0;">${request.ratingComment}</p>` : ''}
+                                </div>
+                            ` : ''}
+                            <div class="request-actions">
+                                <button onclick="openUpdateModal('${request.id}')" class="btn btn-primary btn-small">تحديث الحالة</button>
+                                ${!request.technicianId ? `<button onclick="assignToSelf('${request.id}')" class="btn btn-secondary btn-small">تعيين لنفسي</button>` : ''}
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            }
+        }
+
+        // Filter requests
+        function filterRequests(status) {
+            currentFilter = status;
+            
+            // Update button states
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            document.querySelector(`[data-filter="${status}"]`).classList.add('active');
+            
+            loadRequests();
+        }
+
+        // Assign request to self
+        function assignToSelf(requestId) {
+            const requests = JSON.parse(localStorage.getItem('maintenanceRequests') || '[]');
+            const requestIndex = requests.findIndex(r => r.id === requestId);
+            
+            if (requestIndex !== -1) {
+                requests[requestIndex].technicianId = currentUser.id;
+                requests[requestIndex].technicianName = currentUser.name;
+                requests[requestIndex].status = 'in-progress';
+                requests[requestIndex].updatedAt = new Date().toISOString();
+                localStorage.setItem('maintenanceRequests', JSON.stringify(requests));
+                
+                alert('تم تعيين الطلب لك بنجاح');
+                loadRequests();
+            }
+        }
+
+        // Open/Close Update Modal
+        function openUpdateModal(requestId) {
+            currentRequestId = requestId;
+            const requests = JSON.parse(localStorage.getItem('maintenanceRequests') || '[]');
+            const request = requests.find(r => r.id === requestId);
+            
+            if (request) {
+                document.getElementById('newStatus').value = request.status;
+                document.getElementById('techNotes').value = request.technicianNotes || '';
+            }
+            
+            document.getElementById('updateStatusModal').classList.add('active');
+        }
+
+        function closeUpdateModal() {
+            document.getElementById('updateStatusModal').classList.remove('active');
+            currentRequestId = null;
+        }
+
+        // Handle status update
+        document.getElementById('updateStatusForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const requests = JSON.parse(localStorage.getItem('maintenanceRequests') || '[]');
+            const requestIndex = requests.findIndex(r => r.id === currentRequestId);
+            
+            if (requestIndex !== -1) {
+                requests[requestIndex].status = document.getElementById('newStatus').value;
+                requests[requestIndex].technicianNotes = document.getElementById('techNotes').value;
+                requests[requestIndex].technicianId = currentUser.id;
+                requests[requestIndex].technicianName = currentUser.name;
+                requests[requestIndex].updatedAt = new Date().toISOString();
+                
+                localStorage.setItem('maintenanceRequests', JSON.stringify(requests));
+                
+                alert('تم تحديث حالة الطلب بنجاح');
+                closeUpdateModal();
+                loadRequests();
+            }
+        });
+
+        function logout() {
+            localStorage.removeItem('currentUser');
+            window.location.href = 'login.html';
+        }
+
+        // Add active class style for filter buttons
+        const style = document.createElement('style');
+        style.textContent = `
+            .filter-btn.active {
+                background: linear-gradient(135deg, var(--purple-600) 0%, var(--purple-800) 100%);
+                color: white;
+            }
+        `;
+        document.head.appendChild(style);
+
+        // Load requests on page load
+        loadRequests();
+    </script>
+</body>
+</html>

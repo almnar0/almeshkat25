@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#7c3aed">
+    <title>إنشاء حساب - نظام إدارة الصيانة</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&family=Tajawal:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="auth.css">
+</head>
+<body class="auth-page">
+    <div class="auth-container">
+        <div class="auth-card">
+            <div class="auth-header">
+                <div class="auth-logo">🔧</div>
+                <h1 class="auth-title">إنشاء حساب جديد</h1>
+                <p class="auth-subtitle">انضم إلى نظام إدارة الصيانة الاحترافي</p>
+            </div>
+            
+            <form class="auth-form" id="registerForm">
+                <!-- User Type Selection -->
+                <div class="form-group">
+                    <label class="form-label">نوع الحساب</label>
+                    <div class="radio-group">
+                        <label class="radio-option">
+                            <input type="radio" name="userType" value="client" checked>
+                            <span class="radio-label">
+                                <span class="radio-icon">👤</span>
+                                <span class="radio-text">
+                                    <strong>عميل</strong>
+                                    <small>لرفع طلبات الصيانة</small>
+                                </span>
+                            </span>
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="userType" value="technician">
+                            <span class="radio-label">
+                                <span class="radio-icon">🔧</span>
+                                <span class="radio-text">
+                                    <strong>فني</strong>
+                                    <small>لمعالجة الطلبات</small>
+                                </span>
+                            </span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Name -->
+                <div class="form-group">
+                    <label for="name" class="form-label">الاسم الكامل *</label>
+                    <input type="text" id="name" name="name" class="form-input" required placeholder="أدخل اسمك الكامل">
+                </div>
+
+                <!-- Phone -->
+                <div class="form-group">
+                    <label for="phone" class="form-label">رقم الجوال *</label>
+                    <input type="tel" id="phone" name="phone" class="form-input" required placeholder="05xxxxxxxx">
+                </div>
+
+                <!-- Email -->
+                <div class="form-group">
+                    <label for="email" class="form-label">البريد الإلكتروني *</label>
+                    <input type="email" id="email" name="email" class="form-input" required placeholder="example@email.com">
+                </div>
+
+                <!-- Password -->
+                <div class="form-group">
+                    <label for="password" class="form-label">كلمة المرور *</label>
+                    <input type="password" id="password" name="password" class="form-input" required placeholder="أدخل كلمة مرور قوية">
+                    <small class="form-hint">يجب أن تكون 8 أحرف على الأقل</small>
+                </div>
+
+                <!-- Confirm Password -->
+                <div class="form-group">
+                    <label for="confirmPassword" class="form-label">تأكيد كلمة المرور *</label>
+                    <input type="password" id="confirmPassword" name="confirmPassword" class="form-input" required placeholder="أعد إدخال كلمة المرور">
+                </div>
+
+                <!-- School Name (Optional for clients) -->
+                <div class="form-group" id="schoolGroup">
+                    <label for="schoolName" class="form-label">اسم المدرسة (اختياري)</label>
+                    <input type="text" id="schoolName" name="schoolName" class="form-input" placeholder="مدارس المشكاة">
+                </div>
+
+                <!-- Specialization (For technicians) -->
+                <div class="form-group" id="specializationGroup" style="display: none;">
+                    <label for="specialization" class="form-label">التخصص *</label>
+                    <select id="specialization" name="specialization" class="form-input">
+                        <option value="">اختر التخصص</option>
+                        <option value="electrical">كهرباء</option>
+                        <option value="plumbing">سباكة</option>
+                        <option value="carpentry">نجارة</option>
+                        <option value="it">تقنية معلومات</option>
+                        <option value="general">صيانة عامة</option>
+                    </select>
+                </div>
+
+                <!-- Terms -->
+                <div class="form-group">
+                    <label class="checkbox-label">
+                        <input type="checkbox" required>
+                        <span>أوافق على <a href="#" class="link">الشروط والأحكام</a></span>
+                    </label>
+                </div>
+
+                <!-- Submit Button -->
+                <button type="submit" class="btn btn-primary btn-full">إنشاء الحساب</button>
+
+                <!-- Alternative -->
+                <div class="auth-footer">
+                    <p>لديك حساب بالفعل؟ <a href="login.html" class="link">سجل الدخول</a></p>
+                    <p><a href="index.html" class="link">العودة للرئيسية</a></p>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="auth.js"></script>
+    <script>
+        // Handle user type change
+        const userTypeRadios = document.querySelectorAll('input[name="userType"]');
+        const schoolGroup = document.getElementById('schoolGroup');
+        const specializationGroup = document.getElementById('specializationGroup');
+
+        userTypeRadios.forEach(radio => {
+            radio.addEventListener('change', (e) => {
+                if (e.target.value === 'client') {
+                    schoolGroup.style.display = 'block';
+                    specializationGroup.style.display = 'none';
+                    document.getElementById('specialization').removeAttribute('required');
+                } else {
+                    schoolGroup.style.display = 'none';
+                    specializationGroup.style.display = 'block';
+                    document.getElementById('specialization').setAttribute('required', 'required');
+                }
+            });
+        });
+
+        // Handle form submission
+        document.getElementById('registerForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const formData = {
+                userType: document.querySelector('input[name="userType"]:checked').value,
+                name: document.getElementById('name').value,
+                phone: document.getElementById('phone').value,
+                email: document.getElementById('email').value,
+                password: document.getElementById('password').value,
+                confirmPassword: document.getElementById('confirmPassword').value,
+                schoolName: document.getElementById('schoolName').value,
+                specialization: document.getElementById('specialization').value
+            };
+
+            // Validate passwords match
+            if (formData.password !== formData.confirmPassword) {
+                alert('كلمات المرور غير متطابقة');
+                return;
+            }
+
+            // Validate password length
+            if (formData.password.length < 8) {
+                alert('كلمة المرور يجب أن تكون 8 أحرف على الأقل');
+                return;
+            }
+
+            // Get existing users or initialize array
+            let users = JSON.parse(localStorage.getItem('users') || '[]');
+            
+            // Check if email already exists
+            if (users.some(user => user.email === formData.email)) {
+                alert('البريد الإلكتروني مسجل مسبقاً');
+                return;
+            }
+
+            // Create user object
+            const user = {
+                id: Date.now().toString(),
+                userType: formData.userType,
+                name: formData.name,
+                phone: formData.phone,
+                email: formData.email,
+                password: formData.password, // In production, this should be hashed
+                schoolName: formData.schoolName,
+                specialization: formData.specialization,
+                createdAt: new Date().toISOString(),
+                rating: 0,
+                completedRequests: 0
+            };
+
+            // Add user to array
+            users.push(user);
+            
+            // Save to localStorage
+            localStorage.setItem('users', JSON.stringify(users));
+
+            alert('تم إنشاء الحساب بنجاح! سيتم تحويلك لتسجيل الدخول');
+            window.location.href = 'login.html';
+        });
+    </script>
+</body>
+</html>

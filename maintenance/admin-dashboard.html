@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#7c3aed">
+    <title>لوحة الإدارة - نظام إدارة الصيانة</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&family=Tajawal:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="auth.css">
+</head>
+<body class="dashboard">
+    <!-- Dashboard Header -->
+    <header class="dashboard-header">
+        <div class="dashboard-header-content">
+            <h1 class="dashboard-title">لوحة الإدارة</h1>
+            <div class="dashboard-user">
+                <div class="user-avatar">👨‍💼</div>
+                <div class="user-info">
+                    <div class="user-name">المدير</div>
+                    <div class="user-role">مدير النظام</div>
+                </div>
+                <button onclick="logout()" class="btn btn-secondary btn-small">تسجيل الخروج</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Dashboard Content -->
+    <main class="dashboard-content">
+        <!-- Overview Stats -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-card-header">
+                    <div class="stat-card-title">إجمالي المستخدمين</div>
+                    <div class="stat-card-icon">👥</div>
+                </div>
+                <div class="stat-card-value" id="totalUsers">0</div>
+                <div class="stat-card-trend" id="usersTrend"></div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-card-header">
+                    <div class="stat-card-title">الفنيين النشطين</div>
+                    <div class="stat-card-icon">🔧</div>
+                </div>
+                <div class="stat-card-value" id="totalTechs">0</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-card-header">
+                    <div class="stat-card-title">إجمالي الطلبات</div>
+                    <div class="stat-card-icon">📋</div>
+                </div>
+                <div class="stat-card-value" id="totalRequests">0</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-card-header">
+                    <div class="stat-card-title">معدل الإنجاز</div>
+                    <div class="stat-card-icon">✅</div>
+                </div>
+                <div class="stat-card-value" id="completionRate">0%</div>
+            </div>
+        </div>
+
+        <!-- Tabs -->
+        <div class="requests-section">
+            <div class="section-header">
+                <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+                    <button onclick="switchTab('users')" class="btn btn-primary tab-btn active" data-tab="users">المستخدمون</button>
+                    <button onclick="switchTab('requests')" class="btn btn-secondary tab-btn" data-tab="requests">الطلبات</button>
+                    <button onclick="switchTab('technicians')" class="btn btn-secondary tab-btn" data-tab="technicians">الفنيون</button>
+                </div>
+            </div>
+
+            <!-- Users Tab -->
+            <div class="tab-content" id="usersTab">
+                <h3 style="margin-bottom: 1.5rem; color: var(--gray-900); font-weight: 800;">قائمة المستخدمين</h3>
+                <div id="usersList"></div>
+            </div>
+
+            <!-- Requests Tab -->
+            <div class="tab-content" id="requestsTab" style="display: none;">
+                <h3 style="margin-bottom: 1.5rem; color: var(--gray-900); font-weight: 800;">جميع الطلبات</h3>
+                <div id="requestsList"></div>
+            </div>
+
+            <!-- Technicians Tab -->
+            <div class="tab-content" id="techniciansTab" style="display: none;">
+                <h3 style="margin-bottom: 1.5rem; color: var(--gray-900); font-weight: 800;">الفنيون وأدائهم</h3>
+                <div id="techniciansList"></div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Initialize admin if doesn't exist
+        function initializeAdmin() {
+            const users = JSON.parse(localStorage.getItem('users') || '[]');
+            const adminExists = users.some(u => u.userType === 'admin');
+            
+            if (!adminExists) {
+                const admin = {
+                    id: 'admin-' + Date.now(),
+                    userType: 'admin',
+                    name: 'مدير النظام',
+                    email: 'admin@mishkat.edu.sa',
+                    password: 'admin123', // In production, use hashed password
+                    createdAt: new Date().toISOString()
+                };
+                users.push(admin);
+                localStorage.setItem('users', JSON.stringify(users));
+            }
+        }
+
+        initializeAdmin();
+
+        // Check authentication
+        const currentUser = JSON.parse(localStorage.getItem('currentUser') || 'null');
+        if (!currentUser || currentUser.userType !== 'admin') {
+            alert('يجب تسجيل الدخول كمدير');
+            window.location.href = 'login.html';
+        }
+
+        let currentTab = 'users';
+
+        // Load dashboard data
+        function loadDashboard() {
+            const users = JSON.parse(localStorage.getItem('users') || '[]');
+            const requests = JSON.parse(localStorage.getItem('maintenanceRequests') || '[]');
+            
+            // Calculate stats
+            const clients = users.filter(u => u.userType === 'client');
+            const techs = users.filter(u => u.userType === 'technician');
+            const completedRequests = requests.filter(r => r.status === 'completed');
+            const completionRate = requests.length > 0 ? Math.round((completedRequests.length / requests.length) * 100) : 0;
+            
+            // Update stats
+            document.getElementById('totalUsers').textContent = users.length;
+            document.getElementById('totalTechs').textContent = techs.length;
+            document.getElementById('totalRequests').textContent = requests.length;
+            document.getElementById('completionRate').textContent = completionRate + '%';
+            document.getElementById('usersTrend').textContent = `${clients.length} عميل، ${techs.length} فني`;
+
+            // Load tab content
+            loadUsers(users);
+            loadRequests(requests);
+            loadTechnicians(techs, requests);
+        }
+
+        // Load users
+        function loadUsers(users) {
+            const usersList = document.getElementById('usersList');
+            const clientsAndTechs = users.filter(u => u.userType !== 'admin');
+            
+            if (clientsAndTechs.length === 0) {
+                usersList.innerHTML = `<div class="empty-state"><div class="empty-state-icon">👥</div><h3 class="empty-state-title">لا يوجد مستخدمون</h3></div>`;
+                return;
+            }
+
+            usersList.innerHTML = clientsAndTechs.map(user => `
+                <div class="request-card">
+                    <div class="request-header">
+                        <div class="request-info">
+                            <h3>${user.name}</h3>
+                            <div class="request-meta">
+                                <span>📧 ${user.email}</span>
+                                <span>📱 ${user.phone || '-'}</span>
+                                <span>📅 ${new Date(user.createdAt).toLocaleDateString('ar-SA')}</span>
+                            </div>
+                        </div>
+                        <span class="request-status ${user.userType === 'client' ? 'status-pending' : 'status-in-progress'}">
+                            ${user.userType === 'client' ? 'عميل' : 'فني'}
+                        </span>
+                    </div>
+                    ${user.schoolName ? `<p style="color: var(--gray-600);">🏫 ${user.schoolName}</p>` : ''}
+                    ${user.specialization ? `<p style="color: var(--gray-600);">🔧 ${user.specialization}</p>` : ''}
+                </div>
+            `).join('');
+        }
+
+        // Load requests
+        function loadRequests(requests) {
+            const requestsList = document.getElementById('requestsList');
+            
+            if (requests.length === 0) {
+                requestsList.innerHTML = `<div class="empty-state"><div class="empty-state-icon">📋</div><h3 class="empty-state-title">لا توجد طلبات</h3></div>`;
+                return;
+            }
+
+            const statusText = {
+                'pending': 'قيد المعالجة',
+                'in-progress': 'تحت الإصلاح',
+                'completed': 'مكتمل',
+                'rejected': 'مرفوض'
+            };
+            
+            const statusClass = {
+                'pending': 'status-pending',
+                'in-progress': 'status-in-progress',
+                'completed': 'status-completed',
+                'rejected': 'status-rejected'
+            };
+
+            const issueTypes = {
+                'electrical': 'كهرباء',
+                'plumbing': 'سباكة',
+                'carpentry': 'نجارة',
+                'it': 'تقنية معلومات',
+                'ac': 'تكييف',
+                'other': 'أخرى'
+            };
+
+            requestsList.innerHTML = requests.map(request => `
+                <div class="request-card">
+                    <div class="request-header">
+                        <div class="request-info">
+                            <h3>${issueTypes[request.issueType] || request.issueType} - ${request.location}</h3>
+                            <div class="request-meta">
+                                <span>👤 ${request.clientName}</span>
+                                <span>📅 ${new Date(request.createdAt).toLocaleDateString('ar-SA')}</span>
+                                ${request.technicianName ? `<span>🔧 ${request.technicianName}</span>` : ''}
+                            </div>
+                        </div>
+                        <span class="request-status ${statusClass[request.status]}">${statusText[request.status]}</span>
+                    </div>
+                    <p class="request-description">${request.description}</p>
+                    ${request.rating ? `<div style="background: var(--success-light); padding: 0.75rem; border-radius: var(--radius-lg); margin-top: 0.5rem;"><strong style="color: var(--success-dark);">تقييم: ${'⭐'.repeat(request.rating)}</strong></div>` : ''}
+                </div>
+            `).join('');
+        }
+
+        // Load technicians
+        function loadTechnicians(techs, requests) {
+            const techniciansList = document.getElementById('techniciansTab').querySelector('#techniciansList') || 
+                                    document.querySelector('#techniciansTab');
+            
+            if (!document.getElementById('techniciansList')) {
+                const div = document.createElement('div');
+                div.id = 'techniciansList';
+                techniciansList.appendChild(div);
+            }
+            
+            const list = document.getElementById('techniciansList');
+
+            if (techs.length === 0) {
+                list.innerHTML = `<div class="empty-state"><div class="empty-state-icon">🔧</div><h3 class="empty-state-title">لا يوجد فنيون</h3></div>`;
+                return;
+            }
+
+            list.innerHTML = techs.map(tech => {
+                const techRequests = requests.filter(r => r.technicianId === tech.id);
+                const completed = techRequests.filter(r => r.status === 'completed').length;
+                const rating = tech.rating || 0;
+                
+                return `
+                    <div class="request-card">
+                        <div class="request-header">
+                            <div class="request-info">
+                                <h3>${tech.name}</h3>
+                                <div class="request-meta">
+                                    <span>📧 ${tech.email}</span>
+                                    <span>🔧 ${tech.specialization || 'عام'}</span>
+                                    <span>⭐ ${rating.toFixed(1)}</span>
+                                </div>
+                            </div>
+                            <span class="request-status status-completed">${completed} مكتمل</span>
+                        </div>
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem; margin-top: 1rem;">
+                            <div style="background: var(--purple-50); padding: 1rem; border-radius: var(--radius-lg); text-align: center;">
+                                <div style="font-size: 1.5rem; font-weight: 800; color: var(--purple-700);">${techRequests.length}</div>
+                                <div style="font-size: 0.875rem; color: var(--gray-600);">إجمالي الطلبات</div>
+                            </div>
+                            <div style="background: var(--success-light); padding: 1rem; border-radius: var(--radius-lg); text-align: center;">
+                                <div style="font-size: 1.5rem; font-weight: 800; color: var(--success-dark);">${completed}</div>
+                                <div style="font-size: 0.875rem; color: var(--gray-600);">مكتمل</div>
+                            </div>
+                            <div style="background: var(--warning-light); padding: 1rem; border-radius: var(--radius-lg); text-align: center;">
+                                <div style="font-size: 1.5rem; font-weight: 800; color: var(--warning-dark);">${techRequests.filter(r => r.status === 'in-progress').length}</div>
+                                <div style="font-size: 0.875rem; color: var(--gray-600);">جاري العمل</div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Switch tabs
+        function switchTab(tab) {
+            currentTab = tab;
+            
+            // Update button states
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('active', 'btn-primary');
+                btn.classList.add('btn-secondary');
+            });
+            document.querySelector(`[data-tab="${tab}"]`).classList.add('active', 'btn-primary');
+            document.querySelector(`[data-tab="${tab}"]`).classList.remove('btn-secondary');
+            
+            // Show/hide tabs
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.style.display = 'none';
+            });
+            document.getElementById(`${tab}Tab`).style.display = 'block';
+        }
+
+        function logout() {
+            localStorage.removeItem('currentUser');
+            window.location.href = 'login.html';
+        }
+
+        // Add active class style for tab buttons
+        const style = document.createElement('style');
+        style.textContent = `
+            .tab-btn.active {
+                background: linear-gradient(135deg, var(--purple-600) 0%, var(--purple-800) 100%);
+                color: white;
+            }
+        `;
+        document.head.appendChild(style);
+
+        // Load dashboard on page load
+        loadDashboard();
+    </script>
+</body>
+</html>
