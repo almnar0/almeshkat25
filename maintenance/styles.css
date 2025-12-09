@@ -36,10 +36,13 @@
     /* Status Colors */
     --success: #10b981;
     --success-light: #d1fae5;
+    --success-dark: #059669;
     --warning: #f59e0b;
     --warning-light: #fef3c7;
+    --warning-dark: #d97706;
     --danger: #ef4444;
     --danger-light: #fee2e2;
+    --danger-dark: #dc2626;
     --info: #3b82f6;
     --info-light: #dbeafe;
     
