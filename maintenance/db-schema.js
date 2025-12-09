@@ -158,7 +158,7 @@ const DEFAULT_DATA = {
       userType: 'admin',
       name: 'مدير النظام',
       email: 'admin@mishkat.edu.sa',
-      password: 'admin123', // In production: bcrypt hash
+      password: 'admin123', // ⚠️ WARNING: CHANGE THIS PASSWORD! In production, use bcrypt hash
       phone: '0501234567',
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
@@ -174,7 +174,7 @@ const DEFAULT_DATA = {
 
 // Helper functions for data initialization
 function generateId() {
-  return 'id-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9);
+  return 'id-' + Date.now() + '-' + Math.random().toString(36).slice(2, 11);
 }
 
 function generateTicketNumber() {

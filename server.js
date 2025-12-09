@@ -457,7 +457,7 @@ app.patch('/api/suggestions/:id', async (req, res) => {
 
 // Helper functions
 function generateId() {
-  return 'id-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9);
+  return 'id-' + Date.now() + '-' + Math.random().toString(36).slice(2, 11);
 }
 
 function generateTicketNumber() {
@@ -536,7 +536,7 @@ app.post('/api/users', async (req, res) => {
       userType,
       name: sanitizeText(name, { max: 100 }),
       email: sanitizeText(email, { max: 100 }),
-      password, // In production: bcrypt.hash(password, 10)
+      password, // ⚠️ WARNING: In production, MUST use bcrypt.hash(password, 10) - Never store plain text passwords!
       phone: sanitizeText(phone, { max: 20, fallback: '' }),
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
