@@ -62,6 +62,25 @@
             </div>
         </div>
 
+        <!-- Quick Access -->
+        <div style="margin-bottom: 2rem;">
+            <h2 style="margin-bottom: 1rem; color: var(--gray-900); font-weight: 800;">الوصول السريع</h2>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
+                <a href="devices.html" class="btn btn-primary" style="text-decoration: none; text-align: center;">
+                    📦 إدارة الأجهزة
+                </a>
+                <button onclick="switchTab('requests')" class="btn btn-secondary">
+                    📋 إدارة البلاغات
+                </button>
+                <button onclick="switchTab('technicians')" class="btn btn-secondary">
+                    🔧 إدارة الفنيين
+                </button>
+                <button onclick="viewAuditLogs()" class="btn btn-secondary">
+                    📊 سجل النشاط
+                </button>
+            </div>
+        </div>
+
         <!-- Tabs -->
         <div class="requests-section">
             <div class="section-header">
