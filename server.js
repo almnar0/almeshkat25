@@ -12,6 +12,10 @@ const DATA_DIR = path.join(__dirname, 'data');
 const REVIEWS_FILE = path.join(DATA_DIR, 'reviews.json');
 const SUGGESTIONS_FILE = path.join(DATA_DIR, 'suggestions.json');
 
+// Import maintenance system
+const { initializeDataFiles } = require('./maintenance/models');
+const maintenanceRoutes = require('./maintenance/api-routes');
+
 let fetchFn = global.fetch;
 if (!fetchFn) {
   fetchFn = (...args) => import('node-fetch').then(({ default: fetch }) => fetch(...args));
@@ -421,6 +425,9 @@ app.patch('/api/suggestions/:id', async (req, res) => {
   }
 });
 
+// Mount maintenance API routes
+app.use('/api/maintenance', maintenanceRoutes);
+
 const rootDir = path.join(__dirname);
 app.use(express.static(rootDir));
 
@@ -431,10 +438,12 @@ app.use((req, res, next) => {
   return res.sendFile(path.join(rootDir, 'index.html'));
 });
 
-ensureDataFiles()
+// Initialize both data systems
+Promise.all([ensureDataFiles(), initializeDataFiles()])
   .then(() => {
     app.listen(PORT, () => {
       console.log(`🚀 Mishkat Tech site running on http://localhost:${PORT}`);
+      console.log(`✓ Maintenance management system initialized`);
     });
   })
   .catch((error) => {

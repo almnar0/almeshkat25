@@ -53,38 +53,44 @@
         </div>
     </div>
 
-    <script src="auth.js"></script>
+    <script src="api-client.js"></script>
     <script>
+        // Redirect if already authenticated
+        redirectIfAuthenticated();
+
         // Handle form submission
-        document.getElementById('loginForm').addEventListener('submit', function(e) {
+        document.getElementById('loginForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             
             const email = document.getElementById('email').value;
             const password = document.getElementById('password').value;
+            const submitBtn = this.querySelector('button[type="submit"]');
 
-            // Get users from localStorage
-            const users = JSON.parse(localStorage.getItem('users') || '[]');
-            
-            // Find user
-            const user = users.find(u => u.email === email && u.password === password);
+            try {
+                submitBtn.disabled = true;
+                submitBtn.textContent = 'جاري تسجيل الدخول...';
 
-            if (!user) {
-                alert('البريد الإلكتروني أو كلمة المرور غير صحيحة');
-                return;
-            }
+                const response = await api.login(email, password);
+                
+                // Save user info
+                localStorage.setItem('currentUser', JSON.stringify(response.user));
 
-            // Save current user session
-            localStorage.setItem('currentUser', JSON.stringify(user));
+                utils.showNotification('تم تسجيل الدخول بنجاح!', 'success');
 
-            alert('تم تسجيل الدخول بنجاح!');
-
-            // Redirect based on user type
-            if (user.userType === 'client') {
-                window.location.href = 'client-dashboard.html';
-            } else if (user.userType === 'technician') {
-                window.location.href = 'tech-dashboard.html';
-            } else if (user.userType === 'admin') {
-                window.location.href = 'admin-dashboard.html';
+                // Redirect based on user type
+                setTimeout(() => {
+                    if (response.user.userType === 'client') {
+                        window.location.href = 'client-dashboard.html';
+                    } else if (response.user.userType === 'technician') {
+                        window.location.href = 'tech-dashboard.html';
+                    } else if (response.user.userType === 'admin') {
+                        window.location.href = 'admin-dashboard.html';
+                    }
+                }, 500);
+            } catch (error) {
+                utils.showNotification('البريد الإلكتروني أو كلمة المرور غير صحيحة', 'error');
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'تسجيل الدخول';
             }
         });
     </script>
