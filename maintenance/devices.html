@@ -360,9 +360,9 @@
                         </p>
                     ` : ''}
                     
-                    <div class="request-actions" style="margin-top: 1rem;">
-                        <button onclick="openEditDeviceModal('${device.id}')" class="btn btn-primary btn-small">تعديل</button>
-                        <button onclick="deleteDevice('${device.id}', '${device.name}')" class="btn btn-secondary btn-small">حذف</button>
+                    <div class="request-actions" style="margin-top: 1rem; display: flex; gap: 0.75rem;">
+                        <button onclick="openEditDeviceModal('${device.id}')" class="btn btn-primary btn-small" style="flex: 1;">✏️ تعديل</button>
+                        <button onclick="deleteDevice('${device.id}', '${device.name}')" class="btn btn-small" style="flex: 1; background: var(--danger-light); color: var(--danger-dark); border: 2px solid var(--danger);">🗑️ حذف</button>
                     </div>
                 </div>
             `).join('');
@@ -518,7 +518,7 @@
 
         // Delete Device
         async function deleteDevice(deviceId, deviceName) {
-            if (!confirm(`هل أنت متأكد من حذف الجهاز: ${deviceName}؟`)) {
+            if (!confirm(`⚠️ هل أنت متأكد من حذف الجهاز: ${deviceName}؟\n\nلا يمكن التراجع عن هذا الإجراء.`)) {
                 return;
             }
 

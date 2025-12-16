@@ -21,6 +21,17 @@
             </div>
             
             <form class="auth-form" id="loginForm">
+                <!-- User Type -->
+                <div class="form-group">
+                    <label for="userType" class="form-label">نوع المستخدم *</label>
+                    <select id="userType" name="userType" class="form-input" required style="cursor: pointer;">
+                        <option value="">اختر نوع المستخدم</option>
+                        <option value="client">مبلّغ (عميل)</option>
+                        <option value="technician">فني صيانة</option>
+                        <option value="admin">مدير النظام</option>
+                    </select>
+                </div>
+
                 <!-- Email -->
                 <div class="form-group">
                     <label for="email" class="form-label">البريد الإلكتروني</label>
@@ -56,31 +67,54 @@
     <script src="auth.js"></script>
     <script src="api.js"></script>
     <script>
+        // Validate user type matches the selected option
+        function validateUserType(user, selectedUserType) {
+            if (user.userType !== selectedUserType) {
+                alert('❌ نوع المستخدم غير صحيح. الرجاء اختيار النوع المناسب لحسابك');
+                return false;
+            }
+            return true;
+        }
+
+        // Handle successful login
+        function handleSuccessfulLogin(user) {
+            localStorage.setItem('currentUser', JSON.stringify(user));
+            alert('✅ تم تسجيل الدخول بنجاح!');
+            
+            // Redirect based on user type
+            if (user.userType === 'client') {
+                window.location.href = 'client-dashboard.html';
+            } else if (user.userType === 'technician') {
+                window.location.href = 'tech-dashboard.html';
+            } else if (user.userType === 'admin') {
+                window.location.href = 'admin-dashboard.html';
+            }
+        }
+
         // Handle form submission
         document.getElementById('loginForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             
+            const selectedUserType = document.getElementById('userType').value;
             const email = document.getElementById('email').value;
             const password = document.getElementById('password').value;
+
+            if (!selectedUserType) {
+                alert('⚠️ الرجاء اختيار نوع المستخدم');
+                return;
+            }
 
             try {
                 // Try API first
                 const result = await UsersAPI.login(email, password);
                 const user = result.user;
                 
-                // Save current user session
-                localStorage.setItem('currentUser', JSON.stringify(user));
-                
-                alert('✅ تم تسجيل الدخول بنجاح!');
-                
-                // Redirect based on user type
-                if (user.userType === 'client') {
-                    window.location.href = 'client-dashboard.html';
-                } else if (user.userType === 'technician') {
-                    window.location.href = 'tech-dashboard.html';
-                } else if (user.userType === 'admin') {
-                    window.location.href = 'admin-dashboard.html';
+                // Validate user type
+                if (!validateUserType(user, selectedUserType)) {
+                    return;
                 }
+                
+                handleSuccessfulLogin(user);
             } catch (error) {
                 console.error('API login failed, falling back to localStorage:', error);
                 
@@ -93,19 +127,12 @@
                     return;
                 }
 
-                // Save current user session
-                localStorage.setItem('currentUser', JSON.stringify(user));
-                
-                alert('✅ تم تسجيل الدخول بنجاح!');
-
-                // Redirect based on user type
-                if (user.userType === 'client') {
-                    window.location.href = 'client-dashboard.html';
-                } else if (user.userType === 'technician') {
-                    window.location.href = 'tech-dashboard.html';
-                } else if (user.userType === 'admin') {
-                    window.location.href = 'admin-dashboard.html';
+                // Validate user type
+                if (!validateUserType(user, selectedUserType)) {
+                    return;
                 }
+
+                handleSuccessfulLogin(user);
             }
         });
     </script>
