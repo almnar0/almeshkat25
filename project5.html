@@ -41,23 +41,26 @@
             align-items: center;
             gap: 8px;
             background: linear-gradient(135deg, #56ab2f 0%, #a8e063 100%);
-            color: #0f3d0f;
+            color: #ffffff;
             padding: 6px 16px;
             border-radius: 999px;
             font-weight: 700;
             font-size: 0.85em;
             box-shadow: 0 12px 28px rgba(86, 171, 47, 0.28);
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
         }
 
         .project-brief h1 {
             font-size: 2.2em;
-            color: #1f3f1f;
+            color: #0d2e0d;
+            font-weight: 800;
         }
 
         .project-brief p {
-            color: #3c553c;
+            color: #1f3f1f;
             line-height: 1.8;
             font-size: 1.05em;
+            font-weight: 500;
         }
 
         .brief-grid {
@@ -81,14 +84,14 @@
         }
 
         .meta-label {
-            color: #4e6c4e;
+            color: #2d4a2d;
             font-size: 0.85em;
             font-weight: 700;
             letter-spacing: 0.02em;
         }
 
         .meta-value {
-            color: #1f3f1f;
+            color: #0d2e0d;
             font-size: 1.15em;
             font-weight: 800;
         }
@@ -104,7 +107,7 @@
         .brief-list li {
             position: relative;
             padding-inline-start: 26px;
-            color: #3c553c;
+            color: #1f3f1f;
             font-weight: 600;
         }
 
@@ -113,6 +116,7 @@
             position: absolute;
             inset-inline-start: 0;
             color: #2f8f2f;
+            font-weight: 900;
         }
 
         .summary-grid {
@@ -130,8 +134,9 @@
         }
 
         .summary-card .summary-label {
-            color: #4e6c4e;
+            color: #2d4a2d;
             font-size: 0.85em;
+            font-weight: 700;
         }
 
         .summary-card .summary-value {
@@ -139,7 +144,7 @@
             margin-top: 6px;
             font-size: 1.45em;
             font-weight: 800;
-            color: #1f3f1f;
+            color: #0d2e0d;
         }
 
         .insights-grid {
@@ -159,14 +164,16 @@
 
         .insight-card h4 {
             margin-bottom: 8px;
-            color: #1f3f1f;
+            color: #0d2e0d;
             font-size: 1.1em;
+            font-weight: 700;
         }
 
         .insight-card p {
             margin: 0;
-            color: #4e6c4e;
+            color: #2d4a2d;
             font-size: 0.95em;
+            font-weight: 500;
         }
 
         .trend-chart {
@@ -792,12 +799,12 @@
                 <h2>⚙️ التحكم والتنبيهات</h2>
                 
                 <div style="margin-bottom: 25px;">
-                    <h3 style="color: #333; margin-bottom: 15px;">🔔 سجل الأحداث اللحظي</h3>
+                    <h3 style="color: #0d2e0d; margin-bottom: 15px; font-weight: 700;">🔔 سجل الأحداث اللحظي</h3>
                     <div id="eventLog" class="event-log"></div>
                 </div>
 
                 <div class="control-section">
-                    <h3 style="color: #333; margin-bottom: 15px;">🎮 التحكم اليدوي</h3>
+                    <h3 style="color: #0d2e0d; margin-bottom: 15px; font-weight: 700;">🎮 التحكم اليدوي</h3>
                     <button class="control-btn btn-water" onclick="activateWater()">
                         💧 تشغيل الري الآن
                     </button>
@@ -810,7 +817,7 @@
                 </div>
 
                 <div style="margin-top: 25px;">
-                    <h3 style="color: #333; margin-bottom: 15px;">⚡ الأنظمة التلقائية</h3>
+                    <h3 style="color: #0d2e0d; margin-bottom: 15px; font-weight: 700;">⚡ الأنظمة التلقائية</h3>
                     <div style="display: flex; justify-content: space-between; align-items: center; padding: 15px; background: #f8f9fa; border-radius: 10px; margin-bottom: 10px;">
                         <span style="font-weight: bold;">الري التلقائي</span>
                         <label class="toggle-switch">
@@ -877,7 +884,7 @@
                 </div>
 
                 <div style="margin-top: 25px;">
-                    <h3 style="color: #333; margin-bottom: 15px;">📊 إحصائيات الأسبوع</h3>
+                    <h3 style="color: #0d2e0d; margin-bottom: 15px; font-weight: 700;">📊 إحصائيات الأسبوع</h3>
                     <div style="position: relative; height: 200px; background: #f8f9fa; border-radius: 10px; padding: 20px;">
                         <div id="chart" class="trend-chart"></div>
                     </div>
@@ -885,19 +892,19 @@
                 </div>
 
                 <div style="margin-top: 25px;">
-                    <h3 style="color: #333; margin-bottom: 15px;">💧 استهلاك المياه</h3>
+                    <h3 style="color: #0d2e0d; margin-bottom: 15px; font-weight: 700;">💧 استهلاك المياه</h3>
                     <div style="background: #f8f9fa; padding: 20px; border-radius: 10px;">
                         <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
-                            <span style="color: #666;">اليوم</span>
-                            <span id="waterTodayValue" style="font-weight: bold; color: #56ab2f;">45 لتر</span>
+                            <span style="color: #2d4a2d; font-weight: 600;">اليوم</span>
+                            <span id="waterTodayValue" style="font-weight: bold; color: #2f8f2f;">45 لتر</span>
                         </div>
                         <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
-                            <span style="color: #666;">هذا الأسبوع</span>
-                            <span id="waterWeekValue" style="font-weight: bold; color: #56ab2f;">320 لتر</span>
+                            <span style="color: #2d4a2d; font-weight: 600;">هذا الأسبوع</span>
+                            <span id="waterWeekValue" style="font-weight: bold; color: #2f8f2f;">320 لتر</span>
                         </div>
                         <div style="display: flex; justify-content: space-between;">
-                            <span style="color: #666;">هذا الشهر</span>
-                            <span id="waterMonthValue" style="font-weight: bold; color: #56ab2f;">1,245 لتر</span>
+                            <span style="color: #2d4a2d; font-weight: 600;">هذا الشهر</span>
+                            <span id="waterMonthValue" style="font-weight: bold; color: #2f8f2f;">1,245 لتر</span>
                         </div>
                     </div>
                 </div>

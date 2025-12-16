@@ -598,6 +598,83 @@
         </div>
     </div>
 
+    <!-- Modal for Editing Device -->
+    <div class="modal" id="editDeviceModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">✏️ تعديل الجهاز</h2>
+                <button class="close-btn" onclick="closeEditDeviceModal()">×</button>
+            </div>
+            <form id="editDeviceForm" onsubmit="saveEditDevice(event)">
+                <input type="hidden" id="editDeviceId">
+                <div class="form-group">
+                    <label class="form-label">اسم الجهاز *</label>
+                    <input 
+                        type="text" 
+                        class="form-input" 
+                        id="editDeviceName" 
+                        required
+                    >
+                </div>
+                <div class="form-group">
+                    <label class="form-label">نوع الجهاز *</label>
+                    <select class="form-select" id="editDeviceType" required>
+                        <option value="projector">📽️ بروجكتر</option>
+                        <option value="computer">💻 حاسوب</option>
+                        <option value="mouse">🖱️ ماوس</option>
+                        <option value="keyboard">⌨️ كيبورد</option>
+                        <option value="smartboard">🖥️ لوحة ذكية</option>
+                        <option value="printer">🖨️ طابعة</option>
+                        <option value="speakers">🔊 سماعات</option>
+                        <option value="other">🔧 أخرى</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">الموقع *</label>
+                    <input 
+                        type="text" 
+                        class="form-input" 
+                        id="editDeviceLocation" 
+                        required
+                    >
+                </div>
+                <div class="form-group">
+                    <label class="form-label">حالة الجهاز *</label>
+                    <select class="form-select" id="editDeviceStatus" required>
+                        <option value="good">✅ سليم</option>
+                        <option value="maintenance">⚠️ يحتاج صيانة</option>
+                        <option value="repair">🔴 تحت الإصلاح</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">تاريخ آخر فحص *</label>
+                    <input 
+                        type="date" 
+                        class="form-input" 
+                        id="editDeviceLastCheck" 
+                        required
+                    >
+                </div>
+                <div class="form-group">
+                    <label class="form-label">ملاحظات (اختياري)</label>
+                    <textarea 
+                        class="form-textarea" 
+                        id="editDeviceNotes" 
+                        placeholder="أي ملاحظات إضافية عن الجهاز"
+                    ></textarea>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn-secondary" onclick="closeEditDeviceModal()">
+                        إلغاء
+                    </button>
+                    <button type="submit" class="btn-primary">
+                        💾 حفظ التعديلات
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <!-- Toast Notification -->
     <div class="toast" id="toast">
         <span id="toastMessage"></span>
@@ -775,6 +852,96 @@
             }
         });
 
+        document.getElementById('editDeviceModal')?.addEventListener('click', function(event) {
+            if (event.target === this) {
+                closeEditDeviceModal();
+            }
+        });
+
+        // Edit Device Functions
+        function openEditDeviceModal(deviceId) {
+            const device = devices.find(d => d.id === deviceId);
+            if (!device) {
+                showToast('❌ الجهاز غير موجود');
+                return;
+            }
+
+            document.getElementById('editDeviceId').value = device.id;
+            document.getElementById('editDeviceName').value = device.name;
+            document.getElementById('editDeviceType').value = device.type;
+            document.getElementById('editDeviceLocation').value = device.location;
+            document.getElementById('editDeviceStatus').value = device.status;
+            document.getElementById('editDeviceLastCheck').value = device.lastCheck;
+            document.getElementById('editDeviceNotes').value = device.notes === 'لا توجد ملاحظات' ? '' : device.notes;
+            
+            document.getElementById('editDeviceModal').classList.add('active');
+        }
+
+        function closeEditDeviceModal() {
+            document.getElementById('editDeviceModal').classList.remove('active');
+            document.getElementById('editDeviceForm').reset();
+        }
+
+        function saveEditDevice(event) {
+            event.preventDefault();
+            
+            const deviceId = parseInt(document.getElementById('editDeviceId').value);
+            const deviceIndex = devices.findIndex(d => d.id === deviceId);
+            
+            if (deviceIndex === -1) {
+                showToast('❌ الجهاز غير موجود');
+                return;
+            }
+
+            const name = document.getElementById('editDeviceName').value.trim();
+            const type = document.getElementById('editDeviceType').value;
+            const location = document.getElementById('editDeviceLocation').value.trim();
+            const status = document.getElementById('editDeviceStatus').value;
+            const lastCheck = document.getElementById('editDeviceLastCheck').value;
+            const notes = document.getElementById('editDeviceNotes').value.trim() || 'لا توجد ملاحظات';
+            
+            if (!name || !type || !location || !status || !lastCheck) {
+                showToast('⚠️ يرجى تعبئة جميع الحقول المطلوبة');
+                return;
+            }
+
+            // Update device
+            devices[deviceIndex] = {
+                ...devices[deviceIndex],
+                name,
+                type,
+                icon: typeIcons[type] || '🔧',
+                location,
+                status,
+                lastCheck,
+                notes
+            };
+
+            updateStats();
+            renderDevices(currentFilter);
+            closeEditDeviceModal();
+            showToast('✅ تم تحديث الجهاز بنجاح!');
+        }
+
+        // Delete Device Function
+        function deleteDevice(deviceId, deviceName) {
+            if (!confirm(`هل أنت متأكد من حذف الجهاز:\n"${deviceName}"؟\n\nلا يمكن التراجع عن هذا الإجراء.`)) {
+                return;
+            }
+
+            const deviceIndex = devices.findIndex(d => d.id === deviceId);
+            
+            if (deviceIndex === -1) {
+                showToast('❌ الجهاز غير موجود');
+                return;
+            }
+
+            devices.splice(deviceIndex, 1);
+            updateStats();
+            renderDevices(currentFilter);
+            showToast('✅ تم حذف الجهاز بنجاح');
+        }
+
         function updateStats() {
             const goodCount = devices.filter(d => d.status === 'good').length;
             const maintenanceCount = devices.filter(d => d.status === 'maintenance').length;
@@ -798,7 +965,7 @@
             }
 
             grid.innerHTML = filteredDevices.map(device => `
-                <div class="device-card" data-status="${device.status}">
+                <div class="device-card" data-status="${device.status}" data-device-id="${device.id}">
                     <div class="device-icon">${device.icon}</div>
                     <div class="device-name">${device.name}</div>
                     <div class="device-location">📍 ${device.location}</div>
@@ -806,8 +973,16 @@
                         ${statusLabels[device.status]}
                     </span>
                     <div class="device-details">
-                        <div>آخر فحص: ${device.lastCheck}</div>
+                        <div>📅 آخر فحص: ${device.lastCheck}</div>
                         <div style="margin-top: 8px;">${device.notes}</div>
+                    </div>
+                    <div style="display: flex; gap: 8px; margin-top: 16px; padding-top: 12px; border-top: 1px solid var(--neutral-200);">
+                        <button onclick="openEditDeviceModal(${device.id})" class="btn-primary" style="flex: 1; padding: 10px; font-size: 0.9em;">
+                            ✏️ تعديل
+                        </button>
+                        <button onclick="deleteDevice(${device.id}, '${device.name.replace(/'/g, "\\'")}' )" class="btn-secondary" style="flex: 1; padding: 10px; font-size: 0.9em; background: var(--danger-light); color: var(--danger-dark); border: 2px solid var(--danger);">
+                            🗑️ حذف
+                        </button>
                     </div>
                 </div>
             `).join('');

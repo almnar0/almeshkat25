@@ -21,6 +21,17 @@
             </div>
             
             <form class="auth-form" id="loginForm">
+                <!-- User Type -->
+                <div class="form-group">
+                    <label for="userType" class="form-label">نوع المستخدم *</label>
+                    <select id="userType" name="userType" class="form-input" required style="cursor: pointer;">
+                        <option value="">اختر نوع المستخدم</option>
+                        <option value="client">مبلّغ (عميل)</option>
+                        <option value="technician">فني صيانة</option>
+                        <option value="admin">مدير النظام</option>
+                    </select>
+                </div>
+
                 <!-- Email -->
                 <div class="form-group">
                     <label for="email" class="form-label">البريد الإلكتروني</label>
@@ -60,13 +71,25 @@
         document.getElementById('loginForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             
+            const selectedUserType = document.getElementById('userType').value;
             const email = document.getElementById('email').value;
             const password = document.getElementById('password').value;
+
+            if (!selectedUserType) {
+                alert('⚠️ الرجاء اختيار نوع المستخدم');
+                return;
+            }
 
             try {
                 // Try API first
                 const result = await UsersAPI.login(email, password);
                 const user = result.user;
+                
+                // Verify user type matches selection
+                if (user.userType !== selectedUserType) {
+                    alert('❌ نوع المستخدم غير صحيح. الرجاء اختيار النوع المناسب لحسابك');
+                    return;
+                }
                 
                 // Save current user session
                 localStorage.setItem('currentUser', JSON.stringify(user));
@@ -90,6 +113,12 @@
 
                 if (!user) {
                     alert('❌ البريد الإلكتروني أو كلمة المرور غير صحيحة');
+                    return;
+                }
+
+                // Verify user type matches selection
+                if (user.userType !== selectedUserType) {
+                    alert('❌ نوع المستخدم غير صحيح. الرجاء اختيار النوع المناسب لحسابك');
                     return;
                 }
 
