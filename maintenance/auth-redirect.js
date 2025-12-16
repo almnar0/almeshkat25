@@ -1,17 +1,23 @@
 // Authentication redirect script
 // Redirects already logged-in users to their appropriate dashboard
 (function() {
+    // Configuration mapping user types to their dashboard URLs
+    const DASHBOARD_URLS = {
+        'client': 'client-dashboard.html',
+        'technician': 'tech-dashboard.html',
+        'admin': 'admin-dashboard.html'
+    };
+
     try {
         const currentUser = JSON.parse(localStorage.getItem('currentUser') || 'null');
-        if (currentUser && currentUser.userType) {
+        
+        // Validate that currentUser is an object with a userType property
+        if (currentUser && 
+            typeof currentUser === 'object' && 
+            typeof currentUser.userType === 'string' &&
+            DASHBOARD_URLS[currentUser.userType]) {
             // User is already logged in, redirect to their dashboard
-            if (currentUser.userType === 'client') {
-                window.location.href = 'client-dashboard.html';
-            } else if (currentUser.userType === 'technician') {
-                window.location.href = 'tech-dashboard.html';
-            } else if (currentUser.userType === 'admin') {
-                window.location.href = 'admin-dashboard.html';
-            }
+            window.location.href = DASHBOARD_URLS[currentUser.userType];
         }
     } catch (error) {
         // If localStorage is corrupted or inaccessible, just continue to show the page
